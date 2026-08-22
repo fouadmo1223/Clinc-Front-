@@ -155,6 +155,7 @@ export interface Dictionary {
     searchPlaceholder: string;
     fullName: string;
     phone: string;
+    email: string;
     gender: string;
     genderMale: string;
     genderFemale: string;
@@ -622,6 +623,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       searchPlaceholder: 'Search by name, phone, or patient ID…',
       fullName: 'Full name',
       phone: 'Phone',
+      email: 'Email',
       gender: 'Gender',
       genderMale: 'Male',
       genderFemale: 'Female',
@@ -1114,6 +1116,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       searchPlaceholder: 'ابحث بالاسم أو الهاتف أو رقم الملف…',
       fullName: 'الاسم الكامل',
       phone: 'الهاتف',
+      email: 'البريد الإلكتروني',
       gender: 'النوع',
       genderMale: 'ذكر',
       genderFemale: 'أنثى',

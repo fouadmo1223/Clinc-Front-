@@ -30,6 +30,7 @@ function buildSchema(t: ReturnType<typeof useLocale>['t']) {
   return z.object({
     fullName: z.string().min(2, t.common.minLength(2)),
     phone: z.string().min(6, t.common.minLength(6)),
+    email: z.union([z.string().email(t.common.invalidEmail), z.literal('')]).optional(),
     gender: z.enum(['MALE', 'FEMALE']).optional(),
     dateOfBirth: z.string().optional(),
     address: z.string().optional(),
@@ -92,6 +93,7 @@ export default function PatientDetailPage() {
       reset({
         fullName: patient.fullName,
         phone: patient.phone,
+        email: patient.email ?? '',
         gender: patient.gender,
         dateOfBirth: patient.dateOfBirth?.slice(0, 10) ?? '',
         address: patient.address ?? '',
@@ -110,6 +112,7 @@ export default function PatientDetailPage() {
     mutationFn: (values: FormValues) =>
       api.patch<Patient>(`/patients/${id}`, {
         ...values,
+        email: values.email || undefined,
         allergies: canEditMedical ? toList(values.allergies) : undefined,
         chronicConditions: canEditMedical ? toList(values.chronicConditions) : undefined,
         currentMedications: canEditMedical ? toList(values.currentMedications) : undefined,
@@ -261,6 +264,11 @@ export default function PatientDetailPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
+                <Label htmlFor="email">{t.patients.email}</Label>
+                <Input id="email" type="email" dir="ltr" className="text-start" error={!!errors.email} {...register('email')} />
+                <FieldError>{errors.email?.message}</FieldError>
+              </div>
+              <div className="space-y-1.5">
                 <Label htmlFor="gender">{t.patients.gender}</Label>
                 <Controller
                   control={control}
@@ -284,6 +292,8 @@ export default function PatientDetailPage() {
                   )}
                 />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="dateOfBirth">{t.patients.dateOfBirth}</Label>
                 <Controller
@@ -292,16 +302,14 @@ export default function PatientDetailPage() {
                   render={({ field }) => <DatePicker id="dateOfBirth" value={field.value} onChange={field.onChange} />}
                 />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="address">{t.patients.address}</Label>
                 <Input id="address" {...register('address')} />
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="nationalId">{t.patients.nationalId}</Label>
-                <Input id="nationalId" dir="ltr" {...register('nationalId')} />
-              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="nationalId">{t.patients.nationalId}</Label>
+              <Input id="nationalId" dir="ltr" {...register('nationalId')} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">

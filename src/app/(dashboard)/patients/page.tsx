@@ -30,6 +30,7 @@ function buildSchema(t: ReturnType<typeof useLocale>['t']) {
   return z.object({
     fullName: z.string().min(2, t.common.minLength(2)),
     phone: z.string().min(6, t.common.minLength(6)),
+    email: z.union([z.string().email(t.common.invalidEmail), z.literal('')]).optional(),
     gender: z.enum(['MALE', 'FEMALE']).optional(),
     dateOfBirth: z.string().optional(),
     address: z.string().optional(),
@@ -93,6 +94,7 @@ export default function PatientsPage() {
     mutationFn: (values: FormValues) =>
       api.post<Patient>('/patients', {
         ...values,
+        email: values.email || undefined,
         allergies: toList(values.allergies),
         chronicConditions: toList(values.chronicConditions),
         currentMedications: toList(values.currentMedications),
@@ -224,6 +226,11 @@ export default function PatientsPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
+                <Label htmlFor="email">{t.patients.email}</Label>
+                <Input id="email" type="email" dir="ltr" className="text-start" error={!!errors.email} {...register('email')} />
+                <FieldError>{errors.email?.message}</FieldError>
+              </div>
+              <div className="space-y-1.5">
                 <Label htmlFor="gender">{t.patients.gender}</Label>
                 <Controller
                   control={control}
@@ -241,6 +248,9 @@ export default function PatientsPage() {
                   )}
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="dateOfBirth">{t.patients.dateOfBirth}</Label>
                 <Controller
@@ -249,11 +259,10 @@ export default function PatientsPage() {
                   render={({ field }) => <DatePicker id="dateOfBirth" value={field.value} onChange={field.onChange} />}
                 />
               </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="address">{t.patients.address}</Label>
-              <Input id="address" {...register('address')} />
+              <div className="space-y-1.5">
+                <Label htmlFor="address">{t.patients.address}</Label>
+                <Input id="address" {...register('address')} />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">

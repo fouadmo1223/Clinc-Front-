@@ -64,6 +64,7 @@ export interface Patient {
   clinicId: string;
   fullName: string;
   phone: string;
+  email?: string;
   gender?: 'MALE' | 'FEMALE';
   dateOfBirth?: string;
   address?: string;
