@@ -79,7 +79,11 @@ export function PatientCombobox({ value, onChange, id, className, disabled }: Pa
               className="h-8 w-full rounded-md border border-input bg-background ps-8 pe-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
-          <div className="max-h-64 space-y-0.5 overflow-y-auto">
+          {/* stopPropagation: when this combobox opens inside a Dialog, Radix's
+              modal scroll-lock intercepts wheel events at the document level and
+              blocks scrolling on anything it doesn't recognize as inside the
+              modal, including this portaled popover — stop it from bubbling. */}
+          <div className="max-h-64 space-y-0.5 overflow-y-auto" onWheel={(e) => e.stopPropagation()}>
             {patients.length === 0 ? (
               <p className="px-2 py-3 text-center text-xs text-muted-foreground">{t.appointments.noPatientResults}</p>
             ) : (

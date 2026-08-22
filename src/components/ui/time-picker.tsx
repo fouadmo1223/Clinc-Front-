@@ -61,7 +61,9 @@ export function TimePicker({ value, onChange, id, className, disabled }: TimePic
           sideOffset={6}
           className="z-50 w-28 rounded-md border border-border bg-surface shadow-popover data-[state=open]:animate-dialog-in"
         >
-          <div ref={listRef} className="max-h-56 overflow-y-auto p-1">
+          {/* stopPropagation: prevents Radix's Dialog scroll-lock (when this picker
+              opens inside a modal) from swallowing wheel events meant for this list. */}
+          <div ref={listRef} className="max-h-56 overflow-y-auto p-1" onWheel={(e) => e.stopPropagation()}>
             {ALL_SLOTS.map((slot) => (
               <button
                 key={slot}
