@@ -13,13 +13,14 @@ export class ApiError extends Error {
 let refreshPromise: Promise<string | null> | null = null;
 
 async function doRefresh(): Promise<string | null> {
-  const { refreshToken, setAccessToken, clear } = useAuthStore.getState();
-  if (!refreshToken) return null;
+  const { setAccessToken, clear } = useAuthStore.getState();
 
+  // The refresh token lives only in an httpOnly cookie — the browser attaches
+  // it automatically as long as we send credentials, so there's nothing to
+  // read from JS-accessible state here.
   const res = await fetch(`${API_URL}/auth/refresh`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken }),
+    credentials: 'include',
   });
   if (!res.ok) {
     clear();
@@ -27,7 +28,6 @@ async function doRefresh(): Promise<string | null> {
   }
   const data = await res.json();
   setAccessToken(data.accessToken);
-  useAuthStore.setState({ refreshToken: data.refreshToken });
   return data.accessToken as string;
 }
 
@@ -43,6 +43,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   const doFetch = async (accessToken: string | null) =>
     fetch(`${API_URL}${path}`, {
       ...rest,
+      credentials: 'include',
       headers: {
         // Omit Content-Type for FormData — the browser must set its own multipart boundary.
         ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
@@ -81,6 +82,7 @@ async function requestBlob(path: string, options: RequestOptions = {}): Promise<
   const doFetch = async (accessToken: string | null) =>
     fetch(`${API_URL}${path}`, {
       ...rest,
+      credentials: 'include',
       headers: {
         ...(auth && accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         ...headers,

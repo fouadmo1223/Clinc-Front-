@@ -47,12 +47,10 @@ export default function RegisterPage() {
     setServerError(null);
     setSubmitting(true);
     try {
-      const data = await api.post<{ accessToken: string; refreshToken: string; user: any }>(
-        '/auth/register-clinic',
-        values,
-        { auth: false },
-      );
-      setSession(data.accessToken, data.refreshToken, data.user);
+      const data = await api.post<{ accessToken: string; user: any }>('/auth/register-clinic', values, {
+        auth: false,
+      });
+      setSession(data.accessToken, data.user);
       toast.success(t.toasts.clinicCreated, t.toasts.clinicCreatedDesc(data.user.fullName.split(' ')[0]));
       router.push('/dashboard');
     } catch (err) {

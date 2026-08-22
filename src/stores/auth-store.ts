@@ -17,7 +17,6 @@ export interface SessionUser {
 
 interface AuthState {
   accessToken: string | null;
-  refreshToken: string | null;
   user: SessionUser | null;
   /** True once zustand/persist has finished reading localStorage. Every
    * redirect-on-missing-session check must wait for this — persist rehydrates
@@ -25,7 +24,7 @@ interface AuthState {
    * valid session exists in storage, which was causing a spurious bounce to
    * /login on every fresh page load despite a valid saved session. */
   hasHydrated: boolean;
-  setSession: (accessToken: string, refreshToken: string, user: SessionUser) => void;
+  setSession: (accessToken: string, user: SessionUser) => void;
   setAccessToken: (accessToken: string) => void;
   setHasHydrated: (value: boolean) => void;
   clear: () => void;
@@ -36,13 +35,12 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       accessToken: null,
-      refreshToken: null,
       user: null,
       hasHydrated: false,
-      setSession: (accessToken, refreshToken, user) => set({ accessToken, refreshToken, user }),
+      setSession: (accessToken, user) => set({ accessToken, user }),
       setAccessToken: (accessToken) => set({ accessToken }),
       setHasHydrated: (value) => set({ hasHydrated: value }),
-      clear: () => set({ accessToken: null, refreshToken: null, user: null }),
+      clear: () => set({ accessToken: null, user: null }),
       hasPermission: (permission) => {
         const user = get().user;
         if (!user) return false;
@@ -51,13 +49,14 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
+      // The refresh token now lives only in an httpOnly cookie (never JS-readable);
+      // this store only ever holds the short-lived access token + user profile.
       name: 'clinic-auth',
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
       partialize: (state) => ({
         accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
         user: state.user,
       }),
     },

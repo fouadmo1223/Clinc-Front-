@@ -398,12 +398,18 @@ export default function PatientDetailPage() {
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">
-                    <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
-                      <Button type="button" variant="ghost" size="sm">
+                    <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" aria-label={t.documents.download}>
+                      <Button type="button" variant="ghost" size="sm" aria-label={t.documents.download}>
                         <Download className="h-3.5 w-3.5" />
                       </Button>
                     </a>
-                    <Button type="button" variant="ghost" size="sm" onClick={() => deleteDocMutation.mutate(doc._id)}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      aria-label={t.documents.delete}
+                      onClick={() => deleteDocMutation.mutate(doc._id)}
+                    >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>

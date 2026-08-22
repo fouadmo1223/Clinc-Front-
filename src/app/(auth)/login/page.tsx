@@ -43,12 +43,8 @@ export default function LoginPage() {
     setServerError(null);
     setSubmitting(true);
     try {
-      const data = await api.post<{ accessToken: string; refreshToken: string; user: any }>(
-        '/auth/login',
-        values,
-        { auth: false },
-      );
-      setSession(data.accessToken, data.refreshToken, data.user);
+      const data = await api.post<{ accessToken: string; user: any }>('/auth/login', values, { auth: false });
+      setSession(data.accessToken, data.user);
       toast.success(t.toasts.welcomeBack(data.user.fullName.split(' ')[0]));
       router.push('/dashboard');
     } catch (err) {
