@@ -27,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DatePicker } from '@/components/ui/date-picker';
 import { PatientCombobox } from '@/components/ui/patient-combobox';
 import { AvatarInitials } from '@/components/ui/avatar-initials';
+import { IconTooltip } from '@/components/ui/tooltip';
 import { TableSkeleton } from '@/components/layout/table-skeleton';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -268,52 +269,53 @@ export default function AppointmentsPage() {
                   <td>
                     {appt.status !== 'CANCELLED' && appt.status !== 'COMPLETED' && appt.status !== 'NO_SHOW' && (
                       <div className="flex flex-wrap items-center justify-end gap-1.5">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title={t.visits.newVisit}
-                          onClick={() =>
-                            router.push(
-                              `/visits?appointmentId=${appt._id}&patientId=${appt.patientId}&doctorId=${appt.doctorId}&branchId=${appt.branchId}`,
-                            )
-                          }
-                        >
-                          <Stethoscope className="h-3.5 w-3.5" />
-                        </Button>
-                        {appt.status === 'SCHEDULED' && (
+                        <IconTooltip label={t.visits.newVisit}>
                           <Button
                             variant="ghost"
                             size="sm"
-                            title={t.appointments.markConfirmed}
-                            onClick={() => statusMutation.mutate({ id: appt._id, status: 'CONFIRMED' })}
+                            onClick={() =>
+                              router.push(
+                                `/visits?appointmentId=${appt._id}&patientId=${appt.patientId}&doctorId=${appt.doctorId}&branchId=${appt.branchId}`,
+                              )
+                            }
                           >
-                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            <Stethoscope className="h-3.5 w-3.5" />
                           </Button>
+                        </IconTooltip>
+                        {appt.status === 'SCHEDULED' && (
+                          <IconTooltip label={t.appointments.markConfirmed}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => statusMutation.mutate({ id: appt._id, status: 'CONFIRMED' })}
+                            >
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </IconTooltip>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title={t.appointments.markCompleted}
-                          onClick={() => statusMutation.mutate({ id: appt._id, status: 'COMPLETED' })}
-                        >
-                          <Clock className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title={t.appointments.markNoShow}
-                          onClick={() => statusMutation.mutate({ id: appt._id, status: 'NO_SHOW' })}
-                        >
-                          <UserX className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title={t.appointments.cancelAction}
-                          onClick={() => setCancelTarget(appt)}
-                        >
-                          <X className="h-3.5 w-3.5 text-destructive" />
-                        </Button>
+                        <IconTooltip label={t.appointments.markCompleted}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => statusMutation.mutate({ id: appt._id, status: 'COMPLETED' })}
+                          >
+                            <Clock className="h-3.5 w-3.5" />
+                          </Button>
+                        </IconTooltip>
+                        <IconTooltip label={t.appointments.markNoShow}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => statusMutation.mutate({ id: appt._id, status: 'NO_SHOW' })}
+                          >
+                            <UserX className="h-3.5 w-3.5" />
+                          </Button>
+                        </IconTooltip>
+                        <IconTooltip label={t.appointments.cancelAction}>
+                          <Button variant="ghost" size="sm" onClick={() => setCancelTarget(appt)}>
+                            <X className="h-3.5 w-3.5 text-destructive" />
+                          </Button>
+                        </IconTooltip>
                       </div>
                     )}
                   </td>

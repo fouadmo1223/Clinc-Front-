@@ -4,6 +4,7 @@ import * as React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LocaleProvider } from '@/lib/i18n/locale-context';
 import { Toaster } from '@/components/ui/toaster';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { DirectionProvider } from './direction-provider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -20,8 +21,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <LocaleProvider>
         <DirectionProvider>
-          {children}
-          <Toaster />
+          <TooltipProvider delayDuration={300} skipDelayDuration={100}>
+            {children}
+            <Toaster />
+          </TooltipProvider>
         </DirectionProvider>
       </LocaleProvider>
     </QueryClientProvider>
