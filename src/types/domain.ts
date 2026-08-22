@@ -314,6 +314,22 @@ export interface ReportSummary {
   revenueByDay: { date: string; revenue: number }[];
 }
 
+export interface AuditLog {
+  _id: string;
+  clinicId: string;
+  userId: string;
+  userName: string;
+  role: string;
+  method: string;
+  path: string;
+  resource: string;
+  resourceId?: string;
+  description: string;
+  statusCode: number;
+  ipAddress?: string;
+  createdAt: string;
+}
+
 export interface StaffMember {
   _id: string;
   clinicId: string;

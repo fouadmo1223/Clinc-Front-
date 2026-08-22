@@ -16,6 +16,7 @@ import {
   ListOrdered,
   Wallet,
   BarChart3,
+  History,
 } from 'lucide-react';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import { useLocale } from '@/lib/i18n/locale-context';
@@ -29,6 +30,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, isReady } = useRequireAuth();
   const { t, locale, setLocale } = useLocale();
   const clear = useAuthStore((s) => s.clear);
+  const hasPermission = useAuthStore((s) => s.hasPermission);
   const router = useRouter();
 
   if (!isReady || !user) return null;
@@ -46,6 +48,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: '/branches', label: t.nav.branches, icon: Building2 },
     { href: '/doctors', label: t.nav.doctors, icon: Stethoscope },
     { href: '/staff', label: t.nav.staff, icon: Users },
+    ...(hasPermission('audit.read') ? [{ href: '/audit-logs', label: t.nav.auditLogs, icon: History }] : []),
   ];
 
   const handleLogout = async () => {

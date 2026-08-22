@@ -57,6 +57,7 @@ export interface Dictionary {
     queue: string;
     expenses: string;
     reports: string;
+    auditLogs: string;
   };
   clinicSettings: {
     title: string;
@@ -358,6 +359,20 @@ export interface Dictionary {
     revenueByDay: string;
     noData: string;
   };
+  auditLogs: {
+    title: string;
+    subtitle: string;
+    time: string;
+    user: string;
+    action: string;
+    resource: string;
+    allResources: string;
+    status: string;
+    from: string;
+    to: string;
+    apply: string;
+    empty: string;
+  };
   toasts: {
     welcomeBack: (name: string) => string;
     clinicCreated: string;
@@ -474,6 +489,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       queue: 'Queue',
       expenses: 'Expenses',
       reports: 'Reports',
+      auditLogs: 'Audit log',
     },
     clinicSettings: {
       title: 'Clinic settings',
@@ -802,6 +818,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
       revenueByDay: 'Revenue by day',
       noData: 'No data for this period.',
     },
+    auditLogs: {
+      title: 'Audit log',
+      subtitle: 'A record of who did what, and when.',
+      time: 'Time',
+      user: 'User',
+      action: 'Action',
+      resource: 'Resource',
+      allResources: 'All resources',
+      status: 'Status',
+      from: 'From',
+      to: 'To',
+      apply: 'Apply',
+      empty: 'No activity recorded for this period.',
+    },
     toasts: {
       welcomeBack: (name) => `Welcome back, ${name}`,
       clinicCreated: 'Clinic created',
@@ -916,6 +946,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       queue: 'الطابور',
       expenses: 'المصروفات',
       reports: 'التقارير',
+      auditLogs: 'سجل النشاط',
     },
     clinicSettings: {
       title: 'إعدادات العيادة',
@@ -1243,6 +1274,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
       newPatientsCount: 'مرضى جدد',
       revenueByDay: 'الإيرادات اليومية',
       noData: 'لا توجد بيانات لهذه الفترة.',
+    },
+    auditLogs: {
+      title: 'سجل النشاط',
+      subtitle: 'سجل بمن قام بماذا، ومتى.',
+      time: 'الوقت',
+      user: 'المستخدم',
+      action: 'الإجراء',
+      resource: 'المورد',
+      allResources: 'كل الموارد',
+      status: 'الحالة',
+      from: 'من',
+      to: 'إلى',
+      apply: 'تطبيق',
+      empty: 'لا يوجد نشاط مسجل لهذه الفترة.',
     },
     toasts: {
       welcomeBack: (name) => `مرحباً بعودتك، ${name}`,
