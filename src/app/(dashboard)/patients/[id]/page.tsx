@@ -143,7 +143,7 @@ export default function PatientDetailPage() {
 
   if (isLoading || !patient) {
     return (
-      <div className="max-w-2xl space-y-4">
+      <div className="max-w-7xl space-y-4">
         <Skeleton className="h-4 w-32" />
         <Skeleton className="h-7 w-56" />
         <Card>
@@ -160,7 +160,7 @@ export default function PatientDetailPage() {
   const age = calculateAge(patient.dateOfBirth);
 
   return (
-    <div className="max-w-2xl space-y-5">
+    <div className="max-w-7xl space-y-5">
       <div>
         <Link
           href="/patients"
@@ -197,6 +197,7 @@ export default function PatientDetailPage() {
         onSubmit={handleSubmit((v) => updateMutation.mutate(v), onFormInvalid(t.common.formInvalid))}
         className="space-y-5"
       >
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[3fr_2fr] lg:items-start">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">{t.patients.basicInfo}</CardTitle>
@@ -312,6 +313,7 @@ export default function PatientDetailPage() {
             )}
           </CardContent>
         </Card>
+        </div>
 
         <div className="flex items-center gap-3">
           <Button type="submit" loading={updateMutation.isPending} disabled={!isDirty}>
