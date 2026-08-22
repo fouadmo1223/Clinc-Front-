@@ -2,6 +2,20 @@ export type Locale = 'en' | 'ar';
 
 export interface Dictionary {
   app: { name: string; tagline: string };
+  dashboard: {
+    greeting: (name: string) => string;
+    subtitle: string;
+    todayAppointments: string;
+    patientsWaiting: string;
+    todayRevenue: string;
+    completedVisitsToday: string;
+    last30Days: string;
+    viewFullReport: string;
+    todaysSchedule: string;
+    noAppointmentsToday: string;
+    viewQueue: string;
+    viewAllAppointments: string;
+  };
   auth: {
     login: {
       title: string;
@@ -435,6 +449,20 @@ export interface Dictionary {
 export const dictionaries: Record<Locale, Dictionary> = {
   en: {
     app: { name: 'Clinic OS', tagline: 'Clinic operations, handled.' },
+    dashboard: {
+      greeting: (name) => `Good to see you, ${name}`,
+      subtitle: "Here's what's happening at your clinic today.",
+      todayAppointments: "Today's appointments",
+      patientsWaiting: 'Patients waiting',
+      todayRevenue: "Today's revenue",
+      completedVisitsToday: 'Completed visits today',
+      last30Days: 'Last 30 days',
+      viewFullReport: 'View full report',
+      todaysSchedule: "Today's schedule",
+      noAppointmentsToday: 'No appointments scheduled for today.',
+      viewQueue: 'View queue',
+      viewAllAppointments: 'View all',
+    },
     auth: {
       login: {
         title: 'Sign in',
@@ -913,6 +941,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
   },
   ar: {
     app: { name: 'نظام العيادة', tagline: 'تشغيل عيادتك، بكل ثقة.' },
+    dashboard: {
+      greeting: (name) => `أهلاً بعودتك، ${name}`,
+      subtitle: 'إليك ما يحدث في عيادتك اليوم.',
+      todayAppointments: 'مواعيد اليوم',
+      patientsWaiting: 'المرضى في الانتظار',
+      todayRevenue: 'إيرادات اليوم',
+      completedVisitsToday: 'الزيارات المكتملة اليوم',
+      last30Days: 'آخر 30 يومًا',
+      viewFullReport: 'عرض التقرير الكامل',
+      todaysSchedule: 'جدول اليوم',
+      noAppointmentsToday: 'لا توجد مواعيد مجدولة اليوم.',
+      viewQueue: 'عرض الطابور',
+      viewAllAppointments: 'عرض الكل',
+    },
     auth: {
       login: {
         title: 'تسجيل الدخول',
