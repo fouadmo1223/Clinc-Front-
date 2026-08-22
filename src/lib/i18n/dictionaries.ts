@@ -69,6 +69,21 @@ export interface Dictionary {
     address: string;
     city: string;
     saved: string;
+    logo: string;
+    logoHint: string;
+    changeLogo: string;
+    logoUploaded: string;
+    workingHoursTitle: string;
+    workingHoursSaved: string;
+    appointmentDefaultsTitle: string;
+    defaultDurationMinutes: string;
+    bookingLeadTimeMinutes: string;
+    maxAdvanceBookingDays: string;
+    allowOnlineBooking: string;
+    allowWalkIns: string;
+    requireConfirmation: string;
+    minutes: string;
+    days: string;
   };
   branches: {
     title: string;
@@ -507,6 +522,21 @@ export const dictionaries: Record<Locale, Dictionary> = {
       address: 'Address',
       city: 'City',
       saved: 'Saved.',
+      logo: 'Clinic logo',
+      logoHint: 'JPEG, PNG, WEBP, or SVG, up to 5MB.',
+      changeLogo: 'Change logo',
+      logoUploaded: 'Logo updated.',
+      workingHoursTitle: 'Working hours',
+      workingHoursSaved: 'Working hours saved.',
+      appointmentDefaultsTitle: 'Appointment defaults',
+      defaultDurationMinutes: 'Default appointment duration',
+      bookingLeadTimeMinutes: 'Minimum booking lead time',
+      maxAdvanceBookingDays: 'Maximum days in advance',
+      allowOnlineBooking: 'Allow online booking',
+      allowWalkIns: 'Allow walk-ins',
+      requireConfirmation: 'Require confirmation before appointments are booked',
+      minutes: 'minutes',
+      days: 'days',
     },
     branches: {
       title: 'Branches',
@@ -970,6 +1000,21 @@ export const dictionaries: Record<Locale, Dictionary> = {
       address: 'العنوان',
       city: 'المدينة',
       saved: 'تم الحفظ.',
+      logo: 'شعار العيادة',
+      logoHint: 'JPEG أو PNG أو WEBP أو SVG، حتى 5 ميجابايت.',
+      changeLogo: 'تغيير الشعار',
+      logoUploaded: 'تم تحديث الشعار.',
+      workingHoursTitle: 'ساعات العمل',
+      workingHoursSaved: 'تم حفظ ساعات العمل.',
+      appointmentDefaultsTitle: 'إعدادات المواعيد الافتراضية',
+      defaultDurationMinutes: 'مدة الموعد الافتراضية',
+      bookingLeadTimeMinutes: 'الحد الأدنى لمهلة الحجز',
+      maxAdvanceBookingDays: 'أقصى عدد أيام للحجز المسبق',
+      allowOnlineBooking: 'السماح بالحجز عبر الإنترنت',
+      allowWalkIns: 'السماح بالحضور بدون حجز',
+      requireConfirmation: 'يتطلب تأكيد الموعد قبل حجزه',
+      minutes: 'دقيقة',
+      days: 'يوم',
     },
     branches: {
       title: 'الفروع',

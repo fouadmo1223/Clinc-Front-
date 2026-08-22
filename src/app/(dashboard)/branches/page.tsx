@@ -22,8 +22,10 @@ import {
 } from '@/components/ui/dialog';
 import { TableSkeleton } from '@/components/layout/table-skeleton';
 import { FieldError } from '@/components/ui/field-error';
+import { WorkingHoursEditor } from '@/components/ui/working-hours-editor';
 import { onFormInvalid } from '@/lib/form-invalid';
 import { toast } from '@/hooks/use-toast';
+import type { WorkingHours } from '@/types/domain';
 
 function buildSchema(t: ReturnType<typeof useLocale>['t']) {
   return z.object({
@@ -41,6 +43,7 @@ export default function BranchesPage() {
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<Branch | null>(null);
+  const [workingHours, setWorkingHours] = React.useState<WorkingHours[]>([]);
   const schema = React.useMemo(() => buildSchema(t), [t]);
 
   const { data: branches, isLoading } = useQuery({
@@ -58,6 +61,7 @@ export default function BranchesPage() {
   const openCreate = () => {
     setEditing(null);
     reset({ name: '', nameAr: '', address: '', city: '', phone: '' });
+    setWorkingHours([]);
     setOpen(true);
   };
 
@@ -70,11 +74,12 @@ export default function BranchesPage() {
       city: branch.city ?? '',
       phone: branch.phone,
     });
+    setWorkingHours(branch.workingHours ?? []);
     setOpen(true);
   };
 
   const createMutation = useMutation({
-    mutationFn: (values: FormValues) => api.post<Branch>('/branches', values),
+    mutationFn: (values: FormValues) => api.post<Branch>('/branches', { ...values, workingHours }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
       setOpen(false);
@@ -84,7 +89,7 @@ export default function BranchesPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (values: FormValues) => api.patch<Branch>(`/branches/${editing?._id}`, values),
+    mutationFn: (values: FormValues) => api.patch<Branch>(`/branches/${editing?._id}`, { ...values, workingHours }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
       setOpen(false);
@@ -197,7 +202,7 @@ export default function BranchesPage() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[85vh] max-w-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? t.branches.editTitle : t.branches.addTitle}</DialogTitle>
           </DialogHeader>
@@ -229,6 +234,10 @@ export default function BranchesPage() {
                 <Input id="phone" error={!!errors.phone} {...register('phone')} />
                 <FieldError>{errors.phone?.message}</FieldError>
               </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t.clinicSettings.workingHoursTitle}</Label>
+              <WorkingHoursEditor value={workingHours} onChange={setWorkingHours} />
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
