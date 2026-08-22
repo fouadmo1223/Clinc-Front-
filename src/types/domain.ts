@@ -12,7 +12,7 @@ export interface Clinic {
   slug: string;
   logoUrl?: string;
   contactEmail: string;
-  contactPhone: string;
+  contactPhones: string[];
   address?: string;
   city?: string;
   workingHours: WorkingHours[];
@@ -34,7 +34,7 @@ export interface Branch {
   nameAr: string;
   address: string;
   city?: string;
-  phone: string;
+  phones: string[];
   workingHours: WorkingHours[];
   isActive: boolean;
 }

@@ -6,7 +6,7 @@ import type { WorkingHours } from '@/types/domain';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Switch } from '@/components/ui/switch';
 
-function defaultWeek(): WorkingHours[] {
+export function defaultWorkingHoursWeek(): WorkingHours[] {
   return Array.from({ length: 7 }, (_, day) => ({ day, openTime: '09:00', closeTime: '17:00', isClosed: false }));
 }
 
@@ -21,7 +21,7 @@ export function WorkingHoursEditor({ value, onChange }: WorkingHoursEditorProps)
 
   const week = React.useMemo(() => {
     const byDay = new Map(value.map((w) => [w.day, w]));
-    return defaultWeek().map((fallback) => byDay.get(fallback.day) ?? fallback);
+    return defaultWorkingHoursWeek().map((fallback) => byDay.get(fallback.day) ?? fallback);
   }, [value]);
 
   const updateDay = (day: number, patch: Partial<WorkingHours>) => {

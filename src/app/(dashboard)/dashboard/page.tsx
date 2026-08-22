@@ -3,11 +3,12 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { format, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
 import { CalendarClock, Users, Wallet, ClipboardCheck, Clock } from 'lucide-react';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { api } from '@/lib/api';
+import { toUtcDateString } from '@/lib/utils';
 import type { Appointment, AppointmentStatus, QueueEntry, ReportSummary, PaginatedResult, Visit } from '@/types/domain';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -42,8 +43,8 @@ export default function DashboardOverviewPage() {
   const { user, isReady } = useRequireAuth();
   const { t } = useLocale();
 
-  const today = format(new Date(), 'yyyy-MM-dd');
-  const monthAgo = format(subDays(new Date(), 29), 'yyyy-MM-dd');
+  const today = toUtcDateString(new Date());
+  const monthAgo = toUtcDateString(subDays(new Date(), 29));
 
   const { data: todayAppointments, isLoading: loadingAppointments } = useQuery({
     queryKey: ['dashboard', 'appointments-today', today],

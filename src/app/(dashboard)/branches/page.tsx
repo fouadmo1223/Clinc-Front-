@@ -22,10 +22,11 @@ import {
 } from '@/components/ui/dialog';
 import { TableSkeleton } from '@/components/layout/table-skeleton';
 import { FieldError } from '@/components/ui/field-error';
-import { WorkingHoursEditor } from '@/components/ui/working-hours-editor';
+import { WorkingHoursEditor, defaultWorkingHoursWeek } from '@/components/ui/working-hours-editor';
 import { onFormInvalid } from '@/lib/form-invalid';
 import { toast } from '@/hooks/use-toast';
 import type { WorkingHours } from '@/types/domain';
+import { parseCommaList } from '@/lib/utils';
 
 function buildSchema(t: ReturnType<typeof useLocale>['t']) {
   return z.object({
@@ -33,7 +34,10 @@ function buildSchema(t: ReturnType<typeof useLocale>['t']) {
     nameAr: z.string().min(2, t.common.minLength(2)),
     address: z.string().min(3, t.common.minLength(3)),
     city: z.string().optional(),
-    phone: z.string().min(6, t.common.minLength(6)),
+    phones: z
+      .string()
+      .min(6, t.common.minLength(6))
+      .refine((v) => parseCommaList(v).length > 0, t.common.minLength(6)),
   });
 }
 type FormValues = z.infer<ReturnType<typeof buildSchema>>;
@@ -60,8 +64,8 @@ export default function BranchesPage() {
 
   const openCreate = () => {
     setEditing(null);
-    reset({ name: '', nameAr: '', address: '', city: '', phone: '' });
-    setWorkingHours([]);
+    reset({ name: '', nameAr: '', address: '', city: '', phones: '' });
+    setWorkingHours(defaultWorkingHoursWeek());
     setOpen(true);
   };
 
@@ -72,14 +76,15 @@ export default function BranchesPage() {
       nameAr: branch.nameAr,
       address: branch.address,
       city: branch.city ?? '',
-      phone: branch.phone,
+      phones: branch.phones.join(', '),
     });
     setWorkingHours(branch.workingHours ?? []);
     setOpen(true);
   };
 
   const createMutation = useMutation({
-    mutationFn: (values: FormValues) => api.post<Branch>('/branches', { ...values, workingHours }),
+    mutationFn: (values: FormValues) =>
+      api.post<Branch>('/branches', { ...values, phones: parseCommaList(values.phones), workingHours }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
       setOpen(false);
@@ -89,7 +94,8 @@ export default function BranchesPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (values: FormValues) => api.patch<Branch>(`/branches/${editing?._id}`, { ...values, workingHours }),
+    mutationFn: (values: FormValues) =>
+      api.patch<Branch>(`/branches/${editing?._id}`, { ...values, phones: parseCommaList(values.phones), workingHours }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['branches'] });
       setOpen(false);
@@ -163,7 +169,7 @@ export default function BranchesPage() {
                     {branch.address}
                     {branch.city ? `, ${branch.city}` : ''}
                   </td>
-                  <td className="tabular-nums text-muted-foreground">{branch.phone}</td>
+                  <td className="tabular-nums text-muted-foreground">{branch.phones.join(', ')}</td>
                   <td>
                     <Badge variant={branch.isActive ? 'success' : 'neutral'}>
                       {branch.isActive ? t.common.active : t.common.inactive}
@@ -230,9 +236,9 @@ export default function BranchesPage() {
                 <Input id="city" {...register('city')} />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="phone">{t.branches.phone}</Label>
-                <Input id="phone" error={!!errors.phone} {...register('phone')} />
-                <FieldError>{errors.phone?.message}</FieldError>
+                <Label htmlFor="phones">{t.branches.phone}</Label>
+                <Input id="phones" placeholder={t.patients.listArrayHint} error={!!errors.phones} {...register('phones')} />
+                <FieldError>{errors.phones?.message}</FieldError>
               </div>
             </div>
             <div className="space-y-1.5">

@@ -16,16 +16,20 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FieldError } from '@/components/ui/field-error';
-import { WorkingHoursEditor } from '@/components/ui/working-hours-editor';
+import { WorkingHoursEditor, defaultWorkingHoursWeek } from '@/components/ui/working-hours-editor';
 import { onFormInvalid } from '@/lib/form-invalid';
 import { toast } from '@/hooks/use-toast';
+import { parseCommaList } from '@/lib/utils';
 
 function buildSchema(t: ReturnType<typeof useLocale>['t']) {
   return z.object({
     name: z.string().min(2, t.common.minLength(2)),
     nameAr: z.string().min(2, t.common.minLength(2)),
     contactEmail: z.string().email(t.common.invalidEmail),
-    contactPhone: z.string().min(6, t.common.minLength(6)),
+    contactPhones: z
+      .string()
+      .min(6, t.common.minLength(6))
+      .refine((v) => parseCommaList(v).length > 0, t.common.minLength(6)),
     address: z.string().optional(),
     city: z.string().optional(),
   });
@@ -95,9 +99,13 @@ function LogoCard({ clinic }: { clinic: Clinic }) {
 function WorkingHoursCard({ clinic }: { clinic: Clinic }) {
   const { t } = useLocale();
   const queryClient = useQueryClient();
-  const [hours, setHours] = React.useState<WorkingHours[]>(clinic.workingHours);
+  const [hours, setHours] = React.useState<WorkingHours[]>(
+    clinic.workingHours.length > 0 ? clinic.workingHours : defaultWorkingHoursWeek(),
+  );
 
-  React.useEffect(() => setHours(clinic.workingHours), [clinic.workingHours]);
+  React.useEffect(() => {
+    setHours(clinic.workingHours.length > 0 ? clinic.workingHours : defaultWorkingHoursWeek());
+  }, [clinic.workingHours]);
 
   const mutation = useMutation({
     mutationFn: (workingHours: WorkingHours[]) => api.patch<Clinic>('/clinics/me', { workingHours }),
@@ -237,7 +245,7 @@ export default function ClinicSettingsPage() {
         name: clinic.name,
         nameAr: clinic.nameAr,
         contactEmail: clinic.contactEmail,
-        contactPhone: clinic.contactPhone,
+        contactPhones: clinic.contactPhones.join(', '),
         address: clinic.address ?? '',
         city: clinic.city ?? '',
       });
@@ -245,7 +253,8 @@ export default function ClinicSettingsPage() {
   }, [clinic, reset]);
 
   const mutation = useMutation({
-    mutationFn: (values: FormValues) => api.patch<Clinic>('/clinics/me', values),
+    mutationFn: (values: FormValues) =>
+      api.patch<Clinic>('/clinics/me', { ...values, contactPhones: parseCommaList(values.contactPhones) }),
     onSuccess: (data) => {
       queryClient.setQueryData(['clinic', 'me'], data);
       toast.success(t.clinicSettings.saved);
@@ -255,92 +264,103 @@ export default function ClinicSettingsPage() {
 
   if (isLoading || !clinic) {
     return (
-      <div className="max-w-xl space-y-6">
+      <div className="mx-auto max-w-7xl space-y-6">
         <div className="space-y-2">
           <Skeleton className="h-5 w-40" />
           <Skeleton className="h-4 w-64" />
         </div>
-        <Card>
-          <CardContent className="space-y-4 pt-5">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="grid grid-cols-2 gap-3">
-                <Skeleton className="h-9" />
-                <Skeleton className="h-9" />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="space-y-4 pt-5">
+                {Array.from({ length: 3 }).map((_, j) => (
+                  <div key={j} className="grid grid-cols-2 gap-3">
+                    <Skeleton className="h-9" />
+                    <Skeleton className="h-9" />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <div>
         <h1 className="text-lg font-semibold tracking-tight">{t.clinicSettings.title}</h1>
         <p className="text-sm text-muted-foreground">{t.clinicSettings.subtitle}</p>
       </div>
 
-      <LogoCard clinic={clinic} />
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
+        <LogoCard clinic={clinic} />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">{t.app.name}</CardTitle>
-          <CardDescription>{clinic.slug}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            onSubmit={handleSubmit((v) => mutation.mutate(v), onFormInvalid(t.common.formInvalid))}
-            className="space-y-4"
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="name">{t.clinicSettings.nameEn}</Label>
-                <Input id="name" error={!!errors.name} {...register('name')} />
-                <FieldError>{errors.name?.message}</FieldError>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">{t.app.name}</CardTitle>
+            <CardDescription>{clinic.slug}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={handleSubmit((v) => mutation.mutate(v), onFormInvalid(t.common.formInvalid))}
+              className="space-y-4"
+            >
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="name">{t.clinicSettings.nameEn}</Label>
+                  <Input id="name" error={!!errors.name} {...register('name')} />
+                  <FieldError>{errors.name?.message}</FieldError>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="nameAr">{t.clinicSettings.nameAr}</Label>
+                  <Input id="nameAr" dir="rtl" error={!!errors.nameAr} {...register('nameAr')} />
+                  <FieldError>{errors.nameAr?.message}</FieldError>
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="nameAr">{t.clinicSettings.nameAr}</Label>
-                <Input id="nameAr" dir="rtl" error={!!errors.nameAr} {...register('nameAr')} />
-                <FieldError>{errors.nameAr?.message}</FieldError>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="contactEmail">{t.clinicSettings.contactEmail}</Label>
-                <Input id="contactEmail" type="email" error={!!errors.contactEmail} {...register('contactEmail')} />
-                <FieldError>{errors.contactEmail?.message}</FieldError>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="contactEmail">{t.clinicSettings.contactEmail}</Label>
+                  <Input id="contactEmail" type="email" error={!!errors.contactEmail} {...register('contactEmail')} />
+                  <FieldError>{errors.contactEmail?.message}</FieldError>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="contactPhones">{t.clinicSettings.contactPhone}</Label>
+                  <Input
+                    id="contactPhones"
+                    placeholder={t.patients.listArrayHint}
+                    error={!!errors.contactPhones}
+                    {...register('contactPhones')}
+                  />
+                  <FieldError>{errors.contactPhones?.message}</FieldError>
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="contactPhone">{t.clinicSettings.contactPhone}</Label>
-                <Input id="contactPhone" error={!!errors.contactPhone} {...register('contactPhone')} />
-                <FieldError>{errors.contactPhone?.message}</FieldError>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="address">{t.clinicSettings.address}</Label>
-                <Input id="address" {...register('address')} />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="address">{t.clinicSettings.address}</Label>
+                  <Input id="address" {...register('address')} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="city">{t.clinicSettings.city}</Label>
+                  <Input id="city" {...register('city')} />
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="city">{t.clinicSettings.city}</Label>
-                <Input id="city" {...register('city')} />
+
+              <div className="flex items-center gap-3 pt-2">
+                <Button type="submit" loading={mutation.isPending} disabled={!isDirty}>
+                  {t.common.save}
+                </Button>
               </div>
-            </div>
+            </form>
+          </CardContent>
+        </Card>
 
-            <div className="flex items-center gap-3 pt-2">
-              <Button type="submit" loading={mutation.isPending} disabled={!isDirty}>
-                {t.common.save}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-
-      <WorkingHoursCard clinic={clinic} />
-      <AppointmentDefaultsCard clinic={clinic} />
+        <WorkingHoursCard clinic={clinic} />
+        <AppointmentDefaultsCard clinic={clinic} />
+      </div>
     </div>
   );
 }

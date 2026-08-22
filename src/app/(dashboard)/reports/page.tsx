@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { format, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
+import { toUtcDateString } from '@/lib/utils';
 import { TrendingUp, TrendingDown, Wallet, CalendarClock, ClipboardList, UserPlus } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { api } from '@/lib/api';
@@ -32,8 +33,8 @@ function SummaryCard({ icon: Icon, label, value, tone }: { icon: React.ElementTy
 
 export default function ReportsPage() {
   const { t } = useLocale();
-  const [from, setFrom] = React.useState(format(subDays(new Date(), 29), 'yyyy-MM-dd'));
-  const [to, setTo] = React.useState(format(new Date(), 'yyyy-MM-dd'));
+  const [from, setFrom] = React.useState(toUtcDateString(subDays(new Date(), 29)));
+  const [to, setTo] = React.useState(toUtcDateString(new Date()));
   const [appliedRange, setAppliedRange] = React.useState({ from, to });
 
   const { data: summary, isLoading } = useQuery({
