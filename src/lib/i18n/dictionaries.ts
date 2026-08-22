@@ -43,7 +43,7 @@ export interface Dictionary {
       invalidLink: string;
     };
   };
-  common: { loading: string; language: string; save: string; cancel: string; create: string; edit: string; deactivate: string; active: string; inactive: string; noResults: string; error: string; formInvalid: string; required: string; invalidEmail: string; minLength: (n: number) => string; selectAtLeastOne: string; logout: string };
+  common: { loading: string; language: string; save: string; cancel: string; create: string; edit: string; deactivate: string; activate: string; active: string; inactive: string; noResults: string; error: string; formInvalid: string; required: string; invalidEmail: string; minLength: (n: number) => string; selectAtLeastOne: string; logout: string };
   nav: {
     overview: string;
     clinic: string;
@@ -53,6 +53,7 @@ export interface Dictionary {
     patients: string;
     appointments: string;
     visits: string;
+    invoices: string;
   };
   clinicSettings: {
     title: string;
@@ -250,6 +251,43 @@ export interface Dictionary {
     noPrescriptions: string;
     save: string;
   };
+  invoices: {
+    title: string;
+    subtitle: string;
+    newInvoice: string;
+    newInvoiceTitle: string;
+    backToInvoices: string;
+    patient: string;
+    branch: string;
+    linkedVisit: string;
+    item: string;
+    description: string;
+    quantity: string;
+    unitPrice: string;
+    addItem: string;
+    removeItem: string;
+    discount: string;
+    notes: string;
+    subtotal: string;
+    total: string;
+    amountPaid: string;
+    balanceDue: string;
+    status: string;
+    statuses: { UNPAID: string; PARTIALLY_PAID: string; PAID: string; CANCELLED: string };
+    empty: string;
+    allStatuses: string;
+    create: string;
+    payments: string;
+    recordPayment: string;
+    recordPaymentTitle: string;
+    refund: string;
+    refundTitle: string;
+    amount: string;
+    method: string;
+    methods: { CASH: string; CARD: string; TRANSFER: string; INSURANCE: string };
+    reference: string;
+    noPayments: string;
+  };
   toasts: {
     welcomeBack: (name: string) => string;
     clinicCreated: string;
@@ -276,6 +314,9 @@ export interface Dictionary {
     appointmentCancelled: string;
     visitSaved: string;
     prescriptionAdded: string;
+    invoiceCreated: string;
+    paymentRecorded: string;
+    refundRecorded: string;
   };
 }
 
@@ -331,6 +372,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       create: 'Create',
       edit: 'Edit',
       deactivate: 'Deactivate',
+      activate: 'Activate',
       active: 'Active',
       inactive: 'Inactive',
       noResults: 'Nothing here yet.',
@@ -351,6 +393,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       patients: 'Patients',
       appointments: 'Appointments',
       visits: 'Visits',
+      invoices: 'Invoices',
     },
     clinicSettings: {
       title: 'Clinic settings',
@@ -562,6 +605,43 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noPrescriptions: 'No prescriptions for this visit.',
       save: 'Save visit',
     },
+    invoices: {
+      title: 'Invoices',
+      subtitle: 'Bill patients and track payments.',
+      newInvoice: 'New invoice',
+      newInvoiceTitle: 'New invoice',
+      backToInvoices: 'Back to invoices',
+      patient: 'Patient',
+      branch: 'Branch',
+      linkedVisit: 'Linked visit',
+      item: 'Item',
+      description: 'Description',
+      quantity: 'Qty',
+      unitPrice: 'Unit price',
+      addItem: 'Add item',
+      removeItem: 'Remove',
+      discount: 'Discount',
+      notes: 'Notes',
+      subtotal: 'Subtotal',
+      total: 'Total',
+      amountPaid: 'Amount paid',
+      balanceDue: 'Balance due',
+      status: 'Status',
+      statuses: { UNPAID: 'Unpaid', PARTIALLY_PAID: 'Partially paid', PAID: 'Paid', CANCELLED: 'Cancelled' },
+      empty: 'No invoices yet.',
+      allStatuses: 'All statuses',
+      create: 'Create invoice',
+      payments: 'Payments',
+      recordPayment: 'Record payment',
+      recordPaymentTitle: 'Record payment',
+      refund: 'Refund',
+      refundTitle: 'Issue refund',
+      amount: 'Amount',
+      method: 'Method',
+      methods: { CASH: 'Cash', CARD: 'Card', TRANSFER: 'Bank transfer', INSURANCE: 'Insurance' },
+      reference: 'Reference (optional)',
+      noPayments: 'No payments recorded yet.',
+    },
     toasts: {
       welcomeBack: (name) => `Welcome back, ${name}`,
       clinicCreated: 'Clinic created',
@@ -588,6 +668,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       appointmentCancelled: 'Appointment cancelled',
       visitSaved: 'Visit saved',
       prescriptionAdded: 'Prescription added',
+      invoiceCreated: 'Invoice created',
+      paymentRecorded: 'Payment recorded',
+      refundRecorded: 'Refund recorded',
     },
   },
   ar: {
@@ -641,6 +724,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       create: 'إنشاء',
       edit: 'تعديل',
       deactivate: 'إلغاء التفعيل',
+      activate: 'تفعيل',
       active: 'نشط',
       inactive: 'غير نشط',
       noResults: 'لا يوجد شيء هنا بعد.',
@@ -661,6 +745,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       patients: 'المرضى',
       appointments: 'المواعيد',
       visits: 'الزيارات',
+      invoices: 'الفواتير',
     },
     clinicSettings: {
       title: 'إعدادات العيادة',
@@ -872,6 +957,43 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noPrescriptions: 'لا توجد روشتات لهذه الزيارة.',
       save: 'حفظ الزيارة',
     },
+    invoices: {
+      title: 'الفواتير',
+      subtitle: 'فوترة المرضى ومتابعة المدفوعات.',
+      newInvoice: 'فاتورة جديدة',
+      newInvoiceTitle: 'فاتورة جديدة',
+      backToInvoices: 'العودة إلى الفواتير',
+      patient: 'المريض',
+      branch: 'الفرع',
+      linkedVisit: 'الزيارة المرتبطة',
+      item: 'البند',
+      description: 'الوصف',
+      quantity: 'الكمية',
+      unitPrice: 'سعر الوحدة',
+      addItem: 'إضافة بند',
+      removeItem: 'إزالة',
+      discount: 'الخصم',
+      notes: 'ملاحظات',
+      subtotal: 'الإجمالي الفرعي',
+      total: 'الإجمالي',
+      amountPaid: 'المبلغ المدفوع',
+      balanceDue: 'المبلغ المستحق',
+      status: 'الحالة',
+      statuses: { UNPAID: 'غير مدفوعة', PARTIALLY_PAID: 'مدفوعة جزئيًا', PAID: 'مدفوعة', CANCELLED: 'ملغاة' },
+      empty: 'لا توجد فواتير بعد.',
+      allStatuses: 'كل الحالات',
+      create: 'إنشاء فاتورة',
+      payments: 'المدفوعات',
+      recordPayment: 'تسجيل دفعة',
+      recordPaymentTitle: 'تسجيل دفعة',
+      refund: 'استرداد',
+      refundTitle: 'إصدار استرداد',
+      amount: 'المبلغ',
+      method: 'طريقة الدفع',
+      methods: { CASH: 'نقدًا', CARD: 'بطاقة', TRANSFER: 'تحويل بنكي', INSURANCE: 'تأمين' },
+      reference: 'المرجع (اختياري)',
+      noPayments: 'لا توجد مدفوعات مسجلة بعد.',
+    },
     toasts: {
       welcomeBack: (name) => `مرحباً بعودتك، ${name}`,
       clinicCreated: 'تم إنشاء العيادة',
@@ -898,6 +1020,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       appointmentCancelled: 'تم إلغاء الموعد',
       visitSaved: 'تم حفظ الزيارة',
       prescriptionAdded: 'تمت إضافة الروشتة',
+      invoiceCreated: 'تم إنشاء الفاتورة',
+      paymentRecorded: 'تم تسجيل الدفعة',
+      refundRecorded: 'تم تسجيل الاسترداد',
     },
   },
 };

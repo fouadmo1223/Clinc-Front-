@@ -207,6 +207,50 @@ export interface Prescription {
   createdAt: string;
 }
 
+export type InvoiceStatus = 'UNPAID' | 'PARTIALLY_PAID' | 'PAID' | 'CANCELLED';
+
+export interface InvoiceItem {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface Invoice {
+  _id: string;
+  clinicId: string;
+  branchId: string;
+  patientId: string;
+  visitId?: string;
+  items: InvoiceItem[];
+  subtotal: number;
+  discount: number;
+  total: number;
+  amountPaid: number;
+  status: InvoiceStatus;
+  notes?: string;
+  patientName?: string;
+  patientPhone?: string;
+  createdAt: string;
+}
+
+export type PaymentType = 'PAYMENT' | 'REFUND';
+export type PaymentMethod = 'CASH' | 'CARD' | 'TRANSFER' | 'INSURANCE';
+
+export interface Payment {
+  _id: string;
+  clinicId: string;
+  invoiceId: string;
+  patientId: string;
+  amount: number;
+  type: PaymentType;
+  method: PaymentMethod;
+  reference?: string;
+  notes?: string;
+  paidAt: string;
+  createdAt: string;
+}
+
 export interface StaffMember {
   _id: string;
   clinicId: string;

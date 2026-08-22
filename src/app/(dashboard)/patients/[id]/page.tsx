@@ -131,6 +131,16 @@ export default function PatientDetailPage() {
     onError: () => toast.error(t.common.error),
   });
 
+  const activateMutation = useMutation({
+    mutationFn: () => api.patch(`/patients/${id}`, { isActive: true }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['patients'] });
+      queryClient.invalidateQueries({ queryKey: ['patients', id] });
+      toast.success(t.toasts.patientUpdated, (data as { fullName?: string })?.fullName);
+    },
+    onError: () => toast.error(t.common.error),
+  });
+
   if (isLoading || !patient) {
     return (
       <div className="max-w-2xl space-y-4">
@@ -167,9 +177,13 @@ export default function PatientDetailPage() {
           <Badge variant={patient.isActive ? 'success' : 'neutral'}>
             {patient.isActive ? t.common.active : t.common.inactive}
           </Badge>
-          {patient.isActive && (
+          {patient.isActive ? (
             <Button variant="outline" size="sm" onClick={() => deactivateMutation.mutate()}>
               {t.common.deactivate}
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => activateMutation.mutate()}>
+              {t.common.activate}
             </Button>
           )}
         </div>

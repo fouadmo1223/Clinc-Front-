@@ -102,6 +102,15 @@ export default function BranchesPage() {
     onError: () => toast.error(t.common.error),
   });
 
+  const activateMutation = useMutation({
+    mutationFn: (id: string) => api.patch(`/branches/${id}`, { isActive: true }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['branches'] });
+      toast.success(t.toasts.branchUpdated);
+    },
+    onError: () => toast.error(t.common.error),
+  });
+
   const onSubmit = (values: FormValues) => {
     if (editing) updateMutation.mutate(values);
     else createMutation.mutate(values);
@@ -156,7 +165,7 @@ export default function BranchesPage() {
                     </Badge>
                   </td>
                   <td className="text-end">
-                    {branch.isActive && (
+                    {branch.isActive ? (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -166,6 +175,17 @@ export default function BranchesPage() {
                         }}
                       >
                         {t.common.deactivate}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          activateMutation.mutate(branch._id);
+                        }}
+                      >
+                        {t.common.activate}
                       </Button>
                     )}
                   </td>

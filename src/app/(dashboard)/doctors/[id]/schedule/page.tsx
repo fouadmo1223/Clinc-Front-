@@ -183,7 +183,7 @@ export default function DoctorSchedulePage() {
   }
 
   return (
-    <div className="max-w-6xl space-y-5">
+    <div className="max-w-7xl space-y-5">
       <div>
         <Link
           href="/doctors"

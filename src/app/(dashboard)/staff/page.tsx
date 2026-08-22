@@ -108,6 +108,15 @@ export default function StaffPage() {
     onError: () => toast.error(t.common.error),
   });
 
+  const activateMutation = useMutation({
+    mutationFn: (id: string) => api.patch(`/staff/${id}`, { isActive: true }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff'] });
+      toast.success(t.toasts.staffUpdated);
+    },
+    onError: () => toast.error(t.common.error),
+  });
+
   const onSubmit = (values: FormValues) => {
     if (editing) updateMutation.mutate(values);
     else createMutation.mutate(values);
@@ -166,7 +175,7 @@ export default function StaffPage() {
                     </Badge>
                   </td>
                   <td className="text-end">
-                    {member.isActive && (
+                    {member.isActive ? (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -176,6 +185,17 @@ export default function StaffPage() {
                         }}
                       >
                         {t.common.deactivate}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          activateMutation.mutate(member._id);
+                        }}
+                      >
+                        {t.common.activate}
                       </Button>
                     )}
                   </td>

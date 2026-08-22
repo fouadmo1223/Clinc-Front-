@@ -128,6 +128,15 @@ export default function DoctorsPage() {
     onError: () => toast.error(t.common.error),
   });
 
+  const activateMutation = useMutation({
+    mutationFn: (id: string) => api.patch(`/doctors/${id}`, { isActive: true }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['doctors'] });
+      toast.success(t.toasts.doctorUpdated);
+    },
+    onError: () => toast.error(t.common.error),
+  });
+
   const onSubmit = (values: FormValues) => {
     if (editing) updateMutation.mutate(values);
     else createMutation.mutate(values);
@@ -193,7 +202,7 @@ export default function DoctorsPage() {
                           <CalendarClock className="h-3.5 w-3.5" />
                         </Button>
                       </Link>
-                      {doctor.isActive && (
+                      {doctor.isActive ? (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -203,6 +212,17 @@ export default function DoctorsPage() {
                           }}
                         >
                           {t.common.deactivate}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            activateMutation.mutate(doctor._id);
+                          }}
+                        >
+                          {t.common.activate}
                         </Button>
                       )}
                     </div>
