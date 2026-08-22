@@ -39,11 +39,13 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   const { auth = true, headers, ...rest } = options;
   const token = useAuthStore.getState().accessToken;
 
+  const isFormData = rest.body instanceof FormData;
   const doFetch = async (accessToken: string | null) =>
     fetch(`${API_URL}${path}`, {
       ...rest,
       headers: {
-        'Content-Type': 'application/json',
+        // Omit Content-Type for FormData — the browser must set its own multipart boundary.
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...(auth && accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         ...headers,
       },
@@ -81,4 +83,6 @@ export const api = {
   put: <T>(path: string, data?: unknown, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'PUT', body: data ? JSON.stringify(data) : undefined }),
   delete: <T>(path: string, options?: RequestOptions) => request<T>(path, { ...options, method: 'DELETE' }),
+  upload: <T>(path: string, formData: FormData, options?: RequestOptions) =>
+    request<T>(path, { ...options, method: 'POST', body: formData }),
 };

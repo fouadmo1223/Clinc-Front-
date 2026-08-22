@@ -2,7 +2,21 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { LayoutGrid, Building2, Stethoscope, Users, Settings, Contact, LogOut, CalendarClock, ClipboardList, Receipt } from 'lucide-react';
+import {
+  LayoutGrid,
+  Building2,
+  Stethoscope,
+  Users,
+  Settings,
+  Contact,
+  LogOut,
+  CalendarClock,
+  ClipboardList,
+  Receipt,
+  ListOrdered,
+  Wallet,
+  BarChart3,
+} from 'lucide-react';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { useAuthStore } from '@/stores/auth-store';
@@ -21,10 +35,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navItems: NavItem[] = [
     { href: '/dashboard', label: t.nav.overview, icon: LayoutGrid },
+    { href: '/queue', label: t.nav.queue, icon: ListOrdered },
     { href: '/appointments', label: t.nav.appointments, icon: CalendarClock },
     { href: '/visits', label: t.nav.visits, icon: ClipboardList },
     { href: '/patients', label: t.nav.patients, icon: Contact },
     { href: '/invoices', label: t.nav.invoices, icon: Receipt },
+    { href: '/expenses', label: t.nav.expenses, icon: Wallet },
+    { href: '/reports', label: t.nav.reports, icon: BarChart3 },
     { href: '/clinic', label: t.nav.clinic, icon: Settings },
     { href: '/branches', label: t.nav.branches, icon: Building2 },
     { href: '/doctors', label: t.nav.doctors, icon: Stethoscope },

@@ -251,6 +251,68 @@ export interface Payment {
   createdAt: string;
 }
 
+export type DocumentCategory = 'LAB_RESULT' | 'SCAN' | 'REPORT' | 'PRESCRIPTION' | 'OTHER';
+
+export interface ClinicDocument {
+  _id: string;
+  clinicId: string;
+  patientId: string;
+  visitId?: string;
+  fileName: string;
+  fileUrl: string;
+  mimeType: string;
+  fileSizeBytes: number;
+  category: DocumentCategory;
+  notes?: string;
+  createdAt: string;
+}
+
+export type QueueStatus = 'WAITING' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED';
+
+export interface QueueEntry {
+  _id: string;
+  clinicId: string;
+  branchId: string;
+  doctorId?: string;
+  patientId: string;
+  appointmentId?: string;
+  date: string;
+  queueNumber: number;
+  status: QueueStatus;
+  checkedInAt: string;
+  calledAt?: string;
+  completedAt?: string;
+  notes?: string;
+  patientName?: string;
+  patientPhone?: string;
+  doctorName?: string;
+}
+
+export type ExpenseCategory = 'RENT' | 'SALARIES' | 'SUPPLIES' | 'UTILITIES' | 'MAINTENANCE' | 'OTHER';
+
+export interface Expense {
+  _id: string;
+  clinicId: string;
+  branchId: string;
+  category: ExpenseCategory;
+  amount: number;
+  description: string;
+  date: string;
+  createdAt: string;
+}
+
+export interface ReportSummary {
+  from: string;
+  to: string;
+  totalRevenue: number;
+  totalExpenses: number;
+  netIncome: number;
+  appointmentsCount: number;
+  visitsCount: number;
+  newPatientsCount: number;
+  revenueByDay: { date: string; revenue: number }[];
+}
+
 export interface StaffMember {
   _id: string;
   clinicId: string;

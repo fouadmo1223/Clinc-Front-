@@ -7,11 +7,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowRight, ArrowLeft, Lock } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Lock, FileText, Upload, Trash2, Download } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
-import type { Patient } from '@/types/domain';
+import type { Patient, ClinicDocument, DocumentCategory } from '@/types/domain';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/date-picker';
 import { FieldError } from '@/components/ui/field-error';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { onFormInvalid } from '@/lib/form-invalid';
 import { toast } from '@/hooks/use-toast';
 
@@ -137,6 +138,49 @@ export default function PatientDetailPage() {
       queryClient.invalidateQueries({ queryKey: ['patients'] });
       queryClient.invalidateQueries({ queryKey: ['patients', id] });
       toast.success(t.toasts.patientUpdated, (data as { fullName?: string })?.fullName);
+    },
+    onError: () => toast.error(t.common.error),
+  });
+
+  const { data: documents } = useQuery({
+    queryKey: ['documents', id],
+    queryFn: () => api.get<ClinicDocument[]>(`/documents?patientId=${id}`),
+  });
+
+  const [uploadOpen, setUploadOpen] = React.useState(false);
+  const [uploadFile, setUploadFile] = React.useState<File | null>(null);
+  const [uploadCategory, setUploadCategory] = React.useState<DocumentCategory>('OTHER');
+  const [uploadNotes, setUploadNotes] = React.useState('');
+
+  const openUpload = () => {
+    setUploadFile(null);
+    setUploadCategory('OTHER');
+    setUploadNotes('');
+    setUploadOpen(true);
+  };
+
+  const uploadMutation = useMutation({
+    mutationFn: () => {
+      const formData = new FormData();
+      formData.append('file', uploadFile!);
+      formData.append('patientId', id);
+      formData.append('category', uploadCategory);
+      if (uploadNotes) formData.append('notes', uploadNotes);
+      return api.upload<ClinicDocument>('/documents', formData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents', id] });
+      setUploadOpen(false);
+      toast.success(t.toasts.documentUploaded);
+    },
+    onError: (err) => toast.error(err instanceof ApiError ? err.message : t.common.error),
+  });
+
+  const deleteDocMutation = useMutation({
+    mutationFn: (docId: string) => api.delete(`/documents/${docId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents', id] });
+      toast.success(t.toasts.documentDeleted);
     },
     onError: () => toast.error(t.common.error),
   });
@@ -327,6 +371,94 @@ export default function PatientDetailPage() {
           </Button>
         </div>
       </form>
+
+      <Card>
+        <CardHeader className="flex-row items-center justify-between space-y-0">
+          <CardTitle className="text-sm">{t.documents.title}</CardTitle>
+          <Button type="button" size="sm" variant="outline" onClick={openUpload}>
+            <Upload className="h-3.5 w-3.5" />
+            {t.documents.upload}
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {!documents || documents.length === 0 ? (
+            <p className="py-2 text-sm text-muted-foreground">{t.documents.empty}</p>
+          ) : (
+            <div className="space-y-2">
+              {documents.map((doc) => (
+                <div key={doc._id} className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2 text-sm">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <FileText className="h-4 w-4 shrink-0 text-primary" />
+                    <div className="min-w-0">
+                      <div className="truncate font-medium">{doc.fileName}</div>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Badge variant="neutral">{t.documents.categories[doc.category]}</Badge>
+                        <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
+                      <Button type="button" variant="ghost" size="sm">
+                        <Download className="h-3.5 w-3.5" />
+                      </Button>
+                    </a>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => deleteDocMutation.mutate(doc._id)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t.documents.uploadTitle}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label>{t.documents.file}</Label>
+              <input
+                type="file"
+                onChange={(e) => setUploadFile(e.target.files?.[0] ?? null)}
+                className="flex h-9 w-full items-center rounded-md border border-input bg-surface text-sm file:me-3 file:h-full file:border-0 file:bg-secondary file:px-3 file:text-sm file:font-medium"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t.documents.category}</Label>
+              <Select value={uploadCategory} onValueChange={(v) => setUploadCategory(v as DocumentCategory)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(t.documents.categories) as DocumentCategory[]).map((c) => (
+                    <SelectItem key={c} value={c}>{t.documents.categories[c]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t.documents.notes}</Label>
+              <Textarea value={uploadNotes} onChange={(e) => setUploadNotes(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setUploadOpen(false)}>
+              {t.common.cancel}
+            </Button>
+            <Button
+              type="button"
+              onClick={() => uploadMutation.mutate()}
+              loading={uploadMutation.isPending}
+              disabled={!uploadFile}
+            >
+              {t.documents.upload}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

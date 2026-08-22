@@ -54,6 +54,9 @@ export interface Dictionary {
     appointments: string;
     visits: string;
     invoices: string;
+    queue: string;
+    expenses: string;
+    reports: string;
   };
   clinicSettings: {
     title: string;
@@ -288,6 +291,69 @@ export interface Dictionary {
     reference: string;
     noPayments: string;
   };
+  documents: {
+    title: string;
+    upload: string;
+    uploadTitle: string;
+    file: string;
+    category: string;
+    categories: { LAB_RESULT: string; SCAN: string; REPORT: string; PRESCRIPTION: string; OTHER: string };
+    notes: string;
+    empty: string;
+    delete: string;
+    download: string;
+    uploadedOn: string;
+  };
+  queue: {
+    title: string;
+    subtitle: string;
+    checkIn: string;
+    checkInTitle: string;
+    branch: string;
+    doctor: string;
+    doctorOptional: string;
+    notes: string;
+    waiting: string;
+    inProgress: string;
+    done: string;
+    cancelled: string;
+    empty: string;
+    callNext: string;
+    markDone: string;
+    cancel: string;
+    checkedInAt: string;
+    queueNumber: string;
+  };
+  expenses: {
+    title: string;
+    subtitle: string;
+    add: string;
+    addTitle: string;
+    branch: string;
+    category: string;
+    categories: { RENT: string; SALARIES: string; SUPPLIES: string; UTILITIES: string; MAINTENANCE: string; OTHER: string };
+    amount: string;
+    description: string;
+    date: string;
+    empty: string;
+    delete: string;
+    total: string;
+  };
+  reports: {
+    title: string;
+    subtitle: string;
+    from: string;
+    to: string;
+    apply: string;
+    totalRevenue: string;
+    totalExpenses: string;
+    netIncome: string;
+    appointmentsCount: string;
+    visitsCount: string;
+    newPatientsCount: string;
+    revenueByDay: string;
+    noData: string;
+  };
   toasts: {
     welcomeBack: (name: string) => string;
     clinicCreated: string;
@@ -317,6 +383,12 @@ export interface Dictionary {
     invoiceCreated: string;
     paymentRecorded: string;
     refundRecorded: string;
+    documentUploaded: string;
+    documentDeleted: string;
+    checkedIn: string;
+    queueUpdated: string;
+    expenseAdded: string;
+    expenseDeleted: string;
   };
 }
 
@@ -394,6 +466,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       appointments: 'Appointments',
       visits: 'Visits',
       invoices: 'Invoices',
+      queue: 'Queue',
+      expenses: 'Expenses',
+      reports: 'Reports',
     },
     clinicSettings: {
       title: 'Clinic settings',
@@ -642,6 +717,82 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reference: 'Reference (optional)',
       noPayments: 'No payments recorded yet.',
     },
+    documents: {
+      title: 'Documents',
+      upload: 'Upload document',
+      uploadTitle: 'Upload document',
+      file: 'File',
+      category: 'Category',
+      categories: {
+        LAB_RESULT: 'Lab result',
+        SCAN: 'Scan',
+        REPORT: 'Report',
+        PRESCRIPTION: 'Prescription',
+        OTHER: 'Other',
+      },
+      notes: 'Notes',
+      empty: 'No documents uploaded yet.',
+      delete: 'Delete',
+      download: 'Download',
+      uploadedOn: 'Uploaded on',
+    },
+    queue: {
+      title: 'Queue',
+      subtitle: "Today's walk-in and check-in queue.",
+      checkIn: 'Check in',
+      checkInTitle: 'Check in patient',
+      branch: 'Branch',
+      doctor: 'Doctor',
+      doctorOptional: 'Doctor (optional)',
+      notes: 'Notes',
+      waiting: 'Waiting',
+      inProgress: 'In progress',
+      done: 'Done',
+      cancelled: 'Cancelled',
+      empty: 'No one in the queue yet.',
+      callNext: 'Call in',
+      markDone: 'Mark done',
+      cancel: 'Cancel',
+      checkedInAt: 'Checked in at',
+      queueNumber: 'No.',
+    },
+    expenses: {
+      title: 'Expenses',
+      subtitle: 'Track clinic operating expenses.',
+      add: 'Add expense',
+      addTitle: 'Add expense',
+      branch: 'Branch',
+      category: 'Category',
+      categories: {
+        RENT: 'Rent',
+        SALARIES: 'Salaries',
+        SUPPLIES: 'Supplies',
+        UTILITIES: 'Utilities',
+        MAINTENANCE: 'Maintenance',
+        OTHER: 'Other',
+      },
+      amount: 'Amount',
+      description: 'Description',
+      date: 'Date',
+      empty: 'No expenses recorded yet.',
+      delete: 'Delete',
+      total: 'Total',
+    },
+    reports: {
+      title: 'Reports',
+      subtitle: 'Revenue, expenses, and activity overview.',
+      from: 'From',
+      to: 'To',
+      apply: 'Apply',
+      totalRevenue: 'Total revenue',
+      totalExpenses: 'Total expenses',
+      netIncome: 'Net income',
+      appointmentsCount: 'Appointments',
+      visitsCount: 'Visits',
+      newPatientsCount: 'New patients',
+      revenueByDay: 'Revenue by day',
+      noData: 'No data for this period.',
+    },
     toasts: {
       welcomeBack: (name) => `Welcome back, ${name}`,
       clinicCreated: 'Clinic created',
@@ -671,6 +822,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
       invoiceCreated: 'Invoice created',
       paymentRecorded: 'Payment recorded',
       refundRecorded: 'Refund recorded',
+      documentUploaded: 'Document uploaded',
+      documentDeleted: 'Document deleted',
+      checkedIn: 'Checked in',
+      queueUpdated: 'Queue updated',
+      expenseAdded: 'Expense added',
+      expenseDeleted: 'Expense deleted',
     },
   },
   ar: {
@@ -746,6 +903,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       appointments: 'المواعيد',
       visits: 'الزيارات',
       invoices: 'الفواتير',
+      queue: 'الطابور',
+      expenses: 'المصروفات',
+      reports: 'التقارير',
     },
     clinicSettings: {
       title: 'إعدادات العيادة',
@@ -994,6 +1154,82 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reference: 'المرجع (اختياري)',
       noPayments: 'لا توجد مدفوعات مسجلة بعد.',
     },
+    documents: {
+      title: 'المستندات',
+      upload: 'رفع مستند',
+      uploadTitle: 'رفع مستند',
+      file: 'الملف',
+      category: 'الفئة',
+      categories: {
+        LAB_RESULT: 'نتيجة تحليل',
+        SCAN: 'أشعة',
+        REPORT: 'تقرير',
+        PRESCRIPTION: 'روشتة',
+        OTHER: 'أخرى',
+      },
+      notes: 'ملاحظات',
+      empty: 'لا توجد مستندات مرفوعة بعد.',
+      delete: 'حذف',
+      download: 'تنزيل',
+      uploadedOn: 'تم الرفع في',
+    },
+    queue: {
+      title: 'الطابور',
+      subtitle: 'طابور الحضور والانتظار لليوم.',
+      checkIn: 'تسجيل حضور',
+      checkInTitle: 'تسجيل حضور مريض',
+      branch: 'الفرع',
+      doctor: 'الطبيب',
+      doctorOptional: 'الطبيب (اختياري)',
+      notes: 'ملاحظات',
+      waiting: 'في الانتظار',
+      inProgress: 'قيد الكشف',
+      done: 'مكتمل',
+      cancelled: 'ملغى',
+      empty: 'لا يوجد أحد في الطابور بعد.',
+      callNext: 'استدعاء',
+      markDone: 'إنهاء',
+      cancel: 'إلغاء',
+      checkedInAt: 'وقت الحضور',
+      queueNumber: 'الرقم',
+    },
+    expenses: {
+      title: 'المصروفات',
+      subtitle: 'متابعة مصروفات تشغيل العيادة.',
+      add: 'إضافة مصروف',
+      addTitle: 'إضافة مصروف',
+      branch: 'الفرع',
+      category: 'الفئة',
+      categories: {
+        RENT: 'إيجار',
+        SALARIES: 'رواتب',
+        SUPPLIES: 'مستلزمات',
+        UTILITIES: 'مرافق',
+        MAINTENANCE: 'صيانة',
+        OTHER: 'أخرى',
+      },
+      amount: 'المبلغ',
+      description: 'الوصف',
+      date: 'التاريخ',
+      empty: 'لا توجد مصروفات مسجلة بعد.',
+      delete: 'حذف',
+      total: 'الإجمالي',
+    },
+    reports: {
+      title: 'التقارير',
+      subtitle: 'نظرة عامة على الإيرادات والمصروفات والنشاط.',
+      from: 'من',
+      to: 'إلى',
+      apply: 'تطبيق',
+      totalRevenue: 'إجمالي الإيرادات',
+      totalExpenses: 'إجمالي المصروفات',
+      netIncome: 'صافي الدخل',
+      appointmentsCount: 'المواعيد',
+      visitsCount: 'الزيارات',
+      newPatientsCount: 'مرضى جدد',
+      revenueByDay: 'الإيرادات اليومية',
+      noData: 'لا توجد بيانات لهذه الفترة.',
+    },
     toasts: {
       welcomeBack: (name) => `مرحباً بعودتك، ${name}`,
       clinicCreated: 'تم إنشاء العيادة',
@@ -1023,6 +1259,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
       invoiceCreated: 'تم إنشاء الفاتورة',
       paymentRecorded: 'تم تسجيل الدفعة',
       refundRecorded: 'تم تسجيل الاسترداد',
+      documentUploaded: 'تم رفع المستند',
+      documentDeleted: 'تم حذف المستند',
+      checkedIn: 'تم تسجيل الحضور',
+      queueUpdated: 'تم تحديث الطابور',
+      expenseAdded: 'تمت إضافة المصروف',
+      expenseDeleted: 'تم حذف المصروف',
     },
   },
 };
