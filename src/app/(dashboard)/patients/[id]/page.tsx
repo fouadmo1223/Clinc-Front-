@@ -224,7 +224,13 @@ export default function PatientDetailPage() {
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger id="gender">
-                        <SelectValue placeholder="—" />
+                        <SelectValue placeholder="—">
+                          {field.value === 'MALE'
+                            ? t.patients.genderMale
+                            : field.value === 'FEMALE'
+                              ? t.patients.genderFemale
+                              : undefined}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="MALE">{t.patients.genderMale}</SelectItem>
@@ -324,3 +330,4 @@ export default function PatientDetailPage() {
     </div>
   );
 }
+

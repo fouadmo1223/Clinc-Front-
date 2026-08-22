@@ -5,7 +5,19 @@ import * as SelectPrimitive from '@radix-ui/react-select';
 import { Check, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const Select = SelectPrimitive.Root;
+/**
+ * Radix mounts a hidden native <select> to mirror the value whenever the
+ * trigger sits inside a <form> (for native FormData reads). Syncing a
+ * programmatically-set value into it races its own <option> registration:
+ * if the option isn't there yet, the browser silently resolves to "", and
+ * that "" bubbles back through onValueChange — silently wiping the field
+ * even though nothing was actually deselected. Since none of our items ever
+ * use value="", an onValueChange("") call can only be that artifact, never
+ * a real user pick, so it's safe to swallow here for every consumer at once.
+ */
+const Select = ({ onValueChange, ...props }: React.ComponentProps<typeof SelectPrimitive.Root>) => (
+  <SelectPrimitive.Root {...props} onValueChange={(value) => { if (value) onValueChange?.(value); }} />
+);
 const SelectValue = SelectPrimitive.Value;
 
 const SelectTrigger = React.forwardRef<
