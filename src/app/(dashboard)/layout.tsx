@@ -25,6 +25,7 @@ import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { SidebarNav, type NavItem } from '@/components/layout/sidebar-nav';
 import { MobileNav } from '@/components/layout/mobile-nav';
+import { NotificationBell } from '@/components/layout/notification-bell';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isReady } = useRequireAuth();
@@ -79,6 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span className="text-sm font-semibold">{t.app.name}</span>
           </div>
           <div className="ms-auto flex items-center gap-2">
+            <NotificationBell />
             <button
               type="button"
               onClick={() => setLocale(locale === 'ar' ? 'en' : 'ar')}

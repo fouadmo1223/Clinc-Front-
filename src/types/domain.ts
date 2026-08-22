@@ -330,6 +330,20 @@ export interface AuditLog {
   createdAt: string;
 }
 
+export type NotificationType = 'APPOINTMENT_BOOKED' | 'APPOINTMENT_CANCELLED' | 'APPOINTMENT_REMINDER' | 'QUEUE_CHECK_IN';
+
+export interface AppNotification {
+  _id: string;
+  clinicId: string;
+  userId: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  link?: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
 export interface StaffMember {
   _id: string;
   clinicId: string;

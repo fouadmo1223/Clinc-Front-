@@ -373,6 +373,12 @@ export interface Dictionary {
     apply: string;
     empty: string;
   };
+  notifications: {
+    title: string;
+    empty: string;
+    markAllRead: string;
+    viewAll: string;
+  };
   toasts: {
     welcomeBack: (name: string) => string;
     clinicCreated: string;
@@ -832,6 +838,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
       apply: 'Apply',
       empty: 'No activity recorded for this period.',
     },
+    notifications: {
+      title: 'Notifications',
+      empty: 'No notifications yet.',
+      markAllRead: 'Mark all as read',
+      viewAll: 'View all',
+    },
     toasts: {
       welcomeBack: (name) => `Welcome back, ${name}`,
       clinicCreated: 'Clinic created',
@@ -1288,6 +1300,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
       to: 'إلى',
       apply: 'تطبيق',
       empty: 'لا يوجد نشاط مسجل لهذه الفترة.',
+    },
+    notifications: {
+      title: 'الإشعارات',
+      empty: 'لا توجد إشعارات بعد.',
+      markAllRead: 'تعليم الكل كمقروء',
+      viewAll: 'عرض الكل',
     },
     toasts: {
       welcomeBack: (name) => `مرحباً بعودتك، ${name}`,
