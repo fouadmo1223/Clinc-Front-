@@ -1,9 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Plus, CalendarClock, Clock, X, CheckCircle2, UserX } from 'lucide-react';
+import { Plus, CalendarClock, Clock, X, CheckCircle2, UserX, Stethoscope } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { api, ApiError } from '@/lib/api';
 import type {
@@ -68,6 +69,7 @@ function emptyBooking(defaultDate: string): BookingForm {
 
 export default function AppointmentsPage() {
   const { t } = useLocale();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -266,6 +268,18 @@ export default function AppointmentsPage() {
                   <td>
                     {appt.status !== 'CANCELLED' && appt.status !== 'COMPLETED' && appt.status !== 'NO_SHOW' && (
                       <div className="flex flex-wrap items-center justify-end gap-1.5">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title={t.visits.newVisit}
+                          onClick={() =>
+                            router.push(
+                              `/visits?appointmentId=${appt._id}&patientId=${appt.patientId}&doctorId=${appt.doctorId}&branchId=${appt.branchId}`,
+                            )
+                          }
+                        >
+                          <Stethoscope className="h-3.5 w-3.5" />
+                        </Button>
                         {appt.status === 'SCHEDULED' && (
                           <Button
                             variant="ghost"

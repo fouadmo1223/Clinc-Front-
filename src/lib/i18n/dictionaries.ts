@@ -52,6 +52,7 @@ export interface Dictionary {
     staff: string;
     patients: string;
     appointments: string;
+    visits: string;
   };
   clinicSettings: {
     title: string;
@@ -209,6 +210,46 @@ export interface Dictionary {
     markNoShow: string;
     reschedule: string;
   };
+  visits: {
+    title: string;
+    subtitle: string;
+    newVisit: string;
+    newVisitTitle: string;
+    editTitle: string;
+    patient: string;
+    doctor: string;
+    branch: string;
+    date: string;
+    linkedAppointment: string;
+    chiefComplaint: string;
+    vitals: string;
+    bloodPressure: string;
+    heartRate: string;
+    temperature: string;
+    weight: string;
+    height: string;
+    diagnosis: string;
+    examinationNotes: string;
+    treatmentPlan: string;
+    status: string;
+    statuses: { IN_PROGRESS: string; COMPLETED: string };
+    empty: string;
+    backToVisits: string;
+    prescriptions: string;
+    addPrescription: string;
+    addPrescriptionTitle: string;
+    medication: string;
+    dosage: string;
+    frequency: string;
+    durationDays: string;
+    instructions: string;
+    addMedication: string;
+    removeMedication: string;
+    daysUnit: string;
+    notes: string;
+    noPrescriptions: string;
+    save: string;
+  };
   toasts: {
     welcomeBack: (name: string) => string;
     clinicCreated: string;
@@ -233,6 +274,8 @@ export interface Dictionary {
     appointmentBooked: string;
     appointmentUpdated: string;
     appointmentCancelled: string;
+    visitSaved: string;
+    prescriptionAdded: string;
   };
 }
 
@@ -307,6 +350,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       staff: 'Staff',
       patients: 'Patients',
       appointments: 'Appointments',
+      visits: 'Visits',
     },
     clinicSettings: {
       title: 'Clinic settings',
@@ -478,6 +522,46 @@ export const dictionaries: Record<Locale, Dictionary> = {
       markNoShow: 'Mark no-show',
       reschedule: 'Reschedule',
     },
+    visits: {
+      title: 'Visits',
+      subtitle: 'Clinical visit records, vitals, and diagnoses.',
+      newVisit: 'New visit',
+      newVisitTitle: 'Record visit',
+      editTitle: 'Edit visit',
+      patient: 'Patient',
+      doctor: 'Doctor',
+      branch: 'Branch',
+      date: 'Date',
+      linkedAppointment: 'Linked appointment',
+      chiefComplaint: 'Chief complaint',
+      vitals: 'Vitals',
+      bloodPressure: 'Blood pressure (systolic/diastolic)',
+      heartRate: 'Heart rate (bpm)',
+      temperature: 'Temperature (°C)',
+      weight: 'Weight (kg)',
+      height: 'Height (cm)',
+      diagnosis: 'Diagnosis',
+      examinationNotes: 'Examination notes',
+      treatmentPlan: 'Treatment plan',
+      status: 'Status',
+      statuses: { IN_PROGRESS: 'In progress', COMPLETED: 'Completed' },
+      empty: 'No visits recorded yet.',
+      backToVisits: 'Back to visits',
+      prescriptions: 'Prescriptions',
+      addPrescription: 'Add prescription',
+      addPrescriptionTitle: 'Add prescription',
+      medication: 'Medication',
+      dosage: 'Dosage',
+      frequency: 'Frequency',
+      durationDays: 'Duration (days)',
+      instructions: 'Instructions',
+      addMedication: 'Add medication',
+      removeMedication: 'Remove',
+      daysUnit: 'days',
+      notes: 'Notes',
+      noPrescriptions: 'No prescriptions for this visit.',
+      save: 'Save visit',
+    },
     toasts: {
       welcomeBack: (name) => `Welcome back, ${name}`,
       clinicCreated: 'Clinic created',
@@ -502,6 +586,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       appointmentBooked: 'Appointment booked',
       appointmentUpdated: 'Appointment updated',
       appointmentCancelled: 'Appointment cancelled',
+      visitSaved: 'Visit saved',
+      prescriptionAdded: 'Prescription added',
     },
   },
   ar: {
@@ -574,6 +660,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       staff: 'الموظفون',
       patients: 'المرضى',
       appointments: 'المواعيد',
+      visits: 'الزيارات',
     },
     clinicSettings: {
       title: 'إعدادات العيادة',
@@ -745,6 +832,46 @@ export const dictionaries: Record<Locale, Dictionary> = {
       markNoShow: 'وضع علامة لم يحضر',
       reschedule: 'إعادة الجدولة',
     },
+    visits: {
+      title: 'الزيارات',
+      subtitle: 'سجلات الزيارات الطبية والعلامات الحيوية والتشخيص.',
+      newVisit: 'زيارة جديدة',
+      newVisitTitle: 'تسجيل زيارة',
+      editTitle: 'تعديل الزيارة',
+      patient: 'المريض',
+      doctor: 'الطبيب',
+      branch: 'الفرع',
+      date: 'التاريخ',
+      linkedAppointment: 'الموعد المرتبط',
+      chiefComplaint: 'الشكوى الرئيسية',
+      vitals: 'العلامات الحيوية',
+      bloodPressure: 'ضغط الدم (انقباضي/انبساطي)',
+      heartRate: 'معدل ضربات القلب',
+      temperature: 'درجة الحرارة (°م)',
+      weight: 'الوزن (كجم)',
+      height: 'الطول (سم)',
+      diagnosis: 'التشخيص',
+      examinationNotes: 'ملاحظات الفحص',
+      treatmentPlan: 'خطة العلاج',
+      status: 'الحالة',
+      statuses: { IN_PROGRESS: 'قيد التنفيذ', COMPLETED: 'مكتملة' },
+      empty: 'لا توجد زيارات مسجلة بعد.',
+      backToVisits: 'العودة إلى الزيارات',
+      prescriptions: 'الروشتات',
+      addPrescription: 'إضافة روشتة',
+      addPrescriptionTitle: 'إضافة روشتة',
+      medication: 'الدواء',
+      dosage: 'الجرعة',
+      frequency: 'التكرار',
+      durationDays: 'المدة (أيام)',
+      instructions: 'التعليمات',
+      addMedication: 'إضافة دواء',
+      removeMedication: 'إزالة',
+      daysUnit: 'يوم',
+      notes: 'ملاحظات',
+      noPrescriptions: 'لا توجد روشتات لهذه الزيارة.',
+      save: 'حفظ الزيارة',
+    },
     toasts: {
       welcomeBack: (name) => `مرحباً بعودتك، ${name}`,
       clinicCreated: 'تم إنشاء العيادة',
@@ -769,6 +896,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       appointmentBooked: 'تم حجز الموعد',
       appointmentUpdated: 'تم تحديث الموعد',
       appointmentCancelled: 'تم إلغاء الموعد',
+      visitSaved: 'تم حفظ الزيارة',
+      prescriptionAdded: 'تمت إضافة الروشتة',
     },
   },
 };

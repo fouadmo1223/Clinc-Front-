@@ -155,6 +155,58 @@ export interface Appointment {
   createdAt: string;
 }
 
+export interface Vitals {
+  bloodPressureSystolic?: number;
+  bloodPressureDiastolic?: number;
+  heartRate?: number;
+  temperatureCelsius?: number;
+  weightKg?: number;
+  heightCm?: number;
+}
+
+export type VisitStatus = 'IN_PROGRESS' | 'COMPLETED';
+
+export interface Visit {
+  _id: string;
+  clinicId: string;
+  doctorId: string;
+  branchId: string;
+  patientId: string;
+  appointmentId?: string;
+  date: string;
+  chiefComplaint?: string;
+  vitals?: Vitals;
+  diagnosis?: string;
+  examinationNotes?: string;
+  treatmentPlan?: string;
+  status: VisitStatus;
+  patientName?: string;
+  patientPhone?: string;
+  doctorName?: string;
+  createdAt: string;
+}
+
+export interface Medication {
+  name: string;
+  dosage?: string;
+  frequency?: string;
+  durationDays?: number;
+  instructions?: string;
+}
+
+export interface Prescription {
+  _id: string;
+  clinicId: string;
+  visitId: string;
+  patientId: string;
+  doctorId: string;
+  medications: Medication[];
+  notes?: string;
+  patientName?: string;
+  doctorName?: string;
+  createdAt: string;
+}
+
 export interface StaffMember {
   _id: string;
   clinicId: string;
