@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { ExportMenu } from '@/components/ui/export-menu';
 import { toast } from '@/hooks/use-toast';
 
 function emptyMedication(): Medication {
@@ -162,21 +163,24 @@ export default function VisitDetailPage() {
               <div className="space-y-3">
                 {prescriptions.map((rx) => (
                   <div key={rx._id} className="rounded-md border border-border p-3 text-sm">
-                    <div className="space-y-2">
-                      {rx.medications.map((med, i) => (
-                        <div key={i} className="flex items-start gap-2">
-                          <Pill className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-                          <div>
-                            <span className="font-medium">{med.name}</span>
-                            {med.dosage && <span className="text-muted-foreground"> · {med.dosage}</span>}
-                            {med.frequency && <span className="text-muted-foreground"> · {med.frequency}</span>}
-                            {med.durationDays && (
-                              <span className="text-muted-foreground"> · {med.durationDays} {t.visits.daysUnit}</span>
-                            )}
-                            {med.instructions && <p className="text-xs text-muted-foreground">{med.instructions}</p>}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1 space-y-2">
+                        {rx.medications.map((med, i) => (
+                          <div key={i} className="flex items-start gap-2">
+                            <Pill className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                            <div>
+                              <span className="font-medium">{med.name}</span>
+                              {med.dosage && <span className="text-muted-foreground"> · {med.dosage}</span>}
+                              {med.frequency && <span className="text-muted-foreground"> · {med.frequency}</span>}
+                              {med.durationDays && (
+                                <span className="text-muted-foreground"> · {med.durationDays} {t.visits.daysUnit}</span>
+                              )}
+                              {med.instructions && <p className="text-xs text-muted-foreground">{med.instructions}</p>}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
+                      <ExportMenu basePath={`/prescriptions/${rx._id}`} fileName={`prescription-${rx._id}`} iconOnly />
                     </div>
                     {rx.notes && <p className="mt-2 border-t border-dashed border-border pt-2 text-xs text-muted-foreground">{rx.notes}</p>}
                   </div>

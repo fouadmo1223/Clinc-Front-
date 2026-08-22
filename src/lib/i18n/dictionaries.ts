@@ -43,7 +43,7 @@ export interface Dictionary {
       invalidLink: string;
     };
   };
-  common: { loading: string; language: string; save: string; cancel: string; create: string; edit: string; deactivate: string; activate: string; active: string; inactive: string; noResults: string; error: string; formInvalid: string; required: string; invalidEmail: string; minLength: (n: number) => string; selectAtLeastOne: string; logout: string };
+  common: { loading: string; language: string; save: string; cancel: string; create: string; edit: string; deactivate: string; activate: string; active: string; inactive: string; noResults: string; error: string; formInvalid: string; required: string; invalidEmail: string; minLength: (n: number) => string; selectAtLeastOne: string; logout: string; export: string };
   nav: {
     overview: string;
     clinic: string;
@@ -459,6 +459,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       minLength: (n) => `Must be at least ${n} characters.`,
       selectAtLeastOne: 'Select at least one branch.',
       logout: 'Log out',
+      export: 'Export',
     },
     nav: {
       overview: 'Overview',
@@ -900,6 +901,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       minLength: (n) => `يجب ألا يقل عن ${n} حرفًا.`,
       selectAtLeastOne: 'اختر فرعًا واحدًا على الأقل.',
       logout: 'تسجيل الخروج',
+      export: 'تصدير',
     },
     nav: {
       overview: 'نظرة عامة',

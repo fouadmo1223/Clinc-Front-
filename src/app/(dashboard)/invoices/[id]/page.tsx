@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ExportMenu } from '@/components/ui/export-menu';
 import { toast } from '@/hooks/use-toast';
 
 const STATUS_VARIANT: Record<InvoiceStatus, 'neutral' | 'success' | 'warning' | 'destructive' | 'info' | 'primary'> = {
@@ -125,6 +126,7 @@ export default function InvoiceDetailPage() {
       <div className="flex flex-wrap items-center gap-2.5">
         <h1 className="text-lg font-semibold tracking-tight">{invoice.patientName}</h1>
         <Badge variant={STATUS_VARIANT[invoice.status]}>{t.invoices.statuses[invoice.status]}</Badge>
+        <ExportMenu basePath={`/invoices/${invoiceId}`} fileName={`invoice-${invoiceId}`} />
         {invoice.status !== 'CANCELLED' && invoice.status !== 'PAID' && (
           <Button size="sm" onClick={openPay}>
             <Wallet className="h-3.5 w-3.5" />

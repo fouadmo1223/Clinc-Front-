@@ -74,6 +74,41 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return body as T;
 }
 
+async function requestBlob(path: string, options: RequestOptions = {}): Promise<Blob> {
+  const { auth = true, headers, ...rest } = options;
+  const token = useAuthStore.getState().accessToken;
+
+  const doFetch = async (accessToken: string | null) =>
+    fetch(`${API_URL}${path}`, {
+      ...rest,
+      headers: {
+        ...(auth && accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        ...headers,
+      },
+    });
+
+  let res = await doFetch(token);
+
+  if (res.status === 401 && auth) {
+    if (!refreshPromise) {
+      refreshPromise = doRefresh().finally(() => {
+        refreshPromise = null;
+      });
+    }
+    const newToken = await refreshPromise;
+    if (newToken) {
+      res = await doFetch(newToken);
+    }
+  }
+
+  if (!res.ok) {
+    const isJson = res.headers.get('content-type')?.includes('application/json');
+    const body = isJson ? await res.json().catch(() => null) : null;
+    throw new ApiError(res.status, body?.message ?? res.statusText ?? 'Request failed');
+  }
+  return res.blob();
+}
+
 export const api = {
   get: <T>(path: string, options?: RequestOptions) => request<T>(path, { ...options, method: 'GET' }),
   post: <T>(path: string, data?: unknown, options?: RequestOptions) =>
@@ -85,4 +120,5 @@ export const api = {
   delete: <T>(path: string, options?: RequestOptions) => request<T>(path, { ...options, method: 'DELETE' }),
   upload: <T>(path: string, formData: FormData, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'POST', body: formData }),
+  getBlob: (path: string, options?: RequestOptions) => requestBlob(path, { ...options, method: 'GET' }),
 };
