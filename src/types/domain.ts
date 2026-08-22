@@ -277,7 +277,7 @@ export interface QueueEntry {
   patientId: string;
   appointmentId?: string;
   date: string;
-  queueNumber: number;
+  queueNumber?: number;
   status: QueueStatus;
   checkedInAt: string;
   calledAt?: string;
@@ -286,6 +286,7 @@ export interface QueueEntry {
   patientName?: string;
   patientPhone?: string;
   doctorName?: string;
+  appointmentStartTime?: string;
 }
 
 export type ExpenseCategory = 'RENT' | 'SALARIES' | 'SUPPLIES' | 'UTILITIES' | 'MAINTENANCE' | 'OTHER';

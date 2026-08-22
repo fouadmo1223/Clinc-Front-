@@ -323,6 +323,10 @@ export interface Dictionary {
     cancel: string;
     checkedInAt: string;
     queueNumber: string;
+    linkAppointment: string;
+    noAppointment: string;
+    walkIn: string;
+    booked: string;
   };
   expenses: {
     title: string;
@@ -755,6 +759,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
       cancel: 'Cancel',
       checkedInAt: 'Checked in at',
       queueNumber: 'No.',
+      linkAppointment: 'Link to appointment (optional)',
+      noAppointment: 'No appointment — walk-in',
+      walkIn: 'Walk-in',
+      booked: 'Booked',
     },
     expenses: {
       title: 'Expenses',
@@ -1192,6 +1200,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
       cancel: 'إلغاء',
       checkedInAt: 'وقت الحضور',
       queueNumber: 'الرقم',
+      linkAppointment: 'ربط بموعد (اختياري)',
+      noAppointment: 'بدون موعد — حضور مباشر',
+      walkIn: 'بدون حجز',
+      booked: 'محجوز',
     },
     expenses: {
       title: 'المصروفات',

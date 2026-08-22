@@ -1,14 +1,16 @@
 'use client';
 
 import * as React from 'react';
+import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ListOrdered, PhoneCall, Check, X } from 'lucide-react';
+import { ListOrdered, PhoneCall, Check, X, CalendarClock } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { api, ApiError } from '@/lib/api';
-import type { QueueEntry, QueueStatus, Branch, Doctor } from '@/types/domain';
+import type { QueueEntry, QueueStatus, Branch, Doctor, Appointment, PaginatedResult } from '@/types/domain';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PatientCombobox } from '@/components/ui/patient-combobox';
@@ -20,11 +22,12 @@ interface CheckInForm {
   patientId: string;
   branchId: string;
   doctorId: string;
+  appointmentId: string;
   notes: string;
 }
 
 function emptyForm(): CheckInForm {
-  return { patientId: '', branchId: '', doctorId: '', notes: '' };
+  return { patientId: '', branchId: '', doctorId: '', appointmentId: '', notes: '' };
 }
 
 function QueueColumn({
@@ -38,6 +41,7 @@ function QueueColumn({
   emptyLabel: string;
   children: (entry: QueueEntry) => React.ReactNode;
 }) {
+  const { t } = useLocale();
   return (
     <div className="min-w-0 flex-1 space-y-2.5 rounded-lg border border-border bg-surface p-3">
       <div className="flex items-center justify-between">
@@ -48,21 +52,32 @@ function QueueColumn({
         <p className="py-4 text-center text-xs text-muted-foreground">{emptyLabel}</p>
       ) : (
         <div className="space-y-2">
-          {entries.map((entry) => (
-            <div key={entry._id} className="rounded-md border border-border bg-background p-2.5">
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                  {entry.queueNumber}
-                </span>
-                <AvatarInitials name={entry.patientName ?? '?'} className="h-6 w-6 text-[10px]" />
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium">{entry.patientName}</div>
-                  {entry.doctorName && <div className="truncate text-xs text-muted-foreground">{entry.doctorName}</div>}
+          {entries.map((entry) => {
+            const booked = !!entry.appointmentStartTime;
+            return (
+              <div key={entry._id} className="rounded-md border border-border bg-background p-2.5">
+                <div className="flex items-center gap-2.5">
+                  {booked ? (
+                    <span className="flex h-6 shrink-0 items-center gap-1 rounded-sm bg-info/10 px-1.5 text-xs font-semibold tabular-nums text-info">
+                      <CalendarClock className="h-3 w-3" />
+                      {entry.appointmentStartTime}
+                    </span>
+                  ) : (
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                      {entry.queueNumber}
+                    </span>
+                  )}
+                  <AvatarInitials name={entry.patientName ?? '?'} className="h-6 w-6 text-[10px]" />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium">{entry.patientName}</div>
+                    {entry.doctorName && <div className="truncate text-xs text-muted-foreground">{entry.doctorName}</div>}
+                  </div>
+                  <Badge variant={booked ? 'info' : 'neutral'}>{booked ? t.queue.booked : t.queue.walkIn}</Badge>
                 </div>
+                <div className="mt-2 flex items-center justify-end gap-1">{children(entry)}</div>
               </div>
-              <div className="mt-2 flex items-center justify-end gap-1">{children(entry)}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -85,9 +100,33 @@ export default function QueuePage() {
     refetchInterval: 15000,
   });
 
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const { data: patientAppointments } = useQuery({
+    queryKey: ['appointments', 'for-checkin', form.patientId],
+    queryFn: () => api.get<PaginatedResult<Appointment>>(`/appointments?patientId=${form.patientId}&date=${today}`),
+    enabled: open && !!form.patientId,
+  });
+  const availableAppointments = (patientAppointments?.items ?? []).filter(
+    (a) => a.status === 'SCHEDULED' || a.status === 'CONFIRMED',
+  );
+
   const openCheckIn = () => {
     setForm(emptyForm());
     setOpen(true);
+  };
+
+  const selectAppointment = (appointmentId: string) => {
+    if (appointmentId === 'none') {
+      setForm((f) => ({ ...f, appointmentId: '' }));
+      return;
+    }
+    const appt = availableAppointments.find((a) => a._id === appointmentId);
+    setForm((f) => ({
+      ...f,
+      appointmentId,
+      branchId: appt?.branchId ?? f.branchId,
+      doctorId: appt?.doctorId ?? f.doctorId,
+    }));
   };
 
   const checkInMutation = useMutation({
@@ -96,6 +135,7 @@ export default function QueuePage() {
         patientId: form.patientId,
         branchId: form.branchId,
         doctorId: form.doctorId || undefined,
+        appointmentId: form.appointmentId || undefined,
         notes: form.notes || undefined,
       }),
     onSuccess: () => {
@@ -177,12 +217,37 @@ export default function QueuePage() {
           <div className="space-y-4">
             <div className="space-y-1.5">
               <Label>{t.patients.title}</Label>
-              <PatientCombobox value={form.patientId} onChange={(id) => setForm((f) => ({ ...f, patientId: id }))} />
+              <PatientCombobox
+                value={form.patientId}
+                onChange={(id) => setForm((f) => ({ ...emptyForm(), patientId: id }))}
+              />
             </div>
+
+            {form.patientId && (
+              <div className="space-y-1.5">
+                <Label>{t.queue.linkAppointment}</Label>
+                <Select value={form.appointmentId || 'none'} onValueChange={selectAppointment}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t.queue.noAppointment}</SelectItem>
+                    {availableAppointments.map((a) => (
+                      <SelectItem key={a._id} value={a._id}>
+                        {a.startTime} · {a.doctorName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label>{t.queue.branch}</Label>
-                <Select value={form.branchId} onValueChange={(v) => setForm((f) => ({ ...f, branchId: v }))}>
+                <Select
+                  value={form.branchId}
+                  onValueChange={(v) => setForm((f) => ({ ...f, branchId: v }))}
+                  disabled={!!form.appointmentId}
+                >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {(branches ?? []).map((b) => (
@@ -193,7 +258,11 @@ export default function QueuePage() {
               </div>
               <div className="space-y-1.5">
                 <Label>{t.queue.doctorOptional}</Label>
-                <Select value={form.doctorId || 'none'} onValueChange={(v) => setForm((f) => ({ ...f, doctorId: v === 'none' ? '' : v }))}>
+                <Select
+                  value={form.doctorId || 'none'}
+                  onValueChange={(v) => setForm((f) => ({ ...f, doctorId: v === 'none' ? '' : v }))}
+                  disabled={!!form.appointmentId}
+                >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">—</SelectItem>
