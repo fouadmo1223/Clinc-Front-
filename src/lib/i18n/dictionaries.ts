@@ -7,6 +7,10 @@ export interface Dictionary {
     subtitle: string;
     phone: string;
     phonePlaceholder: string;
+    email: string;
+    emailPlaceholder: string;
+    useEmailInstead: string;
+    usePhoneInstead: string;
     sendCode: string;
     codeSentSubtitle: string;
     code: string;
@@ -482,6 +486,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
       subtitle: 'View your appointments, visits, and documents.',
       phone: 'Phone number',
       phonePlaceholder: 'e.g. 01012345678',
+      email: 'Email address',
+      emailPlaceholder: 'you@example.com',
+      useEmailInstead: 'Use email instead',
+      usePhoneInstead: 'Use phone instead',
       sendCode: 'Send code',
       codeSentSubtitle: "We've sent a 6-digit code to your phone.",
       code: 'Verification code',
@@ -1002,6 +1010,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
       subtitle: 'اطّلع على مواعيدك وزياراتك ومستنداتك.',
       phone: 'رقم الهاتف',
       phonePlaceholder: 'مثال: 01012345678',
+      email: 'البريد الإلكتروني',
+      emailPlaceholder: 'you@example.com',
+      useEmailInstead: 'استخدام البريد الإلكتروني بدلاً من ذلك',
+      usePhoneInstead: 'استخدام الهاتف بدلاً من ذلك',
       sendCode: 'إرسال الرمز',
       codeSentSubtitle: 'تم إرسال رمز مكوّن من 6 أرقام إلى هاتفك.',
       code: 'رمز التحقق',
