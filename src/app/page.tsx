@@ -4,29 +4,222 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { Star, MapPin, Stethoscope, CalendarClock } from 'lucide-react';
+import { motion, useInView, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
+import {
+  Star,
+  MapPin,
+  Stethoscope,
+  CalendarClock,
+  ArrowUpRight,
+  Menu,
+  X,
+  Search,
+  CheckCircle2,
+  ShieldCheck,
+  Sparkles,
+  Clock,
+  Users,
+  Award,
+  ChevronDown,
+  Phone,
+  Mail,
+  Heart,
+} from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { usePatientAuthStore } from '@/stores/patient-auth-store';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { publicApi } from '@/lib/public-api';
 import { patientApi } from '@/lib/patient-api';
 import { ApiError } from '@/lib/api';
-import type { PublicClinic, PublicDoctor } from '@/types/domain';
+import type { PublicClinic, PublicDoctor, Testimonial } from '@/types/domain';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DoctorAvatar } from '@/components/landing/doctor-avatar';
 import { toast } from '@/hooks/use-toast';
 
 const DEFAULT_CLINIC_SLUG = process.env.NEXT_PUBLIC_DEFAULT_CLINIC_SLUG ?? 'demo-clinic';
+const EASE = [0.32, 0.72, 0, 1] as const;
 
-function Stars({ value }: { value: number }) {
+/* ------------------------------------------------------------------ */
+/* Motion primitives                                                   */
+/* ------------------------------------------------------------------ */
+
+function Reveal({
+  children,
+  delay = 0,
+  className,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.7, delay, ease: EASE }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+      <Sparkles className="h-3 w-3" strokeWidth={1.5} />
+      {children}
+    </span>
+  );
+}
+
+function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const ref = React.useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-40px' });
+  const motionVal = useMotionValue(0);
+  const spring = useSpring(motionVal, { damping: 24, stiffness: 90 });
+  const [display, setDisplay] = React.useState(0);
+
+  React.useEffect(() => {
+    if (inView) motionVal.set(value);
+  }, [inView, value, motionVal]);
+
+  React.useEffect(() => spring.on('change', (v) => setDisplay(Math.round(v))), [spring]);
+
+  return (
+    <span ref={ref} className="tabular-nums">
+      {display}
+      {suffix}
+    </span>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Floating nav                                                        */
+/* ------------------------------------------------------------------ */
+
+function FloatingNav({ clinicName }: { clinicName: string }) {
+  const { t, locale, setLocale } = useLocale();
+  const [open, setOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const links = [
+    { href: '#doctors', label: t.landing.navDoctors },
+    { href: '#services', label: t.landing.navServices },
+    { href: '#testimonials', label: t.landing.navReviews },
+    { href: '#faq', label: t.landing.navFaq },
+    { href: '#contact', label: t.landing.navContact },
+  ];
+
+  return (
+    <>
+      <motion.header
+        initial={{ y: -24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: EASE }}
+        className="fixed inset-x-0 top-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-3xl items-center justify-between rounded-full border border-border/60 bg-surface/80 px-4 py-2 shadow-[0_8px_40px_-12px_rgba(15,23,42,0.15)] backdrop-blur-xl transition-shadow duration-500"
+        style={{ boxShadow: scrolled ? '0 12px 48px -12px rgba(15,23,42,0.2)' : undefined }}
+      >
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <Stethoscope className="h-3.5 w-3.5" strokeWidth={1.75} />
+          </div>
+          <span className="text-sm font-semibold">{clinicName}</span>
+        </div>
+
+        <nav className="hidden items-center gap-5 md:flex">
+          {links.map((l) => (
+            <a key={l.href} href={l.href} className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
+              {l.label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setLocale(locale === 'ar' ? 'en' : 'ar')}
+            className="hidden rounded-full px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary sm:block"
+          >
+            {t.common.language}
+          </button>
+          <Link href="/login" className="hidden sm:block">
+            <Button variant="outline" size="sm" className="rounded-full">
+              {t.landing.staffLogin}
+            </Button>
+          </Link>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary md:hidden"
+            aria-label="Menu"
+          >
+            <Menu className="h-4 w-4" strokeWidth={1.5} />
+          </button>
+        </div>
+      </motion.header>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-2xl md:hidden"
+          >
+            <div className="flex items-center justify-between px-5 py-4">
+              <span className="text-sm font-semibold">{clinicName}</span>
+              <button type="button" onClick={() => setOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary">
+                <X className="h-4 w-4" strokeWidth={1.5} />
+              </button>
+            </div>
+            <nav className="flex flex-1 flex-col items-center justify-center gap-6">
+              {links.map((l, i) => (
+                <motion.a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.06 * i, ease: EASE }}
+                  className="text-2xl font-semibold tracking-tight"
+                >
+                  {l.label}
+                </motion.a>
+              ))}
+              <Link href="/login" onClick={() => setOpen(false)}>
+                <Button variant="outline" className="mt-4 rounded-full">
+                  {t.landing.staffLogin}
+                </Button>
+              </Link>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Doctor card + review form                                           */
+/* ------------------------------------------------------------------ */
+
+function Stars({ value, size = 'sm' }: { value: number; size?: 'sm' | 'md' }) {
+  const dim = size === 'md' ? 'h-4 w-4' : 'h-3.5 w-3.5';
   return (
     <div className="flex items-center gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          className={`h-3.5 w-3.5 ${i < Math.round(value) ? 'fill-warning text-warning' : 'text-border'}`}
-        />
+        <Star key={i} className={`${dim} ${i < Math.round(value) ? 'fill-warning text-warning' : 'text-border'}`} strokeWidth={1.5} />
       ))}
     </div>
   );
@@ -54,12 +247,12 @@ function ReviewForm({ doctorId, onDone }: { doctorId: string; onDone: () => void
   };
 
   return (
-    <div className="space-y-2 border-t border-border pt-3">
+    <div className="space-y-2 border-t border-border/60 pt-3">
       <p className="text-xs font-medium text-muted-foreground">{t.landing.yourRating}</p>
       <div className="flex items-center gap-1">
         {Array.from({ length: 5 }).map((_, i) => (
           <button key={i} type="button" onClick={() => setRating(i + 1)}>
-            <Star className={`h-5 w-5 ${i < rating ? 'fill-warning text-warning' : 'text-border'}`} />
+            <Star className={`h-5 w-5 ${i < rating ? 'fill-warning text-warning' : 'text-border'}`} strokeWidth={1.5} />
           </button>
         ))}
       </div>
@@ -68,39 +261,39 @@ function ReviewForm({ doctorId, onDone }: { doctorId: string; onDone: () => void
         onChange={(e) => setComment(e.target.value)}
         placeholder={t.landing.commentOptional}
         rows={2}
-        className="w-full rounded-md border border-input bg-surface px-3 py-1.5 text-sm shadow-xs"
+        className="w-full rounded-xl border border-input bg-surface px-3 py-1.5 text-sm shadow-xs"
       />
-      <Button type="button" size="sm" loading={submitting} onClick={submit}>
+      <Button type="button" size="sm" className="rounded-full" loading={submitting} onClick={submit}>
         {t.landing.submitReview}
       </Button>
     </div>
   );
 }
 
-function DoctorCard({ doctor }: { doctor: PublicDoctor }) {
+function DoctorCard({ doctor, index }: { doctor: PublicDoctor; index: number }) {
   const { t, locale } = useLocale();
   const router = useRouter();
   const patientToken = usePatientAuthStore((s) => s.accessToken);
   const clinicSlug = usePatientAuthStore((s) => s.clinicSlug);
   const [showReviewForm, setShowReviewForm] = React.useState(false);
-
   const isLoggedInHere = !!patientToken && clinicSlug === DEFAULT_CLINIC_SLUG;
 
   const handleBook = () => {
-    if (isLoggedInHere) {
-      router.push(`/portal/${DEFAULT_CLINIC_SLUG}/book?doctorId=${doctor.id}`);
-    } else {
-      router.push(`/portal/${DEFAULT_CLINIC_SLUG}/login?next=/portal/${DEFAULT_CLINIC_SLUG}/book?doctorId=${doctor.id}`);
-    }
+    if (isLoggedInHere) router.push(`/portal/${DEFAULT_CLINIC_SLUG}/book?doctorId=${doctor.id}`);
+    else router.push(`/portal/${DEFAULT_CLINIC_SLUG}/login?next=/portal/${DEFAULT_CLINIC_SLUG}/book?doctorId=${doctor.id}`);
   };
 
   return (
-    <Card className="flex flex-col">
-      <CardContent className="flex flex-1 flex-col gap-3 py-4">
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.6, delay: (index % 3) * 0.08, ease: EASE }}
+      className="group rounded-[1.75rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5"
+    >
+      <div className="flex h-full flex-col gap-4 rounded-[1.4rem] bg-surface p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] transition-shadow duration-500 group-hover:shadow-[0_20px_50px_-20px_rgba(15,23,42,0.25)]">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Stethoscope className="h-5 w-5" />
-          </div>
+          <DoctorAvatar id={doctor.id} fullName={doctor.fullName} size="lg" />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">{doctor.fullName}</p>
             <p className="truncate text-xs text-muted-foreground">{locale === 'ar' ? doctor.specialtyAr : doctor.specialty}</p>
@@ -114,33 +307,83 @@ function DoctorCard({ doctor }: { doctor: PublicDoctor }) {
           </span>
         </div>
 
-        {doctor.bio && <p className="line-clamp-2 text-xs text-muted-foreground">{doctor.bio}</p>}
+        {doctor.bio && <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{doctor.bio}</p>}
 
         <p className="text-sm font-medium">
           {t.landing.startingFrom} <span className="text-primary">{doctor.consultationPrice}</span>
         </p>
 
         <div className="mt-auto flex items-center gap-2 pt-1">
-          <Button type="button" size="sm" className="flex-1" onClick={handleBook}>
-            <CalendarClock className="h-3.5 w-3.5" />
+          <button
+            type="button"
+            onClick={handleBook}
+            className="group/btn flex flex-1 items-center justify-between rounded-full bg-primary py-1.5 ps-4 pe-1.5 text-xs font-semibold text-primary-foreground transition-transform duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]"
+          >
             {t.landing.bookNow}
-          </Button>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 rtl:group-hover/btn:-translate-x-0.5">
+              <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
+            </span>
+          </button>
           {isLoggedInHere && (
-            <Button type="button" size="sm" variant="outline" onClick={() => setShowReviewForm((v) => !v)}>
-              <Star className="h-3.5 w-3.5" />
-            </Button>
+            <button
+              type="button"
+              onClick={() => setShowReviewForm((v) => !v)}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border transition-colors hover:bg-secondary"
+              aria-label={t.landing.rateThisDoctor}
+            >
+              <Star className="h-3.5 w-3.5" strokeWidth={1.5} />
+            </button>
           )}
         </div>
 
         {showReviewForm && <ReviewForm doctorId={doctor.id} onDone={() => setShowReviewForm(false)} />}
-      </CardContent>
-    </Card>
+      </div>
+    </motion.div>
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* FAQ accordion item                                                  */
+/* ------------------------------------------------------------------ */
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div className="rounded-[1.5rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between rounded-[1.15rem] bg-surface px-5 py-4 text-start"
+      >
+        <span className="text-sm font-semibold">{q}</span>
+        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.4, ease: EASE }}>
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.5} />
+        </motion.span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="overflow-hidden rounded-b-[1.15rem] bg-surface"
+          >
+            <p className="px-5 pb-4 text-sm leading-relaxed text-muted-foreground">{a}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Page                                                                 */
+/* ------------------------------------------------------------------ */
+
 export default function RootPage() {
+  const { t, locale } = useLocale();
   const router = useRouter();
-  const { t, locale, setLocale } = useLocale();
   const staffAccessToken = useAuthStore((s) => s.accessToken);
   const staffHasHydrated = useAuthStore((s) => s.hasHydrated);
 
@@ -148,114 +391,424 @@ export default function RootPage() {
     if (staffHasHydrated && staffAccessToken) router.replace('/dashboard');
   }, [staffHasHydrated, staffAccessToken, router]);
 
-  const { data: clinic, isLoading: loadingClinic } = useQuery({
+  const enabled = staffHasHydrated && !staffAccessToken;
+
+  const { data: clinic } = useQuery({
     queryKey: ['public', 'clinic', DEFAULT_CLINIC_SLUG],
     queryFn: () => publicApi.get<PublicClinic>(`/public/${DEFAULT_CLINIC_SLUG}/clinic`),
-    enabled: staffHasHydrated && !staffAccessToken,
+    enabled,
   });
   const { data: doctors, isLoading: loadingDoctors } = useQuery({
     queryKey: ['public', 'doctors', DEFAULT_CLINIC_SLUG],
     queryFn: () => publicApi.get<PublicDoctor[]>(`/public/${DEFAULT_CLINIC_SLUG}/doctors`),
-    enabled: staffHasHydrated && !staffAccessToken,
+    enabled,
+  });
+  const { data: testimonials } = useQuery({
+    queryKey: ['public', 'testimonials', DEFAULT_CLINIC_SLUG],
+    queryFn: () => publicApi.get<Testimonial[]>(`/public/${DEFAULT_CLINIC_SLUG}/testimonials`),
+    enabled,
   });
 
-  // Staff redirect is in flight — render nothing to avoid a flash of the landing page.
   if (!staffHasHydrated || staffAccessToken) return null;
 
-  const clinicName = locale === 'ar' ? clinic?.nameAr ?? clinic?.name : clinic?.name;
+  const clinicName = (locale === 'ar' ? clinic?.nameAr ?? clinic?.name : clinic?.name) ?? t.app.name;
   const topRated = [...(doctors ?? [])].filter((d) => d.rating.count > 0).slice(0, 3);
+  const specialties = [...new Set((doctors ?? []).map((d) => (locale === 'ar' ? d.specialtyAr : d.specialty)))];
+  const avgRating = doctors && doctors.length > 0 ? doctors.reduce((s, d) => s + d.rating.average, 0) / doctors.filter((d) => d.rating.count > 0).length || 0 : 0;
+
+  const faqs = [
+    { q: t.landing.faq1Q, a: t.landing.faq1A },
+    { q: t.landing.faq2Q, a: t.landing.faq2A },
+    { q: t.landing.faq3Q, a: t.landing.faq3A },
+    { q: t.landing.faq4Q, a: t.landing.faq4A },
+    { q: t.landing.faq5Q, a: t.landing.faq5A },
+  ];
 
   return (
-    <div className="min-h-screen bg-secondary/20">
-      <header className="flex items-center justify-between border-b border-border bg-surface px-4 py-3 md:px-10">
-        <div className="flex items-center gap-2">
-          <Stethoscope className="h-5 w-5 text-primary" />
-          <span className="text-sm font-semibold">{clinicName ?? t.app.name}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setLocale(locale === 'ar' ? 'en' : 'ar')}
-            className="rounded-md border border-border px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary"
-          >
-            {t.common.language}
-          </button>
-          <Link href="/login">
-            <Button variant="outline" size="sm">
-              {t.landing.staffLogin}
-            </Button>
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen overflow-x-hidden bg-background">
+      <FloatingNav clinicName={clinicName} />
 
-      <section className="bg-primary px-4 py-16 text-primary-foreground md:px-10">
+      {/* ---------------------------------------------------------- Hero */}
+      <section className="relative flex min-h-[100dvh] items-center justify-center px-4 pt-28 pb-20">
+        <div
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background:
+              'radial-gradient(60% 50% at 50% 0%, hsl(var(--primary)/0.12), transparent), radial-gradient(40% 35% at 85% 20%, hsl(27 68% 48% / 0.10), transparent)',
+          }}
+        />
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">{t.landing.heroTitle}</h1>
-          {clinicName && <p className="mt-3 text-primary-foreground/80">{t.landing.heroSubtitle(clinicName)}</p>}
-          {clinic?.address && (
-            <p className="mt-4 flex items-center justify-center gap-1.5 text-sm text-primary-foreground/70">
-              <MapPin className="h-3.5 w-3.5" />
-              {clinic.address}
-              {clinic.city ? `, ${clinic.city}` : ''}
-            </p>
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }}>
+            <Eyebrow>{t.landing.eyebrow}</Eyebrow>
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
+            className="mt-5 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl"
+          >
+            {t.landing.heroTitle}
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
+            className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground"
+          >
+            {t.landing.heroSubtitle(clinicName)}
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-3"
+          >
+            <a href="#doctors">
+              <button
+                type="button"
+                className="group flex items-center gap-2 rounded-full bg-primary py-3 ps-6 pe-2 text-sm font-semibold text-primary-foreground shadow-[0_20px_40px_-15px_hsl(var(--primary)/0.5)] transition-transform duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]"
+              >
+                {t.landing.bookNow}
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5">
+                  <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={2} />
+                </span>
+              </button>
+            </a>
+            {clinic?.address && (
+              <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <MapPin className="h-3.5 w-3.5" strokeWidth={1.5} />
+                {clinic.address}
+                {clinic.city ? `, ${clinic.city}` : ''}
+              </span>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------- Stats */}
+      <section className="px-4 pb-24">
+        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-3 rounded-[2rem] bg-black/[0.03] p-2 ring-1 ring-black/5 md:grid-cols-4">
+          {[
+            { value: 49, suffix: '', label: t.landing.stat1Label, display: avgRating > 0 ? avgRating.toFixed(1) : t.landing.stat1Value },
+            { value: doctors?.length ?? 0, suffix: '+', label: t.landing.stat2Label },
+            { value: 500, suffix: '+', label: t.landing.stat3Label },
+            { value: 5, suffix: '+', label: t.landing.stat4Label },
+          ].map((s, i) => (
+            <Reveal key={s.label} delay={i * 0.08}>
+              <div className="flex flex-col items-center gap-1 rounded-[1.6rem] bg-surface px-4 py-6 text-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+                <p className="text-2xl font-semibold tracking-tight text-primary sm:text-3xl">
+                  {s.display ?? <AnimatedCounter value={s.value} suffix={s.suffix} />}
+                </p>
+                <p className="text-[11px] font-medium text-muted-foreground">{s.label}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ------------------------------------------------- How it works */}
+      <section className="px-4 py-24">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="mx-auto max-w-xl text-center">
+            <Eyebrow>{t.landing.howEyebrow}</Eyebrow>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.howTitle}</h2>
+            <p className="mt-3 text-sm text-muted-foreground">{t.landing.howSubtitle}</p>
+          </Reveal>
+
+          <div className="relative mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="pointer-events-none absolute inset-x-[15%] top-8 hidden h-px bg-gradient-to-r from-transparent via-border to-transparent md:block" />
+            {[
+              { icon: Search, title: t.landing.step1Title, desc: t.landing.step1Desc },
+              { icon: CalendarClock, title: t.landing.step2Title, desc: t.landing.step2Desc },
+              { icon: CheckCircle2, title: t.landing.step3Title, desc: t.landing.step3Desc },
+            ].map((step, i) => (
+              <Reveal key={step.title} delay={i * 0.12}>
+                <div className="flex flex-col items-center gap-3 text-center">
+                  <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_16px_32px_-12px_hsl(var(--primary)/0.6)]">
+                    <step.icon className="h-6 w-6" strokeWidth={1.5} />
+                    <span className="absolute -end-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
+                      {i + 1}
+                    </span>
+                  </div>
+                  <h3 className="text-base font-semibold">{step.title}</h3>
+                  <p className="max-w-[220px] text-sm leading-relaxed text-muted-foreground">{step.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* -------------------------------------------------- Why choose us */}
+      <section className="px-4 py-24">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="mx-auto max-w-xl text-center">
+            <Eyebrow>{t.landing.whyEyebrow}</Eyebrow>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.whyTitle}</h2>
+            <p className="mt-3 text-sm text-muted-foreground">{t.landing.whySubtitle}</p>
+          </Reveal>
+
+          <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { icon: ShieldCheck, title: t.landing.why1Title, desc: t.landing.why1Desc },
+              { icon: Clock, title: t.landing.why2Title, desc: t.landing.why2Desc },
+              { icon: Heart, title: t.landing.why3Title, desc: t.landing.why3Desc },
+              { icon: Users, title: t.landing.why4Title, desc: t.landing.why4Desc },
+            ].map((f, i) => (
+              <Reveal key={f.title} delay={i * 0.08} className="rounded-[1.75rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5">
+                <div className="flex h-full flex-col gap-3 rounded-[1.4rem] bg-surface p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <f.icon className="h-5 w-5" strokeWidth={1.5} />
+                  </div>
+                  <h3 className="text-sm font-semibold">{f.title}</h3>
+                  <p className="text-xs leading-relaxed text-muted-foreground">{f.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* --------------------------------------------------- Specialties */}
+      {specialties.length > 0 && (
+        <section className="px-4 py-16">
+          <div className="mx-auto max-w-4xl text-center">
+            <Reveal>
+              <Eyebrow>{t.landing.specialtiesEyebrow}</Eyebrow>
+              <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">{t.landing.specialtiesTitle}</h2>
+            </Reveal>
+            <div className="mt-8 flex flex-wrap justify-center gap-2.5">
+              {specialties.map((s, i) => (
+                <motion.span
+                  key={s}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.05, ease: EASE }}
+                  className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium shadow-[0_2px_10px_-4px_rgba(15,23,42,0.1)]"
+                >
+                  {s}
+                </motion.span>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ------------------------------------------------------ Doctors */}
+      <section id="doctors" className="px-4 py-24">
+        <div className="mx-auto max-w-5xl space-y-16">
+          {topRated.length > 0 && (
+            <div>
+              <Reveal>
+                <h2 className="text-2xl font-semibold tracking-tight">{t.landing.mostRated}</h2>
+              </Reveal>
+              <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {topRated.map((d, i) => (
+                  <DoctorCard key={d.id} doctor={d} index={i} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <Reveal>
+              <h2 className="text-2xl font-semibold tracking-tight">{t.landing.ourDoctors}</h2>
+            </Reveal>
+            {loadingDoctors ? (
+              <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-64 rounded-[1.75rem]" />
+                ))}
+              </div>
+            ) : !doctors || doctors.length === 0 ? (
+              <p className="mt-6 text-sm text-muted-foreground">—</p>
+            ) : (
+              <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {doctors.map((d, i) => (
+                  <DoctorCard key={d.id} doctor={d} index={i} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* -------------------------------------------------- Testimonials */}
+      <section id="testimonials" className="overflow-hidden px-4 py-24">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="mx-auto max-w-xl text-center">
+            <Eyebrow>{t.landing.testimonialsEyebrow}</Eyebrow>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.testimonialsTitle}</h2>
+            <p className="mt-3 text-sm text-muted-foreground">{t.landing.testimonialsSubtitle}</p>
+          </Reveal>
+
+          {!testimonials || testimonials.length === 0 ? (
+            <p className="mt-10 text-center text-sm text-muted-foreground">{t.landing.testimonialsEmpty}</p>
+          ) : (
+            <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
+              {testimonials.slice(0, 6).map((tst, i) => (
+                <Reveal key={i} delay={(i % 3) * 0.1} className="rounded-[1.75rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5">
+                  <div className="flex h-full flex-col gap-3 rounded-[1.4rem] bg-surface p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+                    <Stars value={tst.rating} size="md" />
+                    <p className="flex-1 text-sm leading-relaxed text-foreground">“{tst.comment}”</p>
+                    <div className="flex items-center gap-2 border-t border-border/60 pt-3">
+                      <DoctorAvatar id={tst.doctorName} fullName={tst.doctorName} size="sm" />
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-semibold">{tst.doctorName}</p>
+                        <p className="truncate text-[11px] text-muted-foreground">
+                          {locale === 'ar' ? tst.doctorSpecialtyAr : tst.doctorSpecialty}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
           )}
         </div>
       </section>
 
-      <main className="mx-auto max-w-5xl space-y-12 px-4 py-12 md:px-10">
-        {topRated.length > 0 && (
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold tracking-tight">{t.landing.mostRated}</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {topRated.map((d) => (
-                <DoctorCard key={d.id} doctor={d} />
+      {/* ------------------------------------------------------ Services */}
+      {clinic && clinic.services.length > 0 && (
+        <section id="services" className="px-4 py-24">
+          <div className="mx-auto max-w-4xl text-center">
+            <Reveal>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t.landing.ourServices}</h2>
+            </Reveal>
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {clinic.services.map((s, i) => (
+                <Reveal key={s} delay={i * 0.06}>
+                  <div className="flex flex-col items-center gap-2 rounded-[1.6rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5">
+                    <div className="flex w-full flex-col items-center gap-2 rounded-[1.25rem] bg-surface px-4 py-6">
+                      <Award className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                      <span className="text-sm font-medium">{s}</span>
+                    </div>
+                  </div>
+                </Reveal>
               ))}
             </div>
-          </section>
-        )}
-
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold tracking-tight">{t.landing.ourDoctors}</h2>
-          {loadingDoctors ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-56" />
-              ))}
-            </div>
-          ) : !doctors || doctors.length === 0 ? (
-            <p className="text-sm text-muted-foreground">—</p>
-          ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {doctors.map((d) => (
-                <DoctorCard key={d.id} doctor={d} />
-              ))}
-            </div>
-          )}
+          </div>
         </section>
+      )}
 
-        {!loadingClinic && clinic && clinic.services.length > 0 && (
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold tracking-tight">{t.landing.ourServices}</h2>
-            <div className="flex flex-wrap gap-2">
-              {clinic.services.map((s) => (
-                <span key={s} className="rounded-full border border-border bg-surface px-3 py-1.5 text-sm">
-                  {s}
-                </span>
-              ))}
+      {/* ----------------------------------------------------------- FAQ */}
+      <section id="faq" className="px-4 py-24">
+        <div className="mx-auto max-w-2xl">
+          <Reveal className="text-center">
+            <Eyebrow>{t.landing.faqEyebrow}</Eyebrow>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.faqTitle}</h2>
+          </Reveal>
+          <div className="mt-10 space-y-3">
+            {faqs.map((f, i) => (
+              <Reveal key={f.q} delay={i * 0.05}>
+                <FaqItem q={f.q} a={f.a} />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------- Contact */}
+      <section id="contact" className="px-4 py-24">
+        <div className="mx-auto max-w-4xl">
+          <Reveal className="text-center">
+            <Eyebrow>{t.landing.contactEyebrow}</Eyebrow>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.contactTitle}</h2>
+            <p className="mt-3 text-sm text-muted-foreground">{t.landing.contactSubtitle}</p>
+          </Reveal>
+
+          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {[
+              { icon: MapPin, label: t.landing.addressLabel, value: clinic?.address ? `${clinic.address}${clinic.city ? `, ${clinic.city}` : ''}` : '—' },
+              { icon: Clock, label: t.landing.hoursLabel, value: t.landing.hoursValue },
+              { icon: Phone, label: t.landing.phoneLabel, value: '—' },
+            ].map((c, i) => (
+              <Reveal key={c.label} delay={i * 0.08} className="rounded-[1.75rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5">
+                <div className="flex h-full flex-col items-center gap-2 rounded-[1.4rem] bg-surface px-5 py-8 text-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <c.icon className="h-5 w-5" strokeWidth={1.5} />
+                  </div>
+                  <p className="text-xs font-medium text-muted-foreground">{c.label}</p>
+                  <p className="text-sm font-semibold">{c.value}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------ CTA */}
+      <section className="px-4 pb-24">
+        <Reveal className="mx-auto max-w-4xl">
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-primary px-6 py-16 text-center text-primary-foreground">
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{ background: 'radial-gradient(60% 80% at 50% 0%, hsl(0 0% 100% / 0.12), transparent)' }}
+            />
+            <div className="relative">
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t.landing.ctaTitle}</h2>
+              <p className="mt-2 text-sm text-primary-foreground/80">{t.landing.ctaSubtitle}</p>
+              <Link href={`/portal/${DEFAULT_CLINIC_SLUG}/login`}>
+                <button
+                  type="button"
+                  className="group mt-6 inline-flex items-center gap-2 rounded-full bg-white py-3 ps-6 pe-2 text-sm font-semibold text-primary transition-transform duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]"
+                >
+                  {t.landing.bookNow}
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5">
+                    <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={2} />
+                  </span>
+                </button>
+              </Link>
             </div>
-          </section>
-        )}
+          </div>
+        </Reveal>
+      </section>
 
-        <section className="rounded-xl bg-primary px-6 py-10 text-center text-primary-foreground">
-          <h2 className="text-xl font-semibold tracking-tight">{t.landing.ctaTitle}</h2>
-          <p className="mt-2 text-sm text-primary-foreground/80">{t.landing.ctaSubtitle}</p>
-          <Link href={`/portal/${DEFAULT_CLINIC_SLUG}/login`}>
-            <Button variant="secondary" size="sm" className="mt-5">
-              {t.landing.bookNow}
-            </Button>
-          </Link>
-        </section>
-      </main>
+      {/* --------------------------------------------------------- Footer */}
+      <footer className="border-t border-border/60 px-4 py-12">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:justify-between sm:text-start">
+          <div className="space-y-2">
+            <div className="flex items-center justify-center gap-2 sm:justify-start">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <Stethoscope className="h-3.5 w-3.5" strokeWidth={1.75} />
+              </div>
+              <span className="text-sm font-semibold">{clinicName}</span>
+            </div>
+            <p className="text-xs text-muted-foreground">{t.landing.footerTagline}</p>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.landing.footerQuickLinks}</p>
+            <div className="flex flex-col gap-1.5 text-xs text-muted-foreground">
+              <a href="#doctors" className="hover:text-foreground">
+                {t.landing.navDoctors}
+              </a>
+              <a href="#services" className="hover:text-foreground">
+                {t.landing.navServices}
+              </a>
+              <a href="#faq" className="hover:text-foreground">
+                {t.landing.navFaq}
+              </a>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.landing.footerContact}</p>
+            {clinic?.address && (
+              <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground sm:justify-start">
+                <MapPin className="h-3 w-3" strokeWidth={1.5} />
+                {clinic.address}
+              </p>
+            )}
+            <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground sm:justify-start">
+              <Mail className="h-3 w-3" strokeWidth={1.5} />
+              info@{DEFAULT_CLINIC_SLUG}.example
+            </p>
+          </div>
+        </div>
+        <p className="mt-8 text-center text-[11px] text-muted-foreground">{t.landing.footerRights(new Date().getFullYear())}</p>
+      </footer>
     </div>
   );
 }

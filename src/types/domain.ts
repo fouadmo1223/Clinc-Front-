@@ -383,6 +383,15 @@ export interface Review {
   createdAt: string;
 }
 
+export interface Testimonial {
+  rating: number;
+  comment: string;
+  createdAt: string;
+  doctorName: string;
+  doctorSpecialty: string;
+  doctorSpecialtyAr: string;
+}
+
 export interface StaffMember {
   _id: string;
   clinicId: string;

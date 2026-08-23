@@ -64,6 +64,66 @@ export interface Dictionary {
     reviewNotEligible: string;
     alreadyReviewed: string;
     loginToBook: string;
+    navDoctors: string;
+    navServices: string;
+    navReviews: string;
+    navFaq: string;
+    navContact: string;
+    eyebrow: string;
+    stat1Value: string;
+    stat1Label: string;
+    stat2Label: string;
+    stat3Label: string;
+    stat4Label: string;
+    howEyebrow: string;
+    howTitle: string;
+    howSubtitle: string;
+    step1Title: string;
+    step1Desc: string;
+    step2Title: string;
+    step2Desc: string;
+    step3Title: string;
+    step3Desc: string;
+    whyEyebrow: string;
+    whyTitle: string;
+    whySubtitle: string;
+    why1Title: string;
+    why1Desc: string;
+    why2Title: string;
+    why2Desc: string;
+    why3Title: string;
+    why3Desc: string;
+    why4Title: string;
+    why4Desc: string;
+    specialtiesEyebrow: string;
+    specialtiesTitle: string;
+    testimonialsEyebrow: string;
+    testimonialsTitle: string;
+    testimonialsSubtitle: string;
+    testimonialsEmpty: string;
+    faqEyebrow: string;
+    faqTitle: string;
+    faq1Q: string;
+    faq1A: string;
+    faq2Q: string;
+    faq2A: string;
+    faq3Q: string;
+    faq3A: string;
+    faq4Q: string;
+    faq4A: string;
+    faq5Q: string;
+    faq5A: string;
+    contactEyebrow: string;
+    contactTitle: string;
+    contactSubtitle: string;
+    hoursLabel: string;
+    hoursValue: string;
+    addressLabel: string;
+    phoneLabel: string;
+    footerTagline: string;
+    footerRights: (year: number) => string;
+    footerQuickLinks: string;
+    footerContact: string;
   };
   dashboard: {
     greeting: (name: string) => string;
@@ -576,6 +636,66 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reviewNotEligible: 'You can only review a doctor after a completed visit with them.',
       alreadyReviewed: 'You have already reviewed this doctor.',
       loginToBook: 'Log in to book',
+      navDoctors: 'Doctors',
+      navServices: 'Services',
+      navReviews: 'Reviews',
+      navFaq: 'FAQ',
+      navContact: 'Contact',
+      eyebrow: 'Now accepting online bookings',
+      stat1Value: '4.9',
+      stat1Label: 'Average rating',
+      stat2Label: 'Specialist doctors',
+      stat3Label: 'Patients cared for',
+      stat4Label: 'Years of service',
+      howEyebrow: 'Simple process',
+      howTitle: 'Booking takes three steps',
+      howSubtitle: 'No phone calls, no waiting on hold — pick a doctor and a time that works for you.',
+      step1Title: 'Choose your doctor',
+      step1Desc: 'Browse specialties, read real patient reviews, and compare availability.',
+      step2Title: 'Pick a time',
+      step2Desc: 'See real-time open slots and reserve the one that fits your schedule.',
+      step3Title: 'Get confirmed instantly',
+      step3Desc: "You'll receive an email and SMS confirmation — no waiting for a callback.",
+      whyEyebrow: 'Why patients choose us',
+      whyTitle: 'Care built around you',
+      whySubtitle: 'A modern clinic experience without sacrificing the personal touch.',
+      why1Title: 'Verified specialists',
+      why1Desc: 'Every doctor on our platform is licensed and reviewed by real patients.',
+      why2Title: 'Real-time availability',
+      why2Desc: 'What you see is what you get — no double-booked slots, ever.',
+      why3Title: 'Your records, secured',
+      why3Desc: 'Visit history, prescriptions, and documents kept private and accessible anytime.',
+      why4Title: 'Always reachable',
+      why4Desc: 'Get appointment reminders by email and SMS, so you never miss a visit.',
+      specialtiesEyebrow: 'Specialties',
+      specialtiesTitle: 'Care for every stage of life',
+      testimonialsEyebrow: 'Patient voices',
+      testimonialsTitle: 'What our patients say',
+      testimonialsSubtitle: 'Real feedback from real visits — every review here comes from a completed appointment.',
+      testimonialsEmpty: 'Be the first to share your experience after your next visit.',
+      faqEyebrow: 'Good to know',
+      faqTitle: 'Frequently asked questions',
+      faq1Q: 'Do I need an account to book?',
+      faq1A: 'No password required — just verify your phone or email with a one-time code and you’re in.',
+      faq2Q: 'Can I cancel or reschedule?',
+      faq2A: 'Yes, from your patient dashboard at any time before your appointment.',
+      faq3Q: 'Is my medical information private?',
+      faq3A: 'Yes. Only you and your care team can see your visit history and documents.',
+      faq4Q: 'What if I need to see the same doctor again?',
+      faq4A: 'Just book another appointment — your history carries over automatically.',
+      faq5Q: 'Do you accept walk-ins?',
+      faq5A: 'Yes, though booking online guarantees your time slot.',
+      contactEyebrow: 'Visit us',
+      contactTitle: 'Find us',
+      contactSubtitle: "We're easy to reach, in person or online.",
+      hoursLabel: 'Working hours',
+      hoursValue: 'Sat–Thu, 9:00 AM – 10:00 PM',
+      addressLabel: 'Address',
+      phoneLabel: 'Phone',
+      footerTagline: 'Modern healthcare, made simple.',
+      footerRights: (year) => `© ${year} All rights reserved.`,
+      footerQuickLinks: 'Quick links',
+      footerContact: 'Contact',
     },
     dashboard: {
       greeting: (name) => `Good to see you, ${name}`,
@@ -1133,6 +1253,66 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reviewNotEligible: 'يمكنك تقييم الطبيب فقط بعد زيارة مكتملة معه.',
       alreadyReviewed: 'لقد قيّمت هذا الطبيب من قبل.',
       loginToBook: 'سجّل الدخول للحجز',
+      navDoctors: 'الأطباء',
+      navServices: 'الخدمات',
+      navReviews: 'التقييمات',
+      navFaq: 'الأسئلة الشائعة',
+      navContact: 'تواصل معنا',
+      eyebrow: 'الحجز الإلكتروني متاح الآن',
+      stat1Value: '٤.٩',
+      stat1Label: 'متوسط التقييم',
+      stat2Label: 'طبيب متخصص',
+      stat3Label: 'مريض تمت رعايته',
+      stat4Label: 'سنوات من الخدمة',
+      howEyebrow: 'إجراء بسيط',
+      howTitle: 'الحجز في ثلاث خطوات',
+      howSubtitle: 'بدون مكالمات هاتفية أو انتظار — اختر طبيبًا وموعدًا يناسبك.',
+      step1Title: 'اختر طبيبك',
+      step1Desc: 'تصفح التخصصات، اقرأ تقييمات حقيقية من المرضى، وقارن المواعيد المتاحة.',
+      step2Title: 'اختر الوقت',
+      step2Desc: 'شاهد المواعيد المتاحة فعليًا واحجز الوقت الذي يناسب جدولك.',
+      step3Title: 'تأكيد فوري',
+      step3Desc: 'ستصلك رسالة تأكيد عبر البريد الإلكتروني والرسائل النصية فورًا.',
+      whyEyebrow: 'لماذا يختارنا مرضانا',
+      whyTitle: 'رعاية مصممة من أجلك',
+      whySubtitle: 'تجربة عيادة عصرية دون التضحية باللمسة الشخصية.',
+      why1Title: 'أطباء موثوقون',
+      why1Desc: 'كل طبيب على منصتنا مرخّص ومُقيَّم من مرضى حقيقيين.',
+      why2Title: 'مواعيد فعلية في الوقت الحقيقي',
+      why2Desc: 'ما تراه هو ما تحصل عليه — بدون أي تعارض في الحجز.',
+      why3Title: 'سجلاتك الطبية آمنة',
+      why3Desc: 'سجل الزيارات والوصفات والمستندات محفوظة وخاصة ومتاحة لك دائمًا.',
+      why4Title: 'تواصل مستمر',
+      why4Desc: 'احصل على تذكيرات بمواعيدك عبر البريد الإلكتروني والرسائل النصية.',
+      specialtiesEyebrow: 'التخصصات',
+      specialtiesTitle: 'رعاية لكل مرحلة من حياتك',
+      testimonialsEyebrow: 'آراء المرضى',
+      testimonialsTitle: 'ماذا يقول مرضانا',
+      testimonialsSubtitle: 'آراء حقيقية من زيارات فعلية — كل تقييم هنا من موعد مكتمل.',
+      testimonialsEmpty: 'كن أول من يشارك تجربته بعد زيارتك القادمة.',
+      faqEyebrow: 'معلومات مفيدة',
+      faqTitle: 'الأسئلة الشائعة',
+      faq1Q: 'هل أحتاج إلى حساب للحجز؟',
+      faq1A: 'لا حاجة لكلمة مرور — فقط تحقق من هاتفك أو بريدك الإلكتروني برمز لمرة واحدة.',
+      faq2Q: 'هل يمكنني الإلغاء أو إعادة الجدولة؟',
+      faq2A: 'نعم، من لوحة تحكم المريض الخاصة بك في أي وقت قبل الموعد.',
+      faq3Q: 'هل معلوماتي الطبية سرية؟',
+      faq3A: 'نعم، أنت وفريق الرعاية الخاص بك فقط من يمكنه رؤية سجل زياراتك ومستنداتك.',
+      faq4Q: 'ماذا لو أردت رؤية نفس الطبيب مرة أخرى؟',
+      faq4A: 'فقط احجز موعدًا آخر — سجلك الطبي ينتقل تلقائيًا.',
+      faq5Q: 'هل تقبلون الحضور بدون حجز؟',
+      faq5A: 'نعم، لكن الحجز الإلكتروني يضمن لك الموعد.',
+      contactEyebrow: 'زُرنا',
+      contactTitle: 'موقعنا',
+      contactSubtitle: 'يسهل الوصول إلينا، شخصيًا أو عبر الإنترنت.',
+      hoursLabel: 'ساعات العمل',
+      hoursValue: 'السبت–الخميس، ٩ صباحًا – ١٠ مساءً',
+      addressLabel: 'العنوان',
+      phoneLabel: 'الهاتف',
+      footerTagline: 'رعاية صحية عصرية، بكل بساطة.',
+      footerRights: (year) => `© ${year} جميع الحقوق محفوظة.`,
+      footerQuickLinks: 'روابط سريعة',
+      footerContact: 'تواصل معنا',
     },
     dashboard: {
       greeting: (name) => `أهلاً بعودتك، ${name}`,
