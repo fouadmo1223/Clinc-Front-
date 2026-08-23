@@ -346,6 +346,43 @@ export interface AppNotification {
   createdAt: string;
 }
 
+export interface DoctorRatingSummary {
+  average: number;
+  count: number;
+}
+
+export interface PublicClinic {
+  name: string;
+  nameAr: string;
+  logoUrl?: string;
+  address?: string;
+  city?: string;
+  services: string[];
+}
+
+export interface PublicDoctor {
+  id: string;
+  fullName: string;
+  photoUrl?: string;
+  specialty: string;
+  specialtyAr: string;
+  bio?: string;
+  consultationPrice: number;
+  branchIds: string[];
+  rating: DoctorRatingSummary;
+}
+
+export interface Review {
+  _id: string;
+  clinicId: string;
+  doctorId: string;
+  patientId: string;
+  visitId: string;
+  rating: number;
+  comment?: string;
+  createdAt: string;
+}
+
 export interface StaffMember {
   _id: string;
   clinicId: string;

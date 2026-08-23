@@ -31,6 +31,39 @@ export interface Dictionary {
     noDocuments: string;
     download: string;
     with: string;
+    bookAppointment: string;
+    selectBranch: string;
+    selectDate: string;
+    selectTime: string;
+    noSlotsAvailable: string;
+    confirmBooking: string;
+    bookingConfirmed: string;
+    reasonOptional: string;
+    reasonPlaceholder: string;
+    backToDashboard: string;
+  };
+  landing: {
+    heroTitle: string;
+    heroSubtitle: (clinicName: string) => string;
+    bookNow: string;
+    staffLogin: string;
+    ourDoctors: string;
+    mostRated: string;
+    reviews: (count: number) => string;
+    noReviewsYet: string;
+    viewProfile: string;
+    startingFrom: string;
+    ourServices: string;
+    ctaTitle: string;
+    ctaSubtitle: string;
+    rateThisDoctor: string;
+    yourRating: string;
+    commentOptional: string;
+    submitReview: string;
+    reviewSubmitted: string;
+    reviewNotEligible: string;
+    alreadyReviewed: string;
+    loginToBook: string;
   };
   dashboard: {
     greeting: (name: string) => string;
@@ -510,6 +543,39 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noDocuments: 'No documents yet.',
       download: 'Download',
       with: 'with',
+      bookAppointment: 'Book an appointment',
+      selectBranch: 'Branch',
+      selectDate: 'Date',
+      selectTime: 'Time',
+      noSlotsAvailable: 'No available slots for this day.',
+      confirmBooking: 'Confirm booking',
+      bookingConfirmed: 'Your appointment is booked!',
+      reasonOptional: 'Reason for visit (optional)',
+      reasonPlaceholder: 'e.g. Follow-up, general checkup…',
+      backToDashboard: 'Back to dashboard',
+    },
+    landing: {
+      heroTitle: 'Book your visit in minutes',
+      heroSubtitle: (clinicName) => `Real doctors, real availability — book an appointment with ${clinicName} online.`,
+      bookNow: 'Book now',
+      staffLogin: 'Staff login',
+      ourDoctors: 'Our doctors',
+      mostRated: 'Top rated',
+      reviews: (count) => (count === 1 ? '1 review' : `${count} reviews`),
+      noReviewsYet: 'No reviews yet',
+      viewProfile: 'View profile',
+      startingFrom: 'from',
+      ourServices: 'Our services',
+      ctaTitle: 'Ready to book?',
+      ctaSubtitle: 'Create your appointment online in under a minute.',
+      rateThisDoctor: 'Rate this doctor',
+      yourRating: 'Your rating',
+      commentOptional: 'Comment (optional)',
+      submitReview: 'Submit review',
+      reviewSubmitted: 'Thanks for your feedback!',
+      reviewNotEligible: 'You can only review a doctor after a completed visit with them.',
+      alreadyReviewed: 'You have already reviewed this doctor.',
+      loginToBook: 'Log in to book',
     },
     dashboard: {
       greeting: (name) => `Good to see you, ${name}`,
@@ -1034,6 +1100,39 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noDocuments: 'لا توجد مستندات بعد.',
       download: 'تنزيل',
       with: 'مع',
+      bookAppointment: 'حجز موعد',
+      selectBranch: 'الفرع',
+      selectDate: 'التاريخ',
+      selectTime: 'الوقت',
+      noSlotsAvailable: 'لا توجد مواعيد متاحة في هذا اليوم.',
+      confirmBooking: 'تأكيد الحجز',
+      bookingConfirmed: 'تم حجز موعدك!',
+      reasonOptional: 'سبب الزيارة (اختياري)',
+      reasonPlaceholder: 'مثال: متابعة، فحص عام…',
+      backToDashboard: 'العودة للوحة التحكم',
+    },
+    landing: {
+      heroTitle: 'احجز زيارتك في دقائق',
+      heroSubtitle: (clinicName) => `أطباء حقيقيون، مواعيد فعلية — احجز موعدك مع ${clinicName} عبر الإنترنت.`,
+      bookNow: 'احجز الآن',
+      staffLogin: 'دخول الموظفين',
+      ourDoctors: 'أطباؤنا',
+      mostRated: 'الأعلى تقييمًا',
+      reviews: (count) => (count === 1 ? 'تقييم واحد' : `${count} تقييمات`),
+      noReviewsYet: 'لا توجد تقييمات بعد',
+      viewProfile: 'عرض الملف',
+      startingFrom: 'يبدأ من',
+      ourServices: 'خدماتنا',
+      ctaTitle: 'جاهز للحجز؟',
+      ctaSubtitle: 'أنشئ موعدك عبر الإنترنت في أقل من دقيقة.',
+      rateThisDoctor: 'قيّم هذا الطبيب',
+      yourRating: 'تقييمك',
+      commentOptional: 'تعليق (اختياري)',
+      submitReview: 'إرسال التقييم',
+      reviewSubmitted: 'شكرًا لملاحظاتك!',
+      reviewNotEligible: 'يمكنك تقييم الطبيب فقط بعد زيارة مكتملة معه.',
+      alreadyReviewed: 'لقد قيّمت هذا الطبيب من قبل.',
+      loginToBook: 'سجّل الدخول للحجز',
     },
     dashboard: {
       greeting: (name) => `أهلاً بعودتك، ${name}`,

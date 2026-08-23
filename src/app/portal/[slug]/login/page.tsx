@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { patientApi } from '@/lib/patient-api';
 import { ApiError } from '@/lib/api';
@@ -18,6 +18,7 @@ export default function PatientPortalLoginPage() {
   const { t } = useLocale();
   const router = useRouter();
   const params = useParams<{ slug: string }>();
+  const searchParams = useSearchParams();
   const setSession = usePatientAuthStore((s) => s.setSession);
 
   const [step, setStep] = React.useState<'identify' | 'code'>('identify');
@@ -59,7 +60,8 @@ export default function PatientPortalLoginPage() {
         { auth: false },
       );
       setSession(data.accessToken, data.patient, params.slug);
-      router.push(`/portal/${params.slug}`);
+      const next = searchParams.get('next');
+      router.push(next && next.startsWith(`/portal/${params.slug}`) ? next : `/portal/${params.slug}`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t.portal.invalidCode);
     } finally {

@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { LogOut, CalendarClock, ClipboardList, FileText, Stethoscope, Download } from 'lucide-react';
+import Link from 'next/link';
+import { LogOut, CalendarClock, ClipboardList, FileText, Stethoscope, Download, Plus } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { patientApi } from '@/lib/patient-api';
 import { usePatientAuthStore } from '@/stores/patient-auth-store';
@@ -82,7 +83,15 @@ export default function PatientPortalDashboardPage() {
       </header>
 
       <main className="mx-auto max-w-3xl space-y-5 px-4 py-6 md:px-8">
-        <h1 className="text-lg font-semibold tracking-tight">{t.portal.welcome(patient.fullName.split(' ')[0])}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold tracking-tight">{t.portal.welcome(patient.fullName.split(' ')[0])}</h1>
+          <Link href={`/portal/${params.slug}/book`}>
+            <Button type="button" size="sm">
+              <Plus className="h-3.5 w-3.5" />
+              {t.portal.bookAppointment}
+            </Button>
+          </Link>
+        </div>
 
         <Card>
           <CardHeader>
