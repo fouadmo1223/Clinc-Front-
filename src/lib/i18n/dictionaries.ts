@@ -358,6 +358,7 @@ export interface Dictionary {
     noAppointment: string;
     walkIn: string;
     booked: string;
+    allBranches: string;
   };
   expenses: {
     title: string;
@@ -846,6 +847,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noAppointment: 'No appointment — walk-in',
       walkIn: 'Walk-in',
       booked: 'Booked',
+      allBranches: 'All branches',
     },
     expenses: {
       title: 'Expenses',
@@ -1339,6 +1341,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noAppointment: 'بدون موعد — حضور مباشر',
       walkIn: 'بدون حجز',
       booked: 'محجوز',
+      allBranches: 'كل الفروع',
     },
     expenses: {
       title: 'المصروفات',

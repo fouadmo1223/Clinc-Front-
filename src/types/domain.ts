@@ -288,6 +288,7 @@ export interface QueueEntry {
   patientPhone?: string;
   doctorName?: string;
   appointmentStartTime?: string;
+  branchName?: string;
 }
 
 export type ExpenseCategory = 'RENT' | 'SALARIES' | 'SUPPLIES' | 'UTILITIES' | 'MAINTENANCE' | 'OTHER';

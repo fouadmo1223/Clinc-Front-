@@ -70,7 +70,11 @@ function QueueColumn({
                   <AvatarInitials name={entry.patientName ?? '?'} className="h-6 w-6 text-[10px]" />
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium">{entry.patientName}</div>
-                    {entry.doctorName && <div className="truncate text-xs text-muted-foreground">{entry.doctorName}</div>}
+                    {(entry.doctorName || entry.branchName) && (
+                      <div className="truncate text-xs text-muted-foreground">
+                        {[entry.doctorName, entry.branchName].filter(Boolean).join(' · ')}
+                      </div>
+                    )}
                   </div>
                   <Badge variant={booked ? 'info' : 'neutral'}>{booked ? t.queue.booked : t.queue.walkIn}</Badge>
                 </div>
@@ -90,13 +94,15 @@ export default function QueuePage() {
 
   const [open, setOpen] = React.useState(false);
   const [form, setForm] = React.useState<CheckInForm>(emptyForm());
+  const [branchFilter, setBranchFilter] = React.useState('all');
 
   const { data: branches } = useQuery({ queryKey: ['branches'], queryFn: () => api.get<Branch[]>('/branches') });
   const { data: doctors } = useQuery({ queryKey: ['doctors'], queryFn: () => api.get<Doctor[]>('/doctors') });
+  const doctorsForFormBranch = (doctors ?? []).filter((d) => !form.branchId || d.branchIds.includes(form.branchId));
 
   const { data: entries, isLoading } = useQuery({
-    queryKey: ['queue'],
-    queryFn: () => api.get<QueueEntry[]>('/queue'),
+    queryKey: ['queue', branchFilter],
+    queryFn: () => api.get<QueueEntry[]>(`/queue${branchFilter !== 'all' ? `?branchId=${branchFilter}` : ''}`),
     refetchInterval: 15000,
   });
 
@@ -168,10 +174,21 @@ export default function QueuePage() {
           <h1 className="text-lg font-semibold tracking-tight">{t.queue.title}</h1>
           <p className="text-sm text-muted-foreground">{t.queue.subtitle}</p>
         </div>
-        <Button size="sm" onClick={openCheckIn}>
-          <ListOrdered className="h-4 w-4" />
-          {t.queue.checkIn}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Select value={branchFilter} onValueChange={setBranchFilter}>
+            <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t.queue.allBranches}</SelectItem>
+              {(branches ?? []).map((b) => (
+                <SelectItem key={b._id} value={b._id}>{b.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button size="sm" onClick={openCheckIn}>
+            <ListOrdered className="h-4 w-4" />
+            {t.queue.checkIn}
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -245,7 +262,7 @@ export default function QueuePage() {
                 <Label>{t.queue.branch}</Label>
                 <Select
                   value={form.branchId}
-                  onValueChange={(v) => setForm((f) => ({ ...f, branchId: v }))}
+                  onValueChange={(v) => setForm((f) => ({ ...f, branchId: v, doctorId: '' }))}
                   disabled={!!form.appointmentId}
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
@@ -266,7 +283,7 @@ export default function QueuePage() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">—</SelectItem>
-                    {(doctors ?? []).map((d) => (
+                    {doctorsForFormBranch.map((d) => (
                       <SelectItem key={d._id} value={d._id}>{d.fullName}</SelectItem>
                     ))}
                   </SelectContent>
