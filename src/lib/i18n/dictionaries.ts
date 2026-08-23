@@ -2,6 +2,32 @@ export type Locale = 'en' | 'ar';
 
 export interface Dictionary {
   app: { name: string; tagline: string };
+  portal: {
+    title: string;
+    subtitle: string;
+    phone: string;
+    phonePlaceholder: string;
+    sendCode: string;
+    codeSentSubtitle: string;
+    code: string;
+    verify: string;
+    changePhone: string;
+    invalidCode: string;
+    welcome: (name: string) => string;
+    logout: string;
+    upcomingAppointments: string;
+    pastAppointments: string;
+    noUpcomingAppointments: string;
+    noPastAppointments: string;
+    visits: string;
+    noVisits: string;
+    diagnosis: string;
+    treatmentPlan: string;
+    documents: string;
+    noDocuments: string;
+    download: string;
+    with: string;
+  };
   dashboard: {
     greeting: (name: string) => string;
     subtitle: string;
@@ -451,6 +477,32 @@ export interface Dictionary {
 export const dictionaries: Record<Locale, Dictionary> = {
   en: {
     app: { name: 'Clinic OS', tagline: 'Clinic operations, handled.' },
+    portal: {
+      title: 'Patient Portal',
+      subtitle: 'View your appointments, visits, and documents.',
+      phone: 'Phone number',
+      phonePlaceholder: 'e.g. 01012345678',
+      sendCode: 'Send code',
+      codeSentSubtitle: "We've sent a 6-digit code to your phone.",
+      code: 'Verification code',
+      verify: 'Verify',
+      changePhone: 'Use a different number',
+      invalidCode: 'Invalid or expired code.',
+      welcome: (name) => `Welcome, ${name}`,
+      logout: 'Log out',
+      upcomingAppointments: 'Upcoming appointments',
+      pastAppointments: 'Past appointments',
+      noUpcomingAppointments: 'No upcoming appointments.',
+      noPastAppointments: 'No past appointments.',
+      visits: 'Visit history',
+      noVisits: 'No visits recorded yet.',
+      diagnosis: 'Diagnosis',
+      treatmentPlan: 'Treatment plan',
+      documents: 'Documents',
+      noDocuments: 'No documents yet.',
+      download: 'Download',
+      with: 'with',
+    },
     dashboard: {
       greeting: (name) => `Good to see you, ${name}`,
       subtitle: "Here's what's happening at your clinic today.",
@@ -945,6 +997,32 @@ export const dictionaries: Record<Locale, Dictionary> = {
   },
   ar: {
     app: { name: 'نظام العيادة', tagline: 'تشغيل عيادتك، بكل ثقة.' },
+    portal: {
+      title: 'بوابة المريض',
+      subtitle: 'اطّلع على مواعيدك وزياراتك ومستنداتك.',
+      phone: 'رقم الهاتف',
+      phonePlaceholder: 'مثال: 01012345678',
+      sendCode: 'إرسال الرمز',
+      codeSentSubtitle: 'تم إرسال رمز مكوّن من 6 أرقام إلى هاتفك.',
+      code: 'رمز التحقق',
+      verify: 'تحقق',
+      changePhone: 'استخدام رقم آخر',
+      invalidCode: 'الرمز غير صحيح أو انتهت صلاحيته.',
+      welcome: (name) => `أهلاً بك، ${name}`,
+      logout: 'تسجيل الخروج',
+      upcomingAppointments: 'المواعيد القادمة',
+      pastAppointments: 'المواعيد السابقة',
+      noUpcomingAppointments: 'لا توجد مواعيد قادمة.',
+      noPastAppointments: 'لا توجد مواعيد سابقة.',
+      visits: 'سجل الزيارات',
+      noVisits: 'لا توجد زيارات مسجلة بعد.',
+      diagnosis: 'التشخيص',
+      treatmentPlan: 'خطة العلاج',
+      documents: 'المستندات',
+      noDocuments: 'لا توجد مستندات بعد.',
+      download: 'تنزيل',
+      with: 'مع',
+    },
     dashboard: {
       greeting: (name) => `أهلاً بعودتك، ${name}`,
       subtitle: 'إليك ما يحدث في عيادتك اليوم.',
