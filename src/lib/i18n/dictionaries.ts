@@ -53,6 +53,13 @@ export interface Dictionary {
     signUp: string;
     phoneTaken: string;
     emailTaken: string;
+    editProfile: string;
+    saveChanges: string;
+    profileUpdated: string;
+    uploadDocument: string;
+    chooseFile: string;
+    documentUploaded: string;
+    appointmentCancelled: string;
   };
   landing: {
     heroTitle: string;
@@ -643,6 +650,13 @@ export const dictionaries: Record<Locale, Dictionary> = {
       signUp: 'Create an account',
       phoneTaken: 'An account with this phone number already exists.',
       emailTaken: 'An account with this email already exists.',
+      editProfile: 'Edit profile',
+      saveChanges: 'Save changes',
+      profileUpdated: 'Your profile has been updated.',
+      uploadDocument: 'Upload document',
+      chooseFile: 'Choose file',
+      documentUploaded: 'Document uploaded.',
+      appointmentCancelled: 'Appointment cancelled.',
     },
     landing: {
       heroTitle: 'Book your visit in minutes',
@@ -1278,6 +1292,13 @@ export const dictionaries: Record<Locale, Dictionary> = {
       signUp: 'إنشاء حساب',
       phoneTaken: 'يوجد حساب بهذا الرقم بالفعل.',
       emailTaken: 'يوجد حساب بهذا البريد الإلكتروني بالفعل.',
+      editProfile: 'تعديل الملف الشخصي',
+      saveChanges: 'حفظ التغييرات',
+      profileUpdated: 'تم تحديث ملفك الشخصي.',
+      uploadDocument: 'رفع مستند',
+      chooseFile: 'اختر ملفًا',
+      documentUploaded: 'تم رفع المستند.',
+      appointmentCancelled: 'تم إلغاء الموعد.',
     },
     landing: {
       heroTitle: 'احجز زيارتك في دقائق',

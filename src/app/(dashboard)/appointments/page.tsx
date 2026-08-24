@@ -378,6 +378,7 @@ export default function AppointmentsPage() {
                 <DatePicker
                   value={booking.date}
                   onChange={(v) => setBooking((f) => ({ ...f, date: v, startTime: '' }))}
+                  minDate={new Date()}
                 />
               </div>
               <div className="space-y-1.5">

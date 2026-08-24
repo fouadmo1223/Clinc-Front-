@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { EASE } from '../primitives';
 
+const MotionLink = motion(Link);
+
 const DEFAULT_CLINIC_SLUG = process.env.NEXT_PUBLIC_DEFAULT_CLINIC_SLUG ?? 'demo-clinic';
 
 function patientInitials(fullName: string): string {
@@ -95,9 +97,9 @@ export function Nav({ copy, clinicName, staffLoginLabel }: { copy: LandingCopy['
 
         <nav className="hidden items-center gap-5 md:flex">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
+            <Link key={l.href} href={l.href} className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">
               {l.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -206,7 +208,7 @@ export function Nav({ copy, clinicName, staffLoginLabel }: { copy: LandingCopy['
             </div>
             <nav className="flex flex-1 flex-col items-center justify-center gap-6">
               {links.map((l, i) => (
-                <motion.a
+                <MotionLink
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
@@ -216,7 +218,7 @@ export function Nav({ copy, clinicName, staffLoginLabel }: { copy: LandingCopy['
                   className="text-2xl font-semibold tracking-tight"
                 >
                   {l.label}
-                </motion.a>
+                </MotionLink>
               ))}
               {isPatientLoggedIn && patient ? (
                 <div className="mt-4 flex flex-col items-center gap-3">

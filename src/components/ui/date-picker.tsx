@@ -9,10 +9,12 @@ import {
   endOfMonth,
   endOfWeek,
   format,
+  isBefore,
   isSameDay,
   isSameMonth,
   isToday,
   parseISO,
+  startOfDay,
   startOfMonth,
   startOfWeek,
   subMonths,
@@ -26,6 +28,8 @@ export interface DatePickerProps {
   id?: string;
   className?: string;
   disabled?: boolean;
+  /** Days before this one render disabled and can't be picked — e.g. `new Date()` for a booking flow where the past isn't a valid appointment date. */
+  minDate?: Date;
 }
 
 const WEEKDAY_LABELS = {
@@ -33,7 +37,7 @@ const WEEKDAY_LABELS = {
   ar: ['أح', 'إث', 'ثل', 'أر', 'خم', 'جم', 'سب'],
 };
 
-export function DatePicker({ value, onChange, id, className, disabled }: DatePickerProps) {
+export function DatePicker({ value, onChange, id, className, disabled, minDate }: DatePickerProps) {
   const { locale } = useLocale();
   const [open, setOpen] = React.useState(false);
   const selected = value ? parseISO(value) : undefined;
@@ -102,10 +106,12 @@ export function DatePicker({ value, onChange, id, className, disabled }: DatePic
               const inMonth = isSameMonth(day, viewMonth);
               const active = selected && isSameDay(day, selected);
               const todayFlag = isToday(day);
+              const tooEarly = minDate && isBefore(startOfDay(day), startOfDay(minDate));
               return (
                 <button
                   key={day.toISOString()}
                   type="button"
+                  disabled={tooEarly}
                   onClick={() => {
                     onChange(format(day, 'yyyy-MM-dd'));
                     setOpen(false);
@@ -116,6 +122,7 @@ export function DatePicker({ value, onChange, id, className, disabled }: DatePic
                     inMonth && !active && 'text-foreground hover:bg-secondary',
                     active && 'bg-primary text-primary-foreground',
                     !active && todayFlag && 'ring-1 ring-inset ring-primary/50',
+                    tooEarly && 'cursor-not-allowed text-muted-foreground/25 hover:bg-transparent',
                   )}
                 >
                   {format(day, 'd')}

@@ -11,11 +11,13 @@ interface RequestOptions extends RequestInit {
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { auth = true, headers, ...rest } = options;
   const token = usePatientAuthStore.getState().accessToken;
+  const isFormData = rest.body instanceof FormData;
 
   const res = await fetch(`${API_URL}${path}`, {
     ...rest,
     headers: {
-      'Content-Type': 'application/json',
+      // Omit Content-Type for FormData — the browser must set its own multipart boundary.
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(auth && token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
@@ -38,4 +40,8 @@ export const patientApi = {
   get: <T>(path: string, options?: RequestOptions) => request<T>(path, { ...options, method: 'GET' }),
   post: <T>(path: string, data?: unknown, options?: RequestOptions) =>
     request<T>(path, { ...options, method: 'POST', body: data ? JSON.stringify(data) : undefined }),
+  patch: <T>(path: string, data?: unknown, options?: RequestOptions) =>
+    request<T>(path, { ...options, method: 'PATCH', body: data ? JSON.stringify(data) : undefined }),
+  upload: <T>(path: string, formData: FormData, options?: RequestOptions) =>
+    request<T>(path, { ...options, method: 'POST', body: formData }),
 };

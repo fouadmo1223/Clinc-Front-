@@ -156,7 +156,7 @@ export default function PatientPortalBookPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t.portal.selectDate}</Label>
-                  <DatePicker value={date} onChange={setDate} />
+                  <DatePicker value={date} onChange={setDate} minDate={new Date()} />
                 </div>
               </div>
 

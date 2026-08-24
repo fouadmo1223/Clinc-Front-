@@ -44,9 +44,9 @@ export function Footer({
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">{copy.quickLinks}</p>
               <div className="mt-4 flex flex-col gap-2.5">
                 {navLinks.map((l) => (
-                  <a key={l.href} href={l.href} className="text-sm text-white/70 transition-colors hover:text-white">
+                  <Link key={l.href} href={l.href} className="text-sm text-white/70 transition-colors hover:text-white">
                     {l.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
