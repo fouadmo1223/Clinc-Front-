@@ -2,10 +2,12 @@
 
 import * as React from 'react';
 import { format } from 'date-fns';
+import { io, type Socket } from 'socket.io-client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ListOrdered, PhoneCall, Check, X, CalendarClock } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { api, ApiError } from '@/lib/api';
+import { useAuthStore } from '@/stores/auth-store';
 import type { QueueEntry, QueueStatus, Branch, Doctor, Appointment, PaginatedResult } from '@/types/domain';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -103,8 +105,26 @@ export default function QueuePage() {
   const { data: entries, isLoading } = useQuery({
     queryKey: ['queue', branchFilter],
     queryFn: () => api.get<QueueEntry[]>(`/queue${branchFilter !== 'all' ? `?branchId=${branchFilter}` : ''}`),
-    refetchInterval: 15000,
+    // Socket.IO pushes updates in real time; this is just a safety net in case a
+    // connection drops silently.
+    refetchInterval: 60000,
   });
+
+  const accessToken = useAuthStore((s) => s.accessToken);
+  React.useEffect(() => {
+    if (!accessToken) return;
+    const socketUrl = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api').replace(/\/api\/?$/, '');
+    const socket: Socket = io(`${socketUrl}/queue`, {
+      auth: { token: accessToken },
+      transports: ['websocket'],
+    });
+    const invalidate = () => queryClient.invalidateQueries({ queryKey: ['queue'] });
+    socket.on('queue:checked-in', invalidate);
+    socket.on('queue:updated', invalidate);
+    return () => {
+      socket.disconnect();
+    };
+  }, [accessToken, queryClient]);
 
   const today = format(new Date(), 'yyyy-MM-dd');
   const { data: patientAppointments } = useQuery({
