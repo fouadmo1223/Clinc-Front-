@@ -4,6 +4,13 @@ import * as React from 'react';
 import Lenis from 'lenis';
 import { ensureGsap, gsap, ScrollTrigger } from '@/lib/gsap';
 
+let activeLenis: Lenis | null = null;
+
+/** The live Lenis instance, if smooth scroll is active (null under prefers-reduced-motion). */
+export function getLenis(): Lenis | null {
+  return activeLenis;
+}
+
 /**
  * Drives the whole landing page's scroll physics: Lenis for the inertial feel,
  * synced into GSAP's ticker so every ScrollTrigger in the tree stays in lockstep
@@ -20,6 +27,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       smoothWheel: true,
       touchMultiplier: 1.4,
     });
+    activeLenis = lenis;
 
     lenis.on('scroll', ScrollTrigger.update);
 
@@ -32,6 +40,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     return () => {
       gs.ticker.remove(tick);
       lenis.destroy();
+      activeLenis = null;
     };
   }, []);
 

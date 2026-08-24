@@ -8,7 +8,8 @@ import { useLocale } from '@/lib/i18n/locale-context';
 import { publicApi } from '@/lib/public-api';
 import type { PublicClinic, PublicDoctor, Testimonial } from '@/types/domain';
 import { landingCopy } from '@/content/landing-copy';
-import { SmoothScrollProvider } from '@/components/landing/smooth-scroll-provider';
+import { ensureGsap, ScrollTrigger } from '@/lib/gsap';
+import { SmoothScrollProvider, getLenis } from '@/components/landing/smooth-scroll-provider';
 import { Nav } from '@/components/landing/sections/Nav';
 import { Hero } from '@/components/landing/sections/Hero';
 import { Trust } from '@/components/landing/sections/Trust';
@@ -35,6 +36,25 @@ export default function RootPage() {
   React.useEffect(() => {
     if (staffHasHydrated && staffAccessToken) router.replace('/dashboard');
   }, [staffHasHydrated, staffAccessToken, router]);
+
+  // Switching locale reflows the whole page (different text lengths, dir flip) and
+  // rebuilds each pinned section's own ScrollTrigger. If the user is scrolled into the
+  // middle of a pin when that happens, the new trigger gets created against a scroll
+  // position that no longer matches the new layout, corrupting the pin transform (the
+  // section renders far off-screen). Snapping to top before refreshing sidesteps that
+  // whole class of bug — refresh alone isn't enough to recover a mid-pin desync.
+  const isFirstRender = React.useRef(true);
+  React.useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    ensureGsap();
+    getLenis()?.scrollTo(0, { immediate: true });
+    window.scrollTo(0, 0);
+    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(id);
+  }, [locale]);
 
   const enabled = staffHasHydrated && !staffAccessToken;
 
