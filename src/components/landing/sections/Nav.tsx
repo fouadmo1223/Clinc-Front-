@@ -2,23 +2,55 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Stethoscope, Menu, X } from 'lucide-react';
+import { Stethoscope, Menu, X, LayoutDashboard, LogOut, ChevronDown } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { usePatientAuthStore } from '@/stores/patient-auth-store';
+import { useAuthStore } from '@/stores/auth-store';
+import { getDoctorGradient } from '../doctor-avatar';
 import type { LandingCopy } from '@/content/landing-copy';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { EASE } from '../primitives';
 
 const DEFAULT_CLINIC_SLUG = process.env.NEXT_PUBLIC_DEFAULT_CLINIC_SLUG ?? 'demo-clinic';
 
+function patientInitials(fullName: string): string {
+  return fullName
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join('')
+    .toUpperCase();
+}
+
 export function Nav({ copy, clinicName, staffLoginLabel }: { copy: LandingCopy['nav']; clinicName: string; staffLoginLabel: string }) {
-  const { locale, setLocale } = useLocale();
+  const { locale, setLocale, t } = useLocale();
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
   const patientToken = usePatientAuthStore((s) => s.accessToken);
   const patientClinicSlug = usePatientAuthStore((s) => s.clinicSlug);
+  const patient = usePatientAuthStore((s) => s.patient);
+  const clearPatientSession = usePatientAuthStore((s) => s.clear);
   const isPatientLoggedIn = !!patientToken && patientClinicSlug === DEFAULT_CLINIC_SLUG;
+
+  const staffToken = useAuthStore((s) => s.accessToken);
+  const staffUser = useAuthStore((s) => s.user);
+  const clearStaffSession = useAuthStore((s) => s.clear);
+  const isStaffLoggedIn = !!staffToken && !!staffUser;
+
+  const handlePatientLogout = () => {
+    clearPatientSession();
+    router.push('/');
+  };
+
+  const handleStaffLogout = () => {
+    clearStaffSession();
+    router.push('/');
+  };
 
   // Every pinned/scrubbed GSAP section on this page measures the DOM at setup time.
   // Rebuilding all of them in-place mid-session (in response to a locale change that
@@ -77,18 +109,74 @@ export function Nav({ copy, clinicName, staffLoginLabel }: { copy: LandingCopy['
           >
             {locale === 'ar' ? 'EN' : 'AR'}
           </button>
-          {isPatientLoggedIn ? (
-            <Link href={`/portal/${DEFAULT_CLINIC_SLUG}`} className="hidden sm:block">
-              <Button size="sm" className="rounded-full">
-                {copy.myDashboard}
-              </Button>
-            </Link>
+          {isPatientLoggedIn && patient ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="hidden items-center gap-1.5 rounded-full py-1 ps-1 pe-2 transition-colors hover:bg-secondary sm:flex"
+                >
+                  <span
+                    className={`flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-semibold text-white ${getDoctorGradient(patient.id)}`}
+                  >
+                    {patientInitials(patient.fullName)}
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.75} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <div className="truncate px-2.5 py-1.5 text-xs font-medium text-muted-foreground">{patient.fullName}</div>
+                <DropdownMenuItem onSelect={() => router.push(`/portal/${DEFAULT_CLINIC_SLUG}`)}>
+                  <LayoutDashboard className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  {copy.myDashboard}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={handlePatientLogout} className="text-destructive">
+                  <LogOut className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  {t.portal.logout}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : isStaffLoggedIn && staffUser ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="hidden items-center gap-1.5 rounded-full py-1 ps-1 pe-2 transition-colors hover:bg-secondary sm:flex"
+                >
+                  <span
+                    className={`flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br text-[10px] font-semibold text-white ${getDoctorGradient(staffUser.id)}`}
+                  >
+                    {patientInitials(staffUser.fullName)}
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.75} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <div className="truncate px-2.5 py-1.5 text-xs font-medium text-muted-foreground">{staffUser.fullName}</div>
+                <DropdownMenuItem onSelect={() => router.push('/dashboard')}>
+                  <LayoutDashboard className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  {copy.staffDashboard}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={handleStaffLogout} className="text-destructive">
+                  <LogOut className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  {t.common.logout}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
-            <Link href="/login" className="hidden sm:block">
-              <Button variant="outline" size="sm" className="rounded-full">
-                {staffLoginLabel}
-              </Button>
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="hidden rounded-full sm:inline-flex">
+                  {copy.logIn}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onSelect={() => router.push(`/portal/${DEFAULT_CLINIC_SLUG}/login`)}>
+                  {copy.patientLogin}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => router.push('/login')}>{staffLoginLabel}</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
           <button
             type="button"
@@ -130,16 +218,76 @@ export function Nav({ copy, clinicName, staffLoginLabel }: { copy: LandingCopy['
                   {l.label}
                 </motion.a>
               ))}
-              {isPatientLoggedIn ? (
-                <Link href={`/portal/${DEFAULT_CLINIC_SLUG}`} onClick={() => setOpen(false)}>
-                  <Button className="mt-4 rounded-full">{copy.myDashboard}</Button>
-                </Link>
+              {isPatientLoggedIn && patient ? (
+                <div className="mt-4 flex flex-col items-center gap-3">
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br text-sm font-semibold text-white ${getDoctorGradient(patient.id)}`}
+                  >
+                    {patientInitials(patient.fullName)}
+                  </div>
+                  <p className="text-sm font-medium">{patient.fullName}</p>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/portal/${DEFAULT_CLINIC_SLUG}`}
+                      onClick={() => setOpen(false)}
+                    >
+                      <Button size="sm" className="rounded-full">
+                        {copy.myDashboard}
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => {
+                        setOpen(false);
+                        handlePatientLogout();
+                      }}
+                    >
+                      {t.portal.logout}
+                    </Button>
+                  </div>
+                </div>
+              ) : isStaffLoggedIn && staffUser ? (
+                <div className="mt-4 flex flex-col items-center gap-3">
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br text-sm font-semibold text-white ${getDoctorGradient(staffUser.id)}`}
+                  >
+                    {patientInitials(staffUser.fullName)}
+                  </div>
+                  <p className="text-sm font-medium">{staffUser.fullName}</p>
+                  <div className="flex items-center gap-2">
+                    <Link href="/dashboard" onClick={() => setOpen(false)}>
+                      <Button size="sm" className="rounded-full">
+                        {copy.staffDashboard}
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => {
+                        setOpen(false);
+                        handleStaffLogout();
+                      }}
+                    >
+                      {t.common.logout}
+                    </Button>
+                  </div>
+                </div>
               ) : (
-                <Link href="/login" onClick={() => setOpen(false)}>
-                  <Button variant="outline" className="mt-4 rounded-full">
-                    {staffLoginLabel}
-                  </Button>
-                </Link>
+                <div className="mt-4 flex items-center gap-2">
+                  <Link href={`/portal/${DEFAULT_CLINIC_SLUG}/login`} onClick={() => setOpen(false)}>
+                    <Button size="sm" className="rounded-full">
+                      {copy.patientLogin}
+                    </Button>
+                  </Link>
+                  <Link href="/login" onClick={() => setOpen(false)}>
+                    <Button variant="outline" size="sm" className="rounded-full">
+                      {staffLoginLabel}
+                    </Button>
+                  </Link>
+                </div>
               )}
             </nav>
           </motion.div>

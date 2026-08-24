@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { FieldError } from '@/components/ui/field-error';
 
 type Method = 'phone' | 'email';
+type Mode = 'login' | 'register';
 
 export default function PatientPortalLoginPage() {
   const { t } = useLocale();
@@ -21,16 +22,29 @@ export default function PatientPortalLoginPage() {
   const searchParams = useSearchParams();
   const setSession = usePatientAuthStore((s) => s.setSession);
 
+  const [mode, setMode] = React.useState<Mode>('login');
   const [step, setStep] = React.useState<'identify' | 'code'>('identify');
   const [method, setMethod] = React.useState<Method>('phone');
+  const [fullName, setFullName] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [code, setCode] = React.useState('');
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const identifier = method === 'phone' ? phone : email;
-  const canSubmitIdentifier = method === 'phone' ? phone.trim().length >= 6 : /\S+@\S+\.\S+/.test(email);
+  const identifier = mode === 'register' ? phone : method === 'phone' ? phone : email;
+  const canSubmitIdentifier =
+    mode === 'register'
+      ? fullName.trim().length >= 2 && phone.trim().length >= 6 && (!email || /\S+@\S+\.\S+/.test(email))
+      : method === 'phone'
+        ? phone.trim().length >= 6
+        : /\S+@\S+\.\S+/.test(email);
+
+  const switchMode = (next: Mode) => {
+    setMode(next);
+    setMethod('phone');
+    setError(null);
+  };
 
   const requestCode = async () => {
     setError(null);
@@ -45,6 +59,27 @@ export default function PatientPortalLoginPage() {
     } catch {
       // Same generic outcome whether or not the phone/email exists — no enumeration signal to leak.
       setStep('code');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const registerAndRequestCode = async () => {
+    setError(null);
+    setSubmitting(true);
+    try {
+      await patientApi.post(
+        '/patient-portal/auth/register',
+        { clinicSlug: params.slug, fullName, phone, email: email || undefined },
+        { auth: false },
+      );
+      setStep('code');
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        setError(err.message.toLowerCase().includes('email') ? t.portal.emailTaken : t.portal.phoneTaken);
+      } else {
+        setError(err instanceof ApiError ? err.message : t.common.error);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -72,35 +107,39 @@ export default function PatientPortalLoginPage() {
   return (
     <AuthShell>
       <div className="mb-7 space-y-1.5">
-        <h1 className="text-xl font-semibold tracking-tight">{t.portal.title}</h1>
-        <p className="text-sm text-muted-foreground">{step === 'identify' ? t.portal.subtitle : t.portal.codeSentSubtitle}</p>
+        <h1 className="text-xl font-semibold tracking-tight">{mode === 'register' ? t.portal.createAccount : t.portal.title}</h1>
+        <p className="text-sm text-muted-foreground">
+          {step === 'code' ? t.portal.codeSentSubtitle : mode === 'register' ? t.portal.createAccountSubtitle : t.portal.subtitle}
+        </p>
       </div>
 
       {step === 'identify' ? (
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (canSubmitIdentifier) requestCode();
+            if (!canSubmitIdentifier) return;
+            if (mode === 'register') registerAndRequestCode();
+            else requestCode();
           }}
           className="space-y-4"
           noValidate
         >
-          {method === 'phone' ? (
+          {mode === 'register' && (
             <div className="space-y-1.5">
-              <Label htmlFor="phone">{t.portal.phone}</Label>
+              <Label htmlFor="fullName">{t.portal.fullName}</Label>
               <Input
-                id="phone"
-                type="tel"
-                dir="ltr"
-                className="text-start"
-                placeholder={t.portal.phonePlaceholder}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                autoComplete="tel"
+                id="fullName"
+                type="text"
+                placeholder={t.portal.fullNamePlaceholder}
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                autoComplete="name"
                 autoFocus
               />
             </div>
-          ) : (
+          )}
+
+          {mode === 'login' && method === 'email' ? (
             <div className="space-y-1.5">
               <Label htmlFor="email">{t.portal.email}</Label>
               <Input
@@ -115,17 +154,61 @@ export default function PatientPortalLoginPage() {
                 autoFocus
               />
             </div>
+          ) : (
+            <div className="space-y-1.5">
+              <Label htmlFor="phone">{t.portal.phone}</Label>
+              <Input
+                id="phone"
+                type="tel"
+                dir="ltr"
+                className="text-start"
+                placeholder={t.portal.phonePlaceholder}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                autoComplete="tel"
+                autoFocus={mode === 'login'}
+              />
+            </div>
           )}
+
+          {mode === 'register' && (
+            <div className="space-y-1.5">
+              <Label htmlFor="email">{t.portal.emailOptional}</Label>
+              <Input
+                id="email"
+                type="email"
+                dir="ltr"
+                className="text-start"
+                placeholder={t.portal.emailPlaceholder}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
+          )}
+
+          <FieldError>{error ?? undefined}</FieldError>
+
           <Button type="submit" className="w-full" loading={submitting} disabled={!canSubmitIdentifier}>
-            {t.portal.sendCode}
+            {mode === 'register' ? t.portal.signUp : t.portal.sendCode}
           </Button>
-          <button
-            type="button"
-            onClick={() => setMethod(method === 'phone' ? 'email' : 'phone')}
-            className="w-full text-center text-sm font-medium text-primary hover:underline"
-          >
-            {method === 'phone' ? t.portal.useEmailInstead : t.portal.usePhoneInstead}
-          </button>
+
+          {mode === 'login' && (
+            <button
+              type="button"
+              onClick={() => setMethod(method === 'phone' ? 'email' : 'phone')}
+              className="w-full text-center text-sm font-medium text-primary hover:underline"
+            >
+              {method === 'phone' ? t.portal.useEmailInstead : t.portal.usePhoneInstead}
+            </button>
+          )}
+
+          <p className="text-center text-sm text-muted-foreground">
+            {mode === 'register' ? t.portal.haveAccount : t.portal.newHere}{' '}
+            <button type="button" onClick={() => switchMode(mode === 'register' ? 'login' : 'register')} className="font-medium text-primary hover:underline">
+              {mode === 'register' ? t.portal.logIn : t.portal.signUp}
+            </button>
+          </p>
         </form>
       ) : (
         <form

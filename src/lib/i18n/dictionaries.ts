@@ -42,6 +42,17 @@ export interface Dictionary {
     reasonPlaceholder: string;
     backToDashboard: string;
     backToSite: string;
+    createAccount: string;
+    createAccountSubtitle: string;
+    fullName: string;
+    fullNamePlaceholder: string;
+    emailOptional: string;
+    haveAccount: string;
+    logIn: string;
+    newHere: string;
+    signUp: string;
+    phoneTaken: string;
+    emailTaken: string;
   };
   landing: {
     heroTitle: string;
@@ -621,6 +632,17 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reasonPlaceholder: 'e.g. Follow-up, general checkup…',
       backToDashboard: 'Back to dashboard',
       backToSite: 'Back to site',
+      createAccount: 'Create your account',
+      createAccountSubtitle: 'Just your name and phone — takes a minute.',
+      fullName: 'Full name',
+      fullNamePlaceholder: 'e.g. Sara Youssef',
+      emailOptional: 'Email (optional)',
+      haveAccount: 'Already have an account?',
+      logIn: 'Log in',
+      newHere: 'New here?',
+      signUp: 'Create an account',
+      phoneTaken: 'An account with this phone number already exists.',
+      emailTaken: 'An account with this email already exists.',
     },
     landing: {
       heroTitle: 'Book your visit in minutes',
@@ -1245,6 +1267,17 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reasonPlaceholder: 'مثال: متابعة، فحص عام…',
       backToDashboard: 'العودة للوحة التحكم',
       backToSite: 'العودة للموقع',
+      createAccount: 'إنشاء حسابك',
+      createAccountSubtitle: 'فقط اسمك ورقم هاتفك — يستغرق دقيقة واحدة.',
+      fullName: 'الاسم الكامل',
+      fullNamePlaceholder: 'مثال: سارة يوسف',
+      emailOptional: 'البريد الإلكتروني (اختياري)',
+      haveAccount: 'لديك حساب بالفعل؟',
+      logIn: 'تسجيل الدخول',
+      newHere: 'جديد هنا؟',
+      signUp: 'إنشاء حساب',
+      phoneTaken: 'يوجد حساب بهذا الرقم بالفعل.',
+      emailTaken: 'يوجد حساب بهذا البريد الإلكتروني بالفعل.',
     },
     landing: {
       heroTitle: 'احجز زيارتك في دقائق',

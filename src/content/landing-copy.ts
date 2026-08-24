@@ -5,7 +5,18 @@
  */
 
 export interface LandingCopy {
-  nav: { doctors: string; features: string; how: string; stories: string; faq: string; contact: string; myDashboard: string };
+  nav: {
+    doctors: string;
+    features: string;
+    how: string;
+    stories: string;
+    faq: string;
+    contact: string;
+    myDashboard: string;
+    logIn: string;
+    patientLogin: string;
+    staffDashboard: string;
+  };
   hero: {
     eyebrow: string;
     line1: string;
@@ -54,7 +65,18 @@ export interface LandingCopy {
 
 export const landingCopy: { en: LandingCopy; ar: LandingCopy } = {
   en: {
-    nav: { doctors: 'Doctors', features: 'Why us', how: 'How it works', stories: 'Stories', faq: 'FAQ', contact: 'Contact', myDashboard: 'My dashboard' },
+    nav: {
+      doctors: 'Doctors',
+      features: 'Why us',
+      how: 'How it works',
+      stories: 'Stories',
+      faq: 'FAQ',
+      contact: 'Contact',
+      myDashboard: 'My dashboard',
+      logIn: 'Log in',
+      patientLogin: 'Log in as a patient',
+      staffDashboard: 'Dashboard',
+    },
     hero: {
       eyebrow: 'Now booking online',
       line1: 'Healthcare,',
@@ -170,7 +192,18 @@ export const landingCopy: { en: LandingCopy; ar: LandingCopy } = {
     },
   },
   ar: {
-    nav: { doctors: 'الأطباء', features: 'لماذا نحن', how: 'كيف تعمل', stories: 'الآراء', faq: 'الأسئلة', contact: 'تواصل', myDashboard: 'لوحتي' },
+    nav: {
+      doctors: 'الأطباء',
+      features: 'لماذا نحن',
+      how: 'كيف تعمل',
+      stories: 'الآراء',
+      faq: 'الأسئلة',
+      contact: 'تواصل',
+      myDashboard: 'لوحتي',
+      logIn: 'تسجيل الدخول',
+      patientLogin: 'دخول كمريض',
+      staffDashboard: 'لوحة التحكم',
+    },
     hero: {
       eyebrow: 'الحجز الإلكتروني متاح الآن',
       line1: 'رعاية صحية،',
