@@ -32,7 +32,9 @@ export function Features({ copy, dir }: { copy: LandingCopy['features']; dir: 'l
 
       const getDistance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
 
-      if (isRtl) gsap.set(track, { x: () => -getDistance() });
+      // Always reset first — otherwise switching locale without a reload leaves the
+      // track at whatever x the previous direction's setup last applied.
+      gsap.set(track, { x: isRtl ? () => -getDistance() : 0 });
 
       const tween = gsap.to(track, {
         x: () => (isRtl ? 0 : -getDistance()),
