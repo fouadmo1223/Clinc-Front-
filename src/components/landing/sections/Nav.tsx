@@ -14,6 +14,15 @@ export function Nav({ copy, clinicName, staffLoginLabel }: { copy: LandingCopy['
   const [open, setOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
 
+  // Every pinned/scrubbed GSAP section on this page measures the DOM at setup time.
+  // Rebuilding all of them in-place mid-session (in response to a locale change that
+  // reflows the whole page) turned out to be too fragile to get fully right — a full
+  // reload re-runs every effect from a clean slate instead, which is simple and robust.
+  const toggleLocale = () => {
+    setLocale(locale === 'ar' ? 'en' : 'ar');
+    window.location.reload();
+  };
+
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -57,7 +66,7 @@ export function Nav({ copy, clinicName, staffLoginLabel }: { copy: LandingCopy['
         <div className="flex items-center gap-1.5">
           <button
             type="button"
-            onClick={() => setLocale(locale === 'ar' ? 'en' : 'ar')}
+            onClick={toggleLocale}
             className="hidden rounded-full px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary sm:block"
           >
             {locale === 'ar' ? 'EN' : 'AR'}
