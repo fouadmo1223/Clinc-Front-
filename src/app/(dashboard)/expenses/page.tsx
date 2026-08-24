@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Wallet, Trash2 } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { api, ApiError } from '@/lib/api';
-import type { Expense, ExpenseCategory, Branch } from '@/types/domain';
+import type { Expense, ExpenseCategory, Branch, PaginatedResult } from '@/types/domain';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,11 +35,13 @@ export default function ExpensesPage() {
 
   const [open, setOpen] = React.useState(false);
   const [form, setForm] = React.useState<ExpenseForm>(emptyForm());
+  const [page, setPage] = React.useState(1);
 
   const { data: branches } = useQuery({ queryKey: ['branches'], queryFn: () => api.get<Branch[]>('/branches') });
-  const { data: expenses, isLoading } = useQuery({
-    queryKey: ['expenses'],
-    queryFn: () => api.get<Expense[]>('/expenses'),
+  const { data, isLoading, isPlaceholderData } = useQuery({
+    queryKey: ['expenses', page],
+    queryFn: () => api.get<PaginatedResult<Expense> & { totalAmount: number }>(`/expenses?page=${page}&limit=50`),
+    placeholderData: (prev) => prev,
   });
 
   const openCreate = () => {
@@ -73,8 +75,8 @@ export default function ExpensesPage() {
     onError: () => toast.error(t.common.error),
   });
 
-  const items = expenses ?? [];
-  const total = items.reduce((sum, e) => sum + e.amount, 0);
+  const items = data?.items ?? [];
+  const totalAmount = data?.totalAmount ?? 0;
   const canCreate = !!form.branchId && !!form.description.trim() && Number(form.amount) > 0 && !!form.date;
 
   return (
@@ -90,7 +92,7 @@ export default function ExpensesPage() {
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+      <div className={`overflow-x-auto rounded-lg border border-border bg-surface ${isPlaceholderData ? 'opacity-60' : ''}`}>
         {isLoading ? (
           <TableSkeleton columns={5} />
         ) : items.length === 0 ? (
@@ -117,7 +119,12 @@ export default function ExpensesPage() {
                   <td>{expense.description}</td>
                   <td className="tabular-nums font-medium">{expense.amount.toFixed(2)}</td>
                   <td className="text-end">
-                    <Button variant="ghost" size="sm" onClick={() => deleteMutation.mutate(expense._id)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      aria-label={t.expenses.delete}
+                      onClick={() => deleteMutation.mutate(expense._id)}
+                    >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </td>
@@ -127,13 +134,29 @@ export default function ExpensesPage() {
             <tfoot>
               <tr>
                 <td colSpan={3} className="text-end font-medium">{t.expenses.total}</td>
-                <td className="tabular-nums font-semibold">{total.toFixed(2)}</td>
+                <td className="tabular-nums font-semibold">{totalAmount.toFixed(2)}</td>
                 <td />
               </tr>
             </tfoot>
           </table>
         )}
       </div>
+
+      {data && data.totalPages > 1 && (
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span>
+            {data.total} · {data.page}/{data.totalPages}
+          </span>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+              ‹
+            </Button>
+            <Button variant="outline" size="sm" disabled={page >= data.totalPages} onClick={() => setPage((p) => p + 1)}>
+              ›
+            </Button>
+          </div>
+        </div>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
