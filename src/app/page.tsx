@@ -35,6 +35,8 @@ import type { PublicClinic, PublicDoctor, Testimonial } from '@/types/domain';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DoctorAvatar } from '@/components/landing/doctor-avatar';
+import { PatientAvatar } from '@/components/landing/patient-avatar';
+import { HoverPeek } from '@/components/landing/hover-peek';
 import { toast } from '@/hooks/use-toast';
 
 const DEFAULT_CLINIC_SLUG = process.env.NEXT_PUBLIC_DEFAULT_CLINIC_SLUG ?? 'demo-clinic';
@@ -63,6 +65,17 @@ function Reveal({
     >
       {children}
     </motion.div>
+  );
+}
+
+function FloatingBlob({ className, delay = 0 }: { className?: string; delay?: number }) {
+  return (
+    <motion.div
+      aria-hidden
+      className={`pointer-events-none absolute -z-10 rounded-full blur-3xl ${className ?? ''}`}
+      animate={{ y: [0, -18, 0], x: [0, 10, 0] }}
+      transition={{ duration: 9, repeat: Infinity, repeatType: 'mirror', ease: EASE, delay }}
+    />
   );
 }
 
@@ -295,21 +308,23 @@ function DoctorCard({ doctor, index }: { doctor: PublicDoctor; index: number }) 
         <div className="flex items-center gap-3">
           <DoctorAvatar id={doctor.id} fullName={doctor.fullName} size="lg" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold">{doctor.fullName}</p>
-            <p className="truncate text-xs text-muted-foreground">{locale === 'ar' ? doctor.specialtyAr : doctor.specialty}</p>
+            <HoverPeek avatar={<DoctorAvatar id={doctor.id} fullName={doctor.fullName} size="md" />}>
+              <p className="truncate text-base font-semibold">{doctor.fullName}</p>
+            </HoverPeek>
+            <p className="truncate text-sm text-muted-foreground">{locale === 'ar' ? doctor.specialtyAr : doctor.specialty}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <Stars value={doctor.rating.average} />
-          <span className="text-xs text-muted-foreground">
+          <span className="text-sm text-muted-foreground">
             {doctor.rating.count > 0 ? t.landing.reviews(doctor.rating.count) : t.landing.noReviewsYet}
           </span>
         </div>
 
-        {doctor.bio && <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{doctor.bio}</p>}
+        {doctor.bio && <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">{doctor.bio}</p>}
 
-        <p className="text-sm font-medium">
+        <p className="text-base font-medium">
           {t.landing.startingFrom} <span className="text-primary">{doctor.consultationPrice}</span>
         </p>
 
@@ -355,7 +370,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between rounded-[1.15rem] bg-surface px-5 py-4 text-start"
       >
-        <span className="text-sm font-semibold">{q}</span>
+        <span className="text-base font-semibold">{q}</span>
         <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.4, ease: EASE }}>
           <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.5} />
         </motion.span>
@@ -369,7 +384,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
             transition={{ duration: 0.4, ease: EASE }}
             className="overflow-hidden rounded-b-[1.15rem] bg-surface"
           >
-            <p className="px-5 pb-4 text-sm leading-relaxed text-muted-foreground">{a}</p>
+            <p className="px-5 pb-4 text-base leading-relaxed text-muted-foreground">{a}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -437,6 +452,8 @@ export default function RootPage() {
               'radial-gradient(60% 50% at 50% 0%, hsl(var(--primary)/0.12), transparent), radial-gradient(40% 35% at 85% 20%, hsl(27 68% 48% / 0.10), transparent)',
           }}
         />
+        <FloatingBlob className="start-[6%] top-[18%] h-64 w-64 bg-primary/10" />
+        <FloatingBlob className="end-[8%] top-[55%] h-72 w-72 bg-accent/10" delay={1.5} />
         <div className="mx-auto max-w-3xl text-center">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }}>
             <Eyebrow>{t.landing.eyebrow}</Eyebrow>
@@ -445,7 +462,7 @@ export default function RootPage() {
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
-            className="mt-5 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl"
+            className="mt-5 text-5xl font-semibold tracking-tight text-foreground sm:text-6xl md:text-7xl"
           >
             {t.landing.heroTitle}
           </motion.h1>
@@ -453,7 +470,7 @@ export default function RootPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
-            className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground"
+            className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
           >
             {t.landing.heroSubtitle(clinicName)}
           </motion.p>
@@ -496,10 +513,10 @@ export default function RootPage() {
           ].map((s, i) => (
             <Reveal key={s.label} delay={i * 0.08}>
               <div className="flex flex-col items-center gap-1 rounded-[1.6rem] bg-surface px-4 py-6 text-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
-                <p className="text-2xl font-semibold tracking-tight text-primary sm:text-3xl">
+                <p className="text-3xl font-semibold tracking-tight text-primary sm:text-4xl">
                   {s.display ?? <AnimatedCounter value={s.value} suffix={s.suffix} />}
                 </p>
-                <p className="text-[11px] font-medium text-muted-foreground">{s.label}</p>
+                <p className="text-xs font-medium text-muted-foreground">{s.label}</p>
               </div>
             </Reveal>
           ))}
@@ -507,12 +524,13 @@ export default function RootPage() {
       </section>
 
       {/* ------------------------------------------------- How it works */}
-      <section className="px-4 py-24">
+      <section className="relative px-4 py-24">
+        <FloatingBlob className="end-[4%] top-4 h-56 w-56 bg-accent/10" />
         <div className="mx-auto max-w-5xl">
           <Reveal className="mx-auto max-w-xl text-center">
             <Eyebrow>{t.landing.howEyebrow}</Eyebrow>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.howTitle}</h2>
-            <p className="mt-3 text-sm text-muted-foreground">{t.landing.howSubtitle}</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">{t.landing.howTitle}</h2>
+            <p className="mt-3 text-base text-muted-foreground">{t.landing.howSubtitle}</p>
           </Reveal>
 
           <div className="relative mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -530,8 +548,8 @@ export default function RootPage() {
                       {i + 1}
                     </span>
                   </div>
-                  <h3 className="text-base font-semibold">{step.title}</h3>
-                  <p className="max-w-[220px] text-sm leading-relaxed text-muted-foreground">{step.desc}</p>
+                  <h3 className="text-lg font-semibold">{step.title}</h3>
+                  <p className="max-w-[240px] text-base leading-relaxed text-muted-foreground">{step.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -540,12 +558,13 @@ export default function RootPage() {
       </section>
 
       {/* -------------------------------------------------- Why choose us */}
-      <section className="px-4 py-24">
+      <section className="relative px-4 py-24">
+        <FloatingBlob className="start-[2%] bottom-8 h-64 w-64 bg-primary/10" delay={0.8} />
         <div className="mx-auto max-w-5xl">
           <Reveal className="mx-auto max-w-xl text-center">
             <Eyebrow>{t.landing.whyEyebrow}</Eyebrow>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.whyTitle}</h2>
-            <p className="mt-3 text-sm text-muted-foreground">{t.landing.whySubtitle}</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">{t.landing.whyTitle}</h2>
+            <p className="mt-3 text-base text-muted-foreground">{t.landing.whySubtitle}</p>
           </Reveal>
 
           <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -560,8 +579,8 @@ export default function RootPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <f.icon className="h-5 w-5" strokeWidth={1.5} />
                   </div>
-                  <h3 className="text-sm font-semibold">{f.title}</h3>
-                  <p className="text-xs leading-relaxed text-muted-foreground">{f.desc}</p>
+                  <h3 className="text-base font-semibold">{f.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -575,7 +594,7 @@ export default function RootPage() {
           <div className="mx-auto max-w-4xl text-center">
             <Reveal>
               <Eyebrow>{t.landing.specialtiesEyebrow}</Eyebrow>
-              <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">{t.landing.specialtiesTitle}</h2>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.specialtiesTitle}</h2>
             </Reveal>
             <div className="mt-8 flex flex-wrap justify-center gap-2.5">
               {specialties.map((s, i) => (
@@ -585,7 +604,7 @@ export default function RootPage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.05, ease: EASE }}
-                  className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium shadow-[0_2px_10px_-4px_rgba(15,23,42,0.1)]"
+                  className="rounded-full border border-border bg-surface px-4 py-2 text-base font-medium shadow-[0_2px_10px_-4px_rgba(15,23,42,0.1)]"
                 >
                   {s}
                 </motion.span>
@@ -601,7 +620,7 @@ export default function RootPage() {
           {topRated.length > 0 && (
             <div>
               <Reveal>
-                <h2 className="text-2xl font-semibold tracking-tight">{t.landing.mostRated}</h2>
+                <h2 className="text-3xl font-semibold tracking-tight">{t.landing.mostRated}</h2>
               </Reveal>
               <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {topRated.map((d, i) => (
@@ -613,7 +632,7 @@ export default function RootPage() {
 
           <div>
             <Reveal>
-              <h2 className="text-2xl font-semibold tracking-tight">{t.landing.ourDoctors}</h2>
+              <h2 className="text-3xl font-semibold tracking-tight">{t.landing.ourDoctors}</h2>
             </Reveal>
             {loadingDoctors ? (
               <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -635,12 +654,14 @@ export default function RootPage() {
       </section>
 
       {/* -------------------------------------------------- Testimonials */}
-      <section id="testimonials" className="overflow-hidden px-4 py-24">
+      <section id="testimonials" className="relative overflow-hidden px-4 py-24">
+        <FloatingBlob className="start-[6%] top-10 h-72 w-72 bg-primary/10" delay={0.4} />
+        <FloatingBlob className="end-[4%] bottom-0 h-56 w-56 bg-accent/10" delay={1.2} />
         <div className="mx-auto max-w-5xl">
           <Reveal className="mx-auto max-w-xl text-center">
             <Eyebrow>{t.landing.testimonialsEyebrow}</Eyebrow>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.testimonialsTitle}</h2>
-            <p className="mt-3 text-sm text-muted-foreground">{t.landing.testimonialsSubtitle}</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">{t.landing.testimonialsTitle}</h2>
+            <p className="mt-3 text-base text-muted-foreground">{t.landing.testimonialsSubtitle}</p>
           </Reveal>
 
           {!testimonials || testimonials.length === 0 ? (
@@ -651,12 +672,20 @@ export default function RootPage() {
                 <Reveal key={i} delay={(i % 3) * 0.1} className="rounded-[1.75rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5">
                   <div className="flex h-full flex-col gap-3 rounded-[1.4rem] bg-surface p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
                     <Stars value={tst.rating} size="md" />
-                    <p className="flex-1 text-sm leading-relaxed text-foreground">“{tst.comment}”</p>
+                    <p className="flex-1 text-base leading-relaxed text-foreground">“{tst.comment}”</p>
                     <div className="flex items-center gap-2 border-t border-border/60 pt-3">
-                      <DoctorAvatar id={tst.doctorName} fullName={tst.doctorName} size="sm" />
+                      <PatientAvatar id={tst.doctorName + tst.comment} size="sm" />
                       <div className="min-w-0">
-                        <p className="truncate text-xs font-semibold">{tst.doctorName}</p>
-                        <p className="truncate text-[11px] text-muted-foreground">
+                        <p className="truncate text-sm font-semibold">{t.landing.verifiedPatient}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {t.landing.reviewFor}{' '}
+                          <HoverPeek
+                            className="font-medium text-foreground"
+                            avatar={<DoctorAvatar id={tst.doctorName} fullName={tst.doctorName} size="md" />}
+                          >
+                            {tst.doctorName}
+                          </HoverPeek>
+                          {' · '}
                           {locale === 'ar' ? tst.doctorSpecialtyAr : tst.doctorSpecialty}
                         </p>
                       </div>
@@ -671,10 +700,11 @@ export default function RootPage() {
 
       {/* ------------------------------------------------------ Services */}
       {clinic && clinic.services.length > 0 && (
-        <section id="services" className="px-4 py-24">
+        <section id="services" className="relative px-4 py-24">
+          <FloatingBlob className="start-[10%] top-0 h-56 w-56 bg-accent/10" delay={0.6} />
           <div className="mx-auto max-w-4xl text-center">
             <Reveal>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t.landing.ourServices}</h2>
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.ourServices}</h2>
             </Reveal>
             <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {clinic.services.map((s, i) => (
@@ -682,7 +712,7 @@ export default function RootPage() {
                   <div className="flex flex-col items-center gap-2 rounded-[1.6rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5">
                     <div className="flex w-full flex-col items-center gap-2 rounded-[1.25rem] bg-surface px-4 py-6">
                       <Award className="h-5 w-5 text-primary" strokeWidth={1.5} />
-                      <span className="text-sm font-medium">{s}</span>
+                      <span className="text-base font-medium">{s}</span>
                     </div>
                   </div>
                 </Reveal>
@@ -693,11 +723,12 @@ export default function RootPage() {
       )}
 
       {/* ----------------------------------------------------------- FAQ */}
-      <section id="faq" className="px-4 py-24">
+      <section id="faq" className="relative px-4 py-24">
+        <FloatingBlob className="end-[6%] bottom-4 h-60 w-60 bg-primary/10" delay={1} />
         <div className="mx-auto max-w-2xl">
           <Reveal className="text-center">
             <Eyebrow>{t.landing.faqEyebrow}</Eyebrow>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.faqTitle}</h2>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">{t.landing.faqTitle}</h2>
           </Reveal>
           <div className="mt-10 space-y-3">
             {faqs.map((f, i) => (
@@ -714,8 +745,8 @@ export default function RootPage() {
         <div className="mx-auto max-w-4xl">
           <Reveal className="text-center">
             <Eyebrow>{t.landing.contactEyebrow}</Eyebrow>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.contactTitle}</h2>
-            <p className="mt-3 text-sm text-muted-foreground">{t.landing.contactSubtitle}</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">{t.landing.contactTitle}</h2>
+            <p className="mt-3 text-base text-muted-foreground">{t.landing.contactSubtitle}</p>
           </Reveal>
 
           <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -729,8 +760,8 @@ export default function RootPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <c.icon className="h-5 w-5" strokeWidth={1.5} />
                   </div>
-                  <p className="text-xs font-medium text-muted-foreground">{c.label}</p>
-                  <p className="text-sm font-semibold">{c.value}</p>
+                  <p className="text-sm font-medium text-muted-foreground">{c.label}</p>
+                  <p className="text-base font-semibold">{c.value}</p>
                 </div>
               </Reveal>
             ))}
@@ -747,8 +778,8 @@ export default function RootPage() {
               style={{ background: 'radial-gradient(60% 80% at 50% 0%, hsl(0 0% 100% / 0.12), transparent)' }}
             />
             <div className="relative">
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t.landing.ctaTitle}</h2>
-              <p className="mt-2 text-sm text-primary-foreground/80">{t.landing.ctaSubtitle}</p>
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t.landing.ctaTitle}</h2>
+              <p className="mt-2 text-base text-primary-foreground/80">{t.landing.ctaSubtitle}</p>
               <Link href={`/portal/${DEFAULT_CLINIC_SLUG}/login`}>
                 <button
                   type="button"

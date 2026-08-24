@@ -101,6 +101,8 @@ export interface Dictionary {
     testimonialsTitle: string;
     testimonialsSubtitle: string;
     testimonialsEmpty: string;
+    verifiedPatient: string;
+    reviewFor: string;
     faqEyebrow: string;
     faqTitle: string;
     faq1Q: string;
@@ -673,6 +675,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       testimonialsTitle: 'What our patients say',
       testimonialsSubtitle: 'Real feedback from real visits — every review here comes from a completed appointment.',
       testimonialsEmpty: 'Be the first to share your experience after your next visit.',
+      verifiedPatient: 'Verified patient',
+      reviewFor: 'Review for',
       faqEyebrow: 'Good to know',
       faqTitle: 'Frequently asked questions',
       faq1Q: 'Do I need an account to book?',
@@ -1290,6 +1294,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       testimonialsTitle: 'ماذا يقول مرضانا',
       testimonialsSubtitle: 'آراء حقيقية من زيارات فعلية — كل تقييم هنا من موعد مكتمل.',
       testimonialsEmpty: 'كن أول من يشارك تجربته بعد زيارتك القادمة.',
+      verifiedPatient: 'مريض موثّق',
+      reviewFor: 'تقييم لـ',
       faqEyebrow: 'معلومات مفيدة',
       faqTitle: 'الأسئلة الشائعة',
       faq1Q: 'هل أحتاج إلى حساب للحجز؟',
