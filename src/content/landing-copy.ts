@@ -5,7 +5,7 @@
  */
 
 export interface LandingCopy {
-  nav: { doctors: string; features: string; how: string; stories: string; faq: string; contact: string };
+  nav: { doctors: string; features: string; how: string; stories: string; faq: string; contact: string; myDashboard: string };
   hero: {
     eyebrow: string;
     line1: string;
@@ -35,7 +35,15 @@ export interface LandingCopy {
     cta: string;
   };
   features: { eyebrow: string; title: string; subtitle: string; items: { title: string; desc: string }[] };
-  showcase: { eyebrow: string; title: string; body: string; cta: string; specialtiesLabel: string };
+  showcase: { eyebrow: string; title: string; body: string; cta: string; specialtiesLabel: string; viewAll: string };
+  doctorsPage: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    allFilter: string;
+    resultsCount: (n: number) => string;
+    noResults: string;
+  };
   how: { eyebrow: string; title: string; subtitle: string; steps: { title: string; desc: string }[] };
   visualBreak: { title1: string; title2: string; subtitle: string };
   benefits: { eyebrow: string; title: string; body: string };
@@ -46,7 +54,7 @@ export interface LandingCopy {
 
 export const landingCopy: { en: LandingCopy; ar: LandingCopy } = {
   en: {
-    nav: { doctors: 'Doctors', features: 'Why us', how: 'How it works', stories: 'Stories', faq: 'FAQ', contact: 'Contact' },
+    nav: { doctors: 'Doctors', features: 'Why us', how: 'How it works', stories: 'Stories', faq: 'FAQ', contact: 'Contact', myDashboard: 'My dashboard' },
     hero: {
       eyebrow: 'Now booking online',
       line1: 'Healthcare,',
@@ -109,6 +117,15 @@ export const landingCopy: { en: LandingCopy; ar: LandingCopy } = {
       body: 'This is the actual booking screen our patients use — no mockup. Every rating below comes from a completed visit.',
       cta: 'Book now',
       specialtiesLabel: 'Specialties available',
+      viewAll: 'View all doctors',
+    },
+    doctorsPage: {
+      eyebrow: 'Our doctors',
+      title: 'Every specialist, in one place.',
+      subtitle: 'Filter by specialty, compare ratings and prices, and book directly.',
+      allFilter: 'All',
+      resultsCount: (n) => `${n} doctor${n === 1 ? '' : 's'}`,
+      noResults: 'No doctors match this specialty right now.',
     },
     how: {
       eyebrow: 'The journey',
@@ -153,7 +170,7 @@ export const landingCopy: { en: LandingCopy; ar: LandingCopy } = {
     },
   },
   ar: {
-    nav: { doctors: 'الأطباء', features: 'لماذا نحن', how: 'كيف تعمل', stories: 'الآراء', faq: 'الأسئلة', contact: 'تواصل' },
+    nav: { doctors: 'الأطباء', features: 'لماذا نحن', how: 'كيف تعمل', stories: 'الآراء', faq: 'الأسئلة', contact: 'تواصل', myDashboard: 'لوحتي' },
     hero: {
       eyebrow: 'الحجز الإلكتروني متاح الآن',
       line1: 'رعاية صحية،',
@@ -215,6 +232,15 @@ export const landingCopy: { en: LandingCopy; ar: LandingCopy } = {
       body: 'هذه هي شاشة الحجز الفعلية التي يستخدمها مرضانا — وليست نموذجًا. كل تقييم أدناه من زيارة مكتملة فعليًا.',
       cta: 'احجز الآن',
       specialtiesLabel: 'التخصصات المتاحة',
+      viewAll: 'عرض كل الأطباء',
+    },
+    doctorsPage: {
+      eyebrow: 'أطباؤنا',
+      title: 'كل التخصصات، في مكان واحد.',
+      subtitle: 'صفِّ حسب التخصص، قارن التقييمات والأسعار، واحجز مباشرةً.',
+      allFilter: 'الكل',
+      resultsCount: (n) => `${n} ${n === 1 ? 'طبيب' : 'أطباء'}`,
+      noResults: 'لا يوجد أطباء لهذا التخصص حاليًا.',
     },
     how: {
       eyebrow: 'الرحلة',

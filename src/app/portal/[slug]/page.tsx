@@ -63,10 +63,10 @@ export default function PatientPortalDashboardPage() {
   return (
     <div className="min-h-screen bg-secondary/30">
       <header className="flex items-center justify-between border-b border-border bg-surface px-4 py-3 md:px-8">
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2" title={t.portal.backToSite}>
           <Stethoscope className="h-4.5 w-4.5 text-primary" />
           <span className="text-sm font-semibold">{patient.clinicName}</span>
-        </div>
+        </Link>
         <div className="flex items-center gap-2">
           <button
             type="button"

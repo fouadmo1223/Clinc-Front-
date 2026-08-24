@@ -41,6 +41,7 @@ export interface Dictionary {
     reasonOptional: string;
     reasonPlaceholder: string;
     backToDashboard: string;
+    backToSite: string;
   };
   landing: {
     heroTitle: string;
@@ -619,6 +620,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reasonOptional: 'Reason for visit (optional)',
       reasonPlaceholder: 'e.g. Follow-up, general checkup…',
       backToDashboard: 'Back to dashboard',
+      backToSite: 'Back to site',
     },
     landing: {
       heroTitle: 'Book your visit in minutes',
@@ -1242,6 +1244,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reasonOptional: 'سبب الزيارة (اختياري)',
       reasonPlaceholder: 'مثال: متابعة، فحص عام…',
       backToDashboard: 'العودة للوحة التحكم',
+      backToSite: 'العودة للموقع',
     },
     landing: {
       heroTitle: 'احجز زيارتك في دقائق',

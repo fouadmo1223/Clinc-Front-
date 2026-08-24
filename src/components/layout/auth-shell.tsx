@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { Stethoscope } from 'lucide-react';
 
@@ -18,12 +19,12 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
             backgroundSize: '18px 18px',
           }}
         />
-        <div className="relative flex items-center gap-2.5">
+        <Link href="/" className="relative flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary-foreground/10">
             <Stethoscope className="h-4.5 w-4.5" strokeWidth={1.75} />
           </div>
           <span className="text-[15px] font-semibold tracking-tight">{t.app.name}</span>
-        </div>
+        </Link>
 
         <div className="relative max-w-xs space-y-3">
           <p className="text-2xl font-medium leading-snug tracking-tight">{t.app.tagline}</p>

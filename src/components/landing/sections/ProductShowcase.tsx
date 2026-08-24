@@ -1,11 +1,15 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ArrowUpRight } from 'lucide-react';
 import type { LandingCopy } from '@/content/landing-copy';
 import type { PublicDoctor } from '@/types/domain';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DoctorCard } from '../doctor-card';
 import { EASE, Eyebrow } from '../primitives';
+
+const PREVIEW_COUNT = 6;
 
 export function ProductShowcase({
   copy,
@@ -35,9 +39,13 @@ export function ProductShowcase({
           <div className="mt-8 flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.specialtiesLabel}</span>
             {specialties.map((s) => (
-              <span key={s} className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-medium">
+              <Link
+                key={s}
+                href={`/our-doctors?specialty=${encodeURIComponent(s)}`}
+                className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-medium transition-colors hover:border-primary/40 hover:text-primary"
+              >
                 {s}
-              </span>
+              </Link>
             ))}
           </div>
         )}
@@ -72,9 +80,21 @@ export function ProductShowcase({
                 <p className="py-10 text-center text-sm text-muted-foreground">—</p>
               ) : (
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {doctors.map((d, i) => (
+                  {doctors.slice(0, PREVIEW_COUNT).map((d, i) => (
                     <DoctorCard key={d.id} doctor={d} index={i} />
                   ))}
+                </div>
+              )}
+
+              {doctors.length > PREVIEW_COUNT && (
+                <div className="mt-8 flex justify-center">
+                  <Link
+                    href="/our-doctors"
+                    className="group inline-flex items-center gap-2 rounded-full border border-border bg-surface px-5 py-2.5 text-sm font-semibold transition-colors hover:border-primary/40 hover:text-primary"
+                  >
+                    {copy.viewAll}
+                    <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5" strokeWidth={2} />
+                  </Link>
                 </div>
               )}
             </div>

@@ -2,8 +2,9 @@
 
 import * as React from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Stethoscope } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { patientApi } from '@/lib/patient-api';
 import { ApiError } from '@/lib/api';
@@ -89,7 +90,11 @@ export default function PatientPortalBookPage() {
 
   return (
     <div className="min-h-screen bg-secondary/30">
-      <header className="border-b border-border bg-surface px-4 py-3 md:px-8">
+      <header className="flex items-center justify-between border-b border-border bg-surface px-4 py-3 md:px-8">
+        <Link href="/" className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
+          <Stethoscope className="h-4 w-4" />
+          {t.portal.backToSite}
+        </Link>
         <button
           type="button"
           onClick={() => router.push(`/portal/${params.slug}`)}
