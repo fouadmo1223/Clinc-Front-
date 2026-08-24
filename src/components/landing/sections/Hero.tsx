@@ -61,17 +61,9 @@ export function Hero({ copy, clinicName, address, city, doctors, ratingValue, ra
 
       <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 items-end gap-16 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: EASE }}
-            className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-primary"
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            {copy.eyebrow}
-          </motion.div>
+        
 
-          <h1 className="font-semibold leading-[0.95] tracking-tight text-foreground">
+          <h1 className="font-semibold leading-[60px]  tracking-tight text-foreground">
             {lines.map((line, i) => (
               <span key={i} className="block overflow-hidden">
                 <motion.span
@@ -79,7 +71,7 @@ export function Hero({ copy, clinicName, address, city, doctors, ratingValue, ra
                   initial="hidden"
                   animate="visible"
                   variants={LINE_VARIANTS}
-                  className="block text-6xl sm:text-7xl lg:text-[6.5rem] lg:leading-[0.92]"
+                  className="block text-5xl leading-[60px] sm:text-6xl lg:text-[6.5rem] lg:leading-[120px]"
                 >
                   {line}
                 </motion.span>
@@ -146,6 +138,8 @@ export function Hero({ copy, clinicName, address, city, doctors, ratingValue, ra
             nextAvailableLabel={copy.badgeAvailable}
             nextAvailableValue=""
             verifiedLabel={copy.badgeVerified}
+            slotsLabel={copy.slotsLabel}
+            doctorsOnlineLabel={copy.doctorsOnlineLabel}
           />
         </motion.div>
       </div>

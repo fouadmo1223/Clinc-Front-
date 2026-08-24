@@ -1,11 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { CalendarCheck2, ShieldCheck, TrendingUp } from 'lucide-react';
+import { CalendarCheck2, ShieldCheck, TrendingUp, Clock3 } from 'lucide-react';
 import { DoctorAvatar } from './doctor-avatar';
 import { HeroIllustration } from './illustrations';
 
 const EASE = [0.32, 0.72, 0, 1] as const;
+const SLOT_TIMES = ['09:00', '11:30', '14:00'];
 
 interface HeroVisualDoctor {
   id: string;
@@ -24,6 +25,8 @@ export function HeroVisual({
   nextAvailableLabel,
   nextAvailableValue,
   verifiedLabel,
+  slotsLabel,
+  doctorsOnlineLabel,
 }: {
   doctors: HeroVisualDoctor[];
   ratingLabel: string;
@@ -31,6 +34,8 @@ export function HeroVisual({
   nextAvailableLabel: string;
   nextAvailableValue: string;
   verifiedLabel: string;
+  slotsLabel: string;
+  doctorsOnlineLabel: string;
 }) {
   const stackDoctors = doctors.slice(0, 4);
 
@@ -62,7 +67,7 @@ export function HeroVisual({
         initial={{ opacity: 0, y: 30, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.9, ease: EASE }}
-        className="absolute inset-x-0 bottom-0 top-[35%] z-10 flex flex-col justify-between rounded-[2rem] bg-white/70 p-6 shadow-[0_30px_80px_-25px_rgba(15,23,42,0.35)] ring-1 ring-white/70 backdrop-blur-2xl"
+        className="absolute inset-x-0 bottom-0 top-[35%] z-10 flex flex-col justify-between gap-4 overflow-y-auto rounded-[2rem] bg-white/70 p-6 shadow-[0_30px_80px_-25px_rgba(15,23,42,0.35)] ring-1 ring-white/70 backdrop-blur-2xl"
       >
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary">
@@ -72,24 +77,47 @@ export function HeroVisual({
           <span className="text-xs font-medium text-muted-foreground">{nextAvailableValue}</span>
         </div>
 
-        <div className="flex items-center">
-          {stackDoctors.length > 0 ? (
-            stackDoctors.map((d, i) => (
-              <div key={d.id} style={{ marginInlineStart: i === 0 ? 0 : -14, zIndex: stackDoctors.length - i }} className="ring-2 ring-white rounded-full">
-                <DoctorAvatar id={d.id} fullName={d.fullName} size="md" />
-              </div>
-            ))
-          ) : (
-            <div className="h-14 w-14 animate-pulse rounded-full bg-black/10" />
-          )}
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{slotsLabel}</p>
+          <div className="mt-2.5 flex flex-wrap gap-2">
+            {SLOT_TIMES.map((time, i) => (
+              <span
+                key={time}
+                dir="ltr"
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums ${
+                  i === 0 ? 'bg-primary text-primary-foreground' : 'bg-primary/[0.07] text-foreground'
+                }`}
+              >
+                <Clock3 className="h-3 w-3" strokeWidth={1.75} />
+                {time}
+              </span>
+            ))}
+          </div>
         </div>
 
         <div>
-          <div className="flex items-baseline gap-1.5">
-            <TrendingUp className="h-4 w-4 text-accent" strokeWidth={1.75} />
-            <span className="text-2xl font-semibold tracking-tight text-foreground">{ratingValue}</span>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{doctorsOnlineLabel}</p>
+          <div className="mt-2.5 flex items-center">
+            {stackDoctors.length > 0 ? (
+              stackDoctors.map((d, i) => (
+                <div key={d.id} style={{ marginInlineStart: i === 0 ? 0 : -14, zIndex: stackDoctors.length - i }} className="rounded-full ring-2 ring-white">
+                  <DoctorAvatar id={d.id} fullName={d.fullName} size="md" />
+                </div>
+              ))
+            ) : (
+              <div className="h-14 w-14 animate-pulse rounded-full bg-black/10" />
+            )}
           </div>
-          <p className="mt-0.5 text-xs text-muted-foreground">{ratingLabel}</p>
+        </div>
+
+        <div className="flex items-end justify-between border-t border-black/5 pt-4">
+          <div>
+            <div className="flex items-baseline gap-1.5">
+              <TrendingUp className="h-4 w-4 text-accent" strokeWidth={1.75} />
+              <span className="text-2xl font-semibold tracking-tight text-foreground">{ratingValue}</span>
+            </div>
+            <p className="mt-0.5 text-xs text-muted-foreground">{ratingLabel}</p>
+          </div>
         </div>
       </motion.div>
 

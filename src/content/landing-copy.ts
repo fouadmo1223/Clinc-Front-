@@ -16,6 +16,9 @@ export interface LandingCopy {
     ctaSecondary: string;
     badgeAvailable: string;
     badgeVerified: string;
+    slotsLabel: string;
+    doctorsOnlineLabel: string;
+    noWaitBadge: string;
   };
   trust: { label: string; stat1: string; stat2: string; stat3: string; stat4: string };
   problem: {
@@ -55,6 +58,9 @@ export const landingCopy: { en: LandingCopy; ar: LandingCopy } = {
       ctaSecondary: 'Meet our doctors',
       badgeAvailable: 'Next slot',
       badgeVerified: 'Verified clinic',
+      slotsLabel: 'Today’s open slots',
+      doctorsOnlineLabel: 'Doctors online now',
+      noWaitBadge: 'No waiting room',
     },
     trust: {
       label: 'Trusted by patients across every specialty we offer',
@@ -158,6 +164,9 @@ export const landingCopy: { en: LandingCopy; ar: LandingCopy } = {
       ctaSecondary: 'تعرّف على أطبائنا',
       badgeAvailable: 'أقرب موعد',
       badgeVerified: 'عيادة موثّقة',
+      slotsLabel: 'مواعيد اليوم المتاحة',
+      doctorsOnlineLabel: 'أطباء متصلون الآن',
+      noWaitBadge: 'بدون غرفة انتظار',
     },
     trust: {
       label: 'موثوق به من المرضى في كل تخصص نقدّمه',

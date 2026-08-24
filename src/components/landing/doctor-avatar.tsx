@@ -22,6 +22,11 @@ function hashString(input: string): number {
   return Math.abs(hash);
 }
 
+/** Same deterministic gradient a doctor's avatar uses — for cards that want a matching accent. */
+export function getDoctorGradient(id: string): string {
+  return GRADIENTS[hashString(id) % GRADIENTS.length];
+}
+
 function initials(fullName: string): string {
   const parts = fullName.replace(/^Dr\.?\s*/i, '').trim().split(/\s+/);
   return parts

@@ -84,7 +84,7 @@ export default function RootPage() {
 
   return (
     <SmoothScrollProvider>
-      <div className="min-h-screen overflow-x-hidden bg-background">
+      <div className="min-h-screen bg-background">
         <Nav copy={copy.nav} clinicName={clinicName} staffLoginLabel={copy.footer.staffLogin} />
 
         <Hero

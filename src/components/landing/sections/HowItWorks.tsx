@@ -92,7 +92,7 @@ export function HowItWorks({ copy }: { copy: LandingCopy['how'] }) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-24 lg:gap-32">
+          <div className="flex flex-col gap-24 lg:gap-0">
             {copy.steps.map((step, i) => {
               const Illustration = ILLUSTRATIONS[i] ?? ILLUSTRATIONS[0];
               return (
@@ -101,7 +101,7 @@ export function HowItWorks({ copy }: { copy: LandingCopy['how'] }) {
                   ref={(el) => {
                     stepRefs.current[i] = el;
                   }}
-                  className="transition-opacity duration-500"
+                  className="transition-opacity duration-500 lg:flex lg:min-h-[70vh] lg:flex-col lg:justify-center"
                   style={{ opacity: active === i ? 1 : 0.45 }}
                 >
                   <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/[0.07] lg:hidden">
