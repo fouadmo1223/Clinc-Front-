@@ -118,13 +118,13 @@ export function DoctorCard({ doctor, index }: { doctor: PublicDoctor; index: num
         <div className="flex flex-col gap-3 px-5 pb-5 pt-3">
           <div className="min-w-0">
             <HoverPeek avatar={<DoctorAvatar id={doctor.id} fullName={doctor.fullName} size="md" />}>
-              <p className="truncate text-base font-semibold">{doctor.fullName}</p>
+              <p className="truncate text-lg font-semibold">{doctor.fullName}</p>
             </HoverPeek>
-            <p className="truncate text-sm text-muted-foreground">{locale === 'ar' ? doctor.specialtyAr : doctor.specialty}</p>
+            <p className="truncate text-base text-muted-foreground">{locale === 'ar' ? doctor.specialtyAr : doctor.specialty}</p>
           </div>
 
           <div className="flex items-center gap-2">
-            <Stars value={doctor.rating.average} />
+            <Stars value={doctor.rating.average} size="md" />
             <span className="text-sm text-muted-foreground">
               {doctor.rating.count > 0 ? t.landing.reviews(doctor.rating.count) : t.landing.noReviewsYet}
             </span>
@@ -132,7 +132,7 @@ export function DoctorCard({ doctor, index }: { doctor: PublicDoctor; index: num
 
           {doctor.bio && <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">{doctor.bio}</p>}
 
-          <p className="text-base font-medium">
+          <p className="text-lg font-medium">
             {t.landing.startingFrom} <span className="text-primary">{doctor.consultationPrice}</span>
           </p>
 
@@ -140,12 +140,12 @@ export function DoctorCard({ doctor, index }: { doctor: PublicDoctor; index: num
             <button
               type="button"
               onClick={handleBook}
-              className="group/btn relative flex flex-1 items-center justify-between overflow-hidden rounded-full bg-primary py-1.5 ps-4 pe-1.5 text-xs font-semibold text-primary-foreground transition-[transform,box-shadow] duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-12px_hsl(var(--primary)/0.6)] active:scale-[0.98] active:translate-y-0"
+              className="group/btn relative flex flex-1 items-center justify-between overflow-hidden rounded-full bg-primary py-2.5 ps-5 pe-2 text-sm font-semibold text-primary-foreground transition-[transform,box-shadow] duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-12px_hsl(var(--primary)/0.6)] active:scale-[0.98] active:translate-y-0"
             >
-              <span className="pointer-events-none absolute inset-0 origin-center scale-0 rounded-full bg-white/10 transition-transform duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] group-hover/btn:scale-100" />
+              <span className="pointer-events-none absolute inset-y-0 start-0 w-1/3 -skew-x-12 bg-white/25 blur-md transition-transform duration-700 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] -translate-x-[220%] rtl:translate-x-[220%] group-hover/btn:translate-x-[420%] rtl:group-hover/btn:-translate-x-[420%]" />
               <span className="relative">{t.landing.bookNow}</span>
-              <span className="relative flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition-all duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 group-hover/btn:bg-white/25 rtl:group-hover/btn:-translate-x-0.5">
-                <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
+              <span className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white/15 transition-all duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 group-hover/btn:bg-white/25 rtl:group-hover/btn:-translate-x-0.5">
+                <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
               </span>
             </button>
             {isLoggedInHere && (

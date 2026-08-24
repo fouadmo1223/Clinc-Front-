@@ -44,15 +44,15 @@ export function HowItWorks({ copy }: { copy: LandingCopy['how'] }) {
       <div className="mx-auto max-w-[1400px]">
         <div className="max-w-xl">
           <Eyebrow>{copy.eyebrow}</Eyebrow>
-          <h2 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">{copy.title}</h2>
-          <p className="mt-3 text-lg text-muted-foreground">{copy.subtitle}</p>
+          <h2 className="mt-6 text-5xl font-semibold tracking-tight sm:text-6xl">{copy.title}</h2>
+          <p className="mt-4 text-xl text-muted-foreground">{copy.subtitle}</p>
         </div>
 
         <div className="mt-16 grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="relative hidden lg:block">
             <div className="sticky top-32 flex items-center gap-6">
               {/* Progress rail: one dot per step, filled up to the active step */}
-              <div className="relative flex h-72 w-2 shrink-0 flex-col items-center justify-between rounded-full bg-border/60">
+              <div className="relative flex h-80 w-2 shrink-0 flex-col items-center justify-between rounded-full bg-border/60">
                 <motion.div
                   className="absolute inset-x-0 top-0 rounded-full bg-primary"
                   animate={{ height: `${((active + 1) / copy.steps.length) * 100}%` }}
@@ -68,7 +68,7 @@ export function HowItWorks({ copy }: { copy: LandingCopy['how'] }) {
               </div>
 
               {/* Single crossfading illustration tied to the active step */}
-              <div className="relative flex h-72 w-72 items-center justify-center rounded-[2rem] border border-border bg-surface shadow-[0_20px_50px_-20px_rgba(15,23,42,0.15)]">
+              <div className="relative flex h-80 w-80 items-center justify-center rounded-[2rem] border border-border bg-surface shadow-[0_20px_50px_-20px_rgba(15,23,42,0.15)]">
                 <AnimatePresence mode="wait">
                   {(() => {
                     const Illustration = ILLUSTRATIONS[active] ?? ILLUSTRATIONS[0];
@@ -80,12 +80,12 @@ export function HowItWorks({ copy }: { copy: LandingCopy['how'] }) {
                         exit={{ opacity: 0, scale: 0.85 }}
                         transition={{ duration: 0.4, ease: EASE }}
                       >
-                        <Illustration className="h-40 w-40" />
+                        <Illustration className="h-48 w-48" />
                       </motion.div>
                     );
                   })()}
                 </AnimatePresence>
-                <span className="absolute bottom-5 text-xs font-semibold tabular-nums text-muted-foreground">
+                <span className="absolute bottom-5 text-sm font-semibold tabular-nums text-muted-foreground">
                   {String(active + 1).padStart(2, '0')} / {String(copy.steps.length).padStart(2, '0')}
                 </span>
               </div>
@@ -104,12 +104,12 @@ export function HowItWorks({ copy }: { copy: LandingCopy['how'] }) {
                   className="transition-opacity duration-500 lg:flex lg:min-h-[70vh] lg:flex-col lg:justify-center"
                   style={{ opacity: active === i ? 1 : 0.45 }}
                 >
-                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/[0.07] lg:hidden">
-                    <Illustration className="h-11 w-11" />
+                  <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/[0.07] lg:hidden">
+                    <Illustration className="h-14 w-14" />
                   </div>
-                  <span className="text-sm font-semibold tabular-nums text-accent">{String(i + 1).padStart(2, '0')}</span>
-                  <h3 className="mt-2 text-2xl font-semibold sm:text-3xl">{step.title}</h3>
-                  <p className="mt-3 max-w-md text-base leading-relaxed text-muted-foreground">{step.desc}</p>
+                  <span className="text-lg font-bold tabular-nums text-accent">{String(i + 1).padStart(2, '0')}</span>
+                  <h3 className="mt-3 text-4xl font-semibold sm:text-5xl">{step.title}</h3>
+                  <p className="mt-4 max-w-md text-xl leading-relaxed text-muted-foreground">{step.desc}</p>
                 </div>
               );
             })}

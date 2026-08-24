@@ -10,13 +10,17 @@ import { FeatureGlyph } from '../illustrations';
 /**
  * Vertical scroll drives a pinned, horizontally-scrubbed feature rail (GSAP
  * ScrollTrigger). The track itself is forced dir="ltr" so the translate math
- * stays simple regardless of page direction; each card's own text still
- * renders in the active locale's reading direction.
+ * stays simple regardless of page direction. To still read correctly in
+ * Arabic — card 01 starting at the right, revealing 02/03/... toward the
+ * left as the user scrolls — the render order is reversed and the tween
+ * runs in the opposite direction (starts fully offset, animates back to 0)
+ * for RTL instead of flipping the whole subtree's direction.
  */
 export function Features({ copy, dir }: { copy: LandingCopy['features']; dir: 'ltr' | 'rtl' }) {
   const sectionRef = React.useRef<HTMLElement>(null);
   const viewportRef = React.useRef<HTMLDivElement>(null);
   const trackRef = React.useRef<HTMLDivElement>(null);
+  const isRtl = dir === 'rtl';
 
   useGSAP(
     () => {
@@ -28,8 +32,10 @@ export function Features({ copy, dir }: { copy: LandingCopy['features']; dir: 'l
 
       const getDistance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
 
+      if (isRtl) gsap.set(track, { x: () => -getDistance() });
+
       const tween = gsap.to(track, {
-        x: () => -getDistance(),
+        x: () => (isRtl ? 0 : -getDistance()),
         ease: 'none',
         scrollTrigger: {
           trigger: section,
@@ -46,8 +52,10 @@ export function Features({ copy, dir }: { copy: LandingCopy['features']; dir: 'l
         tween.kill();
       };
     },
-    { scope: sectionRef },
+    { scope: sectionRef, dependencies: [isRtl] },
   );
+
+  const orderedItems = isRtl ? [...copy.items].map((item, i) => ({ item, i })).reverse() : copy.items.map((item, i) => ({ item, i }));
 
   return (
     <section id="features" ref={sectionRef} className="relative overflow-hidden py-28">
@@ -59,7 +67,7 @@ export function Features({ copy, dir }: { copy: LandingCopy['features']; dir: 'l
 
       <div ref={viewportRef} className="mt-16 overflow-hidden" dir="ltr">
         <div ref={trackRef} className="flex w-max gap-6 px-5 sm:px-8 lg:px-14">
-          {copy.items.map((f, i) => (
+          {orderedItems.map(({ item: f, i }) => (
             <div
               key={f.title}
               dir={dir}

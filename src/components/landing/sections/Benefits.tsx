@@ -33,57 +33,65 @@ export function Benefits({
           <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{copy.body}</p>
         </div>
 
-        <div className="relative mt-20 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-12">
+        <div className="relative mt-20 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
+            whileHover={{ y: -4 }}
             transition={{ duration: 0.8, ease: EASE }}
             className="sm:col-span-7"
           >
+            <span className="mb-3 block h-1.5 w-10 rounded-full bg-primary" />
             <p className="text-[5.5rem] font-semibold leading-none tracking-tight text-primary sm:text-[8rem]">
               {avgRating > 0 ? avgRating.toFixed(1) : '—'}
             </p>
-            <p className="mt-2 text-sm font-medium text-muted-foreground">{ratingLabel}</p>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">{ratingLabel}</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
+            whileHover={{ y: -4 }}
             transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
             className="self-end sm:col-span-5"
           >
-            <p className="text-6xl font-semibold leading-none tracking-tight sm:text-7xl">
+            <span className="mb-3 block h-1.5 w-10 rounded-full bg-accent" />
+            <p className="text-7xl font-semibold leading-none tracking-tight text-accent sm:text-8xl">
               <AnimatedCounter value={doctorCount} suffix="+" />
             </p>
-            <p className="mt-2 text-sm font-medium text-muted-foreground">{doctorLabel}</p>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">{doctorLabel}</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
+            whileHover={{ y: -4 }}
             transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
             className="sm:col-span-5"
           >
-            <p className="text-5xl font-semibold leading-none tracking-tight text-accent sm:text-6xl">
+            <span className="mb-3 block h-1.5 w-10 rounded-full bg-primary" />
+            <p className="text-5xl font-semibold leading-none tracking-tight text-primary sm:text-6xl">
               <AnimatedCounter value={500} suffix="+" />
             </p>
-            <p className="mt-2 text-sm font-medium text-muted-foreground">{patientLabel}</p>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">{patientLabel}</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
+            whileHover={{ y: -4 }}
             transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
             className="self-end sm:col-span-7 sm:text-end"
           >
-            <p className="text-5xl font-semibold leading-none tracking-tight sm:text-6xl">
+            <span className="mb-3 block h-1.5 w-10 rounded-full bg-accent sm:ms-auto" />
+            <p className="text-6xl font-semibold leading-none tracking-tight text-accent sm:text-7xl">
               <AnimatedCounter value={5} suffix="+" />
             </p>
-            <p className="mt-2 text-sm font-medium text-muted-foreground">{yearsLabel}</p>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">{yearsLabel}</p>
           </motion.div>
         </div>
       </div>
