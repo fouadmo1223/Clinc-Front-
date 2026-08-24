@@ -9,12 +9,9 @@ import {
   Star,
   MapPin,
   Stethoscope,
-  CalendarClock,
   ArrowUpRight,
   Menu,
   X,
-  Search,
-  CheckCircle2,
   ShieldCheck,
   Sparkles,
   Clock,
@@ -38,6 +35,7 @@ import { DoctorAvatar } from '@/components/landing/doctor-avatar';
 import { PatientAvatar } from '@/components/landing/patient-avatar';
 import { HoverPeek } from '@/components/landing/hover-peek';
 import { HeroVisual } from '@/components/landing/hero-visual';
+import { SearchDoctorIllustration, PickTimeIllustration, ConfirmIllustration } from '@/components/landing/illustrations';
 import { toast } from '@/hooks/use-toast';
 
 const DEFAULT_CLINIC_SLUG = process.env.NEXT_PUBLIC_DEFAULT_CLINIC_SLUG ?? 'demo-clinic';
@@ -302,12 +300,20 @@ function DoctorCard({ doctor, index }: { doctor: PublicDoctor; index: number }) 
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
+      whileHover={{ y: -6 }}
       transition={{ duration: 0.6, delay: (index % 3) * 0.08, ease: EASE }}
-      className="group rounded-[1.75rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5"
+      className="group relative rounded-[1.75rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5 transition-shadow duration-500"
     >
-      <div className="flex h-full flex-col gap-4 rounded-[1.4rem] bg-surface p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] transition-shadow duration-500 group-hover:shadow-[0_20px_50px_-20px_rgba(15,23,42,0.25)]">
-        <div className="flex items-center gap-3">
-          <DoctorAvatar id={doctor.id} fullName={doctor.fullName} size="lg" />
+      <div className="relative flex h-full flex-col gap-4 overflow-hidden rounded-[1.4rem] bg-surface p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] transition-[box-shadow,ring] duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] group-hover:shadow-[0_24px_60px_-20px_rgba(15,23,42,0.28)]">
+        <div
+          className="pointer-events-none absolute -top-16 end-[-20%] -z-0 h-40 w-40 rounded-full opacity-0 blur-2xl transition-opacity duration-700 group-hover:opacity-100"
+          style={{ background: 'radial-gradient(circle, hsl(var(--primary)/0.18), transparent 70%)' }}
+        />
+
+        <div className="relative flex items-center gap-3">
+          <motion.div whileHover={{ scale: 1.06, rotate: -2 }} transition={{ duration: 0.4, ease: EASE }}>
+            <DoctorAvatar id={doctor.id} fullName={doctor.fullName} size="lg" />
+          </motion.div>
           <div className="min-w-0">
             <HoverPeek avatar={<DoctorAvatar id={doctor.id} fullName={doctor.fullName} size="md" />}>
               <p className="truncate text-base font-semibold">{doctor.fullName}</p>
@@ -316,20 +322,20 @@ function DoctorCard({ doctor, index }: { doctor: PublicDoctor; index: number }) 
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="relative flex items-center gap-2">
           <Stars value={doctor.rating.average} />
           <span className="text-sm text-muted-foreground">
             {doctor.rating.count > 0 ? t.landing.reviews(doctor.rating.count) : t.landing.noReviewsYet}
           </span>
         </div>
 
-        {doctor.bio && <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">{doctor.bio}</p>}
+        {doctor.bio && <p className="relative line-clamp-2 text-sm leading-relaxed text-muted-foreground">{doctor.bio}</p>}
 
-        <p className="text-base font-medium">
+        <p className="relative text-base font-medium">
           {t.landing.startingFrom} <span className="text-primary">{doctor.consultationPrice}</span>
         </p>
 
-        <div className="mt-auto flex items-center gap-2 pt-1">
+        <div className="relative mt-auto flex items-center gap-2 pt-1">
           <button
             type="button"
             onClick={handleBook}
@@ -352,7 +358,19 @@ function DoctorCard({ doctor, index }: { doctor: PublicDoctor; index: number }) 
           )}
         </div>
 
-        {showReviewForm && <ReviewForm doctorId={doctor.id} onDone={() => setShowReviewForm(false)} />}
+        <AnimatePresence>
+          {showReviewForm && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.4, ease: EASE }}
+              className="relative overflow-hidden"
+            >
+              <ReviewForm doctorId={doctor.id} onDone={() => setShowReviewForm(false)} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
@@ -550,17 +568,17 @@ export default function RootPage() {
           </Reveal>
 
           <div className="relative mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div className="pointer-events-none absolute inset-x-[15%] top-8 hidden h-px bg-gradient-to-r from-transparent via-border to-transparent md:block" />
+            <div className="pointer-events-none absolute inset-x-[15%] top-14 hidden h-px bg-gradient-to-r from-transparent via-border to-transparent md:block" />
             {[
-              { icon: Search, title: t.landing.step1Title, desc: t.landing.step1Desc },
-              { icon: CalendarClock, title: t.landing.step2Title, desc: t.landing.step2Desc },
-              { icon: CheckCircle2, title: t.landing.step3Title, desc: t.landing.step3Desc },
+              { Illustration: SearchDoctorIllustration, title: t.landing.step1Title, desc: t.landing.step1Desc },
+              { Illustration: PickTimeIllustration, title: t.landing.step2Title, desc: t.landing.step2Desc },
+              { Illustration: ConfirmIllustration, title: t.landing.step3Title, desc: t.landing.step3Desc },
             ].map((step, i) => (
               <Reveal key={step.title} delay={i * 0.12}>
                 <div className="flex flex-col items-center gap-3 text-center">
-                  <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_16px_32px_-12px_hsl(var(--primary)/0.6)]">
-                    <step.icon className="h-6 w-6" strokeWidth={1.5} />
-                    <span className="absolute -end-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
+                  <div className="relative flex h-28 w-28 items-center justify-center rounded-[1.75rem] bg-white/70 shadow-[0_16px_40px_-18px_rgba(15,23,42,0.3)] ring-1 ring-white/60 backdrop-blur-md">
+                    <step.Illustration className="h-20 w-20" />
+                    <span className="absolute -end-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground shadow-md">
                       {i + 1}
                     </span>
                   </div>

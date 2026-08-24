@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { CalendarCheck2, ShieldCheck, TrendingUp } from 'lucide-react';
 import { DoctorAvatar } from './doctor-avatar';
+import { HeroIllustration } from './illustrations';
 
 const EASE = [0.32, 0.72, 0, 1] as const;
 
@@ -35,13 +36,7 @@ export function HeroVisual({
 
   return (
     <div className="relative mx-auto aspect-[4/5] w-full max-w-sm lg:max-w-md">
-      <div
-        className="pointer-events-none absolute -inset-10 -z-10 rounded-[3rem]"
-        style={{
-          background:
-            'radial-gradient(65% 65% at 50% 35%, hsl(var(--primary)/0.16), transparent), radial-gradient(45% 45% at 80% 80%, hsl(27 68% 48% / 0.14), transparent)',
-        }}
-      />
+      <HeroIllustration className="pointer-events-none absolute -inset-16 -z-10 h-[calc(100%+8rem)] w-[calc(100%+8rem)]" />
 
       {/* Back stacked card */}
       <motion.div
