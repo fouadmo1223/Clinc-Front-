@@ -1,0 +1,157 @@
+'use client';
+
+import * as React from 'react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Star, ArrowUpRight } from 'lucide-react';
+import { useLocale } from '@/lib/i18n/locale-context';
+import { usePatientAuthStore } from '@/stores/patient-auth-store';
+import { patientApi } from '@/lib/patient-api';
+import { ApiError } from '@/lib/api';
+import type { PublicDoctor } from '@/types/domain';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
+import { DoctorAvatar } from './doctor-avatar';
+import { HoverPeek } from './hover-peek';
+import { EASE, Stars } from './primitives';
+
+const DEFAULT_CLINIC_SLUG = process.env.NEXT_PUBLIC_DEFAULT_CLINIC_SLUG ?? 'demo-clinic';
+
+function ReviewForm({ doctorId, onDone }: { doctorId: string; onDone: () => void }) {
+  const { t } = useLocale();
+  const [rating, setRating] = React.useState(5);
+  const [comment, setComment] = React.useState('');
+  const [submitting, setSubmitting] = React.useState(false);
+
+  const submit = async () => {
+    setSubmitting(true);
+    try {
+      await patientApi.post('/patient-portal/reviews', { doctorId, rating, comment: comment || undefined });
+      toast.success(t.landing.reviewSubmitted);
+      onDone();
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 403) toast.error(t.landing.reviewNotEligible);
+      else if (err instanceof ApiError && err.status === 409) toast.error(t.landing.alreadyReviewed);
+      else toast.error(t.common.error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2 border-t border-border/60 pt-3">
+      <p className="text-xs font-medium text-muted-foreground">{t.landing.yourRating}</p>
+      <div className="flex items-center gap-1">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <button key={i} type="button" onClick={() => setRating(i + 1)}>
+            <Star className={`h-5 w-5 ${i < rating ? 'fill-warning text-warning' : 'text-border'}`} strokeWidth={1.5} />
+          </button>
+        ))}
+      </div>
+      <textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder={t.landing.commentOptional}
+        rows={2}
+        className="w-full rounded-xl border border-input bg-surface px-3 py-1.5 text-sm shadow-xs"
+      />
+      <Button type="button" size="sm" className="rounded-full" loading={submitting} onClick={submit}>
+        {t.landing.submitReview}
+      </Button>
+    </div>
+  );
+}
+
+export function DoctorCard({ doctor, index }: { doctor: PublicDoctor; index: number }) {
+  const { t, locale } = useLocale();
+  const router = useRouter();
+  const patientToken = usePatientAuthStore((s) => s.accessToken);
+  const clinicSlug = usePatientAuthStore((s) => s.clinicSlug);
+  const [showReviewForm, setShowReviewForm] = React.useState(false);
+  const isLoggedInHere = !!patientToken && clinicSlug === DEFAULT_CLINIC_SLUG;
+
+  const handleBook = () => {
+    if (isLoggedInHere) router.push(`/portal/${DEFAULT_CLINIC_SLUG}/book?doctorId=${doctor.id}`);
+    else router.push(`/portal/${DEFAULT_CLINIC_SLUG}/login?next=/portal/${DEFAULT_CLINIC_SLUG}/book?doctorId=${doctor.id}`);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      whileHover={{ y: -6 }}
+      transition={{ duration: 0.6, delay: (index % 3) * 0.08, ease: EASE }}
+      className="group relative rounded-[1.75rem] bg-black/[0.03] p-1.5 ring-1 ring-black/5 transition-shadow duration-500"
+    >
+      <div className="relative flex h-full flex-col gap-4 overflow-hidden rounded-[1.4rem] bg-surface p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] transition-[box-shadow,ring] duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] group-hover:shadow-[0_24px_60px_-20px_rgba(15,23,42,0.28)]">
+        <div
+          className="pointer-events-none absolute -top-16 end-[-20%] -z-0 h-40 w-40 rounded-full opacity-0 blur-2xl transition-opacity duration-700 group-hover:opacity-100"
+          style={{ background: 'radial-gradient(circle, hsl(var(--primary)/0.18), transparent 70%)' }}
+        />
+
+        <div className="relative flex items-center gap-3">
+          <motion.div whileHover={{ scale: 1.06, rotate: -2 }} transition={{ duration: 0.4, ease: EASE }}>
+            <DoctorAvatar id={doctor.id} fullName={doctor.fullName} size="lg" />
+          </motion.div>
+          <div className="min-w-0">
+            <HoverPeek avatar={<DoctorAvatar id={doctor.id} fullName={doctor.fullName} size="md" />}>
+              <p className="truncate text-base font-semibold">{doctor.fullName}</p>
+            </HoverPeek>
+            <p className="truncate text-sm text-muted-foreground">{locale === 'ar' ? doctor.specialtyAr : doctor.specialty}</p>
+          </div>
+        </div>
+
+        <div className="relative flex items-center gap-2">
+          <Stars value={doctor.rating.average} />
+          <span className="text-sm text-muted-foreground">
+            {doctor.rating.count > 0 ? t.landing.reviews(doctor.rating.count) : t.landing.noReviewsYet}
+          </span>
+        </div>
+
+        {doctor.bio && <p className="relative line-clamp-2 text-sm leading-relaxed text-muted-foreground">{doctor.bio}</p>}
+
+        <p className="relative text-base font-medium">
+          {t.landing.startingFrom} <span className="text-primary">{doctor.consultationPrice}</span>
+        </p>
+
+        <div className="relative mt-auto flex items-center gap-2 pt-1">
+          <button
+            type="button"
+            onClick={handleBook}
+            className="group/btn flex flex-1 items-center justify-between rounded-full bg-primary py-1.5 ps-4 pe-1.5 text-xs font-semibold text-primary-foreground transition-transform duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]"
+          >
+            {t.landing.bookNow}
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 rtl:group-hover/btn:-translate-x-0.5">
+              <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
+            </span>
+          </button>
+          {isLoggedInHere && (
+            <button
+              type="button"
+              onClick={() => setShowReviewForm((v) => !v)}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border transition-colors hover:bg-secondary"
+              aria-label={t.landing.rateThisDoctor}
+            >
+              <Star className="h-3.5 w-3.5" strokeWidth={1.5} />
+            </button>
+          )}
+        </div>
+
+        <AnimatePresence>
+          {showReviewForm && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.4, ease: EASE }}
+              className="relative overflow-hidden"
+            >
+              <ReviewForm doctorId={doctor.id} onDone={() => setShowReviewForm(false)} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
