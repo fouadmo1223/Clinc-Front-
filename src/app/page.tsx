@@ -37,6 +37,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DoctorAvatar } from '@/components/landing/doctor-avatar';
 import { PatientAvatar } from '@/components/landing/patient-avatar';
 import { HoverPeek } from '@/components/landing/hover-peek';
+import { HeroVisual } from '@/components/landing/hero-visual';
 import { toast } from '@/hooks/use-toast';
 
 const DEFAULT_CLINIC_SLUG = process.env.NEXT_PUBLIC_DEFAULT_CLINIC_SLUG ?? 'demo-clinic';
@@ -454,57 +455,72 @@ export default function RootPage() {
         />
         <FloatingBlob className="start-[6%] top-[18%] h-64 w-64 bg-primary/10" />
         <FloatingBlob className="end-[8%] top-[55%] h-72 w-72 bg-accent/10" delay={1.5} />
-        <div className="mx-auto max-w-3xl text-center">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }}>
-            <Eyebrow>{t.landing.eyebrow}</Eyebrow>
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
-            className="mt-5 text-5xl font-semibold tracking-tight text-foreground sm:text-6xl md:text-7xl"
-          >
-            {t.landing.heroTitle}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
-            className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
-          >
-            {t.landing.heroSubtitle(clinicName)}
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-3"
-          >
-            <a href="#doctors">
-              <button
-                type="button"
-                className="group flex items-center gap-2 rounded-full bg-primary py-3 ps-6 pe-2 text-sm font-semibold text-primary-foreground shadow-[0_20px_40px_-15px_hsl(var(--primary)/0.5)] transition-transform duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]"
-              >
-                {t.landing.bookNow}
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5">
-                  <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={2} />
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-8">
+          <div className="text-center lg:text-start">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }}>
+              <Eyebrow>{t.landing.eyebrow}</Eyebrow>
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
+              className="mt-5 text-5xl font-semibold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+            >
+              {t.landing.heroTitle}
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
+              className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl lg:mx-0"
+            >
+              {t.landing.heroSubtitle(clinicName)}
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
+              className="mt-8 flex flex-wrap items-center justify-center gap-3 lg:justify-start"
+            >
+              <a href="#doctors">
+                <button
+                  type="button"
+                  className="group flex items-center gap-2 rounded-full bg-primary py-3 ps-6 pe-2 text-sm font-semibold text-primary-foreground shadow-[0_20px_40px_-15px_hsl(var(--primary)/0.5)] transition-transform duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]"
+                >
+                  {t.landing.bookNow}
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5">
+                    <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={2} />
+                  </span>
+                </button>
+              </a>
+              {clinic?.address && (
+                <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <MapPin className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  {clinic.address}
+                  {clinic.city ? `, ${clinic.city}` : ''}
                 </span>
-              </button>
-            </a>
-            {clinic?.address && (
-              <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <MapPin className="h-3.5 w-3.5" strokeWidth={1.5} />
-                {clinic.address}
-                {clinic.city ? `, ${clinic.city}` : ''}
-              </span>
-            )}
-          </motion.div>
+              )}
+            </motion.div>
+          </div>
+
+          <HeroVisual
+            doctors={(doctors ?? []).map((d) => ({ id: d.id, fullName: d.fullName }))}
+            ratingLabel={t.landing.heroRatingLabel}
+            ratingValue={avgRating > 0 ? avgRating.toFixed(1) : t.landing.stat1Value}
+            nextAvailableLabel={t.landing.heroNextAvailable}
+            nextAvailableValue={t.landing.heroNextAvailableValue}
+            verifiedLabel={t.landing.heroVerifiedBadge}
+          />
         </div>
       </section>
 
       {/* ------------------------------------------------------- Stats */}
-      <section className="px-4 pb-24">
-        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-3 rounded-[2rem] bg-black/[0.03] p-2 ring-1 ring-black/5 md:grid-cols-4">
+      <section className="relative px-4 pb-24">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 mx-auto h-full max-w-4xl rounded-[2rem]"
+          style={{ background: 'radial-gradient(70% 100% at 50% 0%, hsl(var(--primary)/0.10), transparent)' }}
+        />
+        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-3 rounded-[2rem] bg-white/40 p-2 ring-1 ring-white/60 backdrop-blur-xl md:grid-cols-4">
           {[
             { value: 49, suffix: '', label: t.landing.stat1Label, display: avgRating > 0 ? avgRating.toFixed(1) : t.landing.stat1Value },
             { value: doctors?.length ?? 0, suffix: '+', label: t.landing.stat2Label },
@@ -512,7 +528,7 @@ export default function RootPage() {
             { value: 5, suffix: '+', label: t.landing.stat4Label },
           ].map((s, i) => (
             <Reveal key={s.label} delay={i * 0.08}>
-              <div className="flex flex-col items-center gap-1 rounded-[1.6rem] bg-surface px-4 py-6 text-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]">
+              <div className="flex flex-col items-center gap-1 rounded-[1.6rem] bg-white/70 px-4 py-6 text-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] ring-1 ring-white/40 backdrop-blur-md">
                 <p className="text-3xl font-semibold tracking-tight text-primary sm:text-4xl">
                   {s.display ?? <AnimatedCounter value={s.value} suffix={s.suffix} />}
                 </p>
@@ -560,6 +576,29 @@ export default function RootPage() {
       {/* -------------------------------------------------- Why choose us */}
       <section className="relative px-4 py-24">
         <FloatingBlob className="start-[2%] bottom-8 h-64 w-64 bg-primary/10" delay={0.8} />
+
+        {/* Decorative stacked glass chips */}
+        <div className="pointer-events-none absolute end-[6%] top-10 hidden lg:block">
+          <motion.div
+            initial={{ opacity: 0, y: 20, rotate: -6 }}
+            whileInView={{ opacity: 1, y: 0, rotate: -6 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: EASE }}
+            className="absolute -end-3 -top-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/55 shadow-lg ring-1 ring-white/60 backdrop-blur-xl"
+          >
+            <Heart className="h-6 w-6 text-accent" strokeWidth={1.5} />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20, rotate: 6 }}
+            whileInView={{ opacity: 1, y: 0, rotate: 6 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
+            className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/75 shadow-xl ring-1 ring-white/70 backdrop-blur-xl"
+          >
+            <ShieldCheck className="h-7 w-7 text-primary" strokeWidth={1.5} />
+          </motion.div>
+        </div>
+
         <div className="mx-auto max-w-5xl">
           <Reveal className="mx-auto max-w-xl text-center">
             <Eyebrow>{t.landing.whyEyebrow}</Eyebrow>

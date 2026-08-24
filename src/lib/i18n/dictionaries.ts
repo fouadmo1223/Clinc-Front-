@@ -45,6 +45,10 @@ export interface Dictionary {
   landing: {
     heroTitle: string;
     heroSubtitle: (clinicName: string) => string;
+    heroNextAvailable: string;
+    heroNextAvailableValue: string;
+    heroRatingLabel: string;
+    heroVerifiedBadge: string;
     bookNow: string;
     staffLogin: string;
     ourDoctors: string;
@@ -619,6 +623,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
     landing: {
       heroTitle: 'Book your visit in minutes',
       heroSubtitle: (clinicName) => `Real doctors, real availability — book an appointment with ${clinicName} online.`,
+      heroNextAvailable: 'Next available',
+      heroNextAvailableValue: 'Today, 4:30 PM',
+      heroRatingLabel: 'Average patient rating',
+      heroVerifiedBadge: 'Verified clinic',
       bookNow: 'Book now',
       staffLogin: 'Staff login',
       ourDoctors: 'Our doctors',
@@ -1238,6 +1246,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
     landing: {
       heroTitle: 'احجز زيارتك في دقائق',
       heroSubtitle: (clinicName) => `أطباء حقيقيون، مواعيد فعلية — احجز موعدك مع ${clinicName} عبر الإنترنت.`,
+      heroNextAvailable: 'أقرب موعد متاح',
+      heroNextAvailableValue: 'اليوم، ٤:٣٠ م',
+      heroRatingLabel: 'متوسط تقييم المرضى',
+      heroVerifiedBadge: 'عيادة موثّقة',
       bookNow: 'احجز الآن',
       staffLogin: 'دخول الموظفين',
       ourDoctors: 'أطباؤنا',
