@@ -64,10 +64,11 @@ export function FinalCTA({ copy, onCta }: { copy: LandingCopy['finalCta']; onCta
             <button
               type="button"
               onClick={onCta}
-              className="group inline-flex items-center gap-2 rounded-full bg-white py-4 ps-7 pe-2.5 text-sm font-semibold text-[#0b1614] shadow-[0_30px_70px_-20px_rgba(255,255,255,0.25)] transition-transform duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white py-4 ps-7 pe-2.5 text-sm font-semibold text-[#0b1614] shadow-[0_30px_70px_-20px_rgba(255,255,255,0.25)] transition-[transform,box-shadow] duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_36px_80px_-16px_rgba(255,255,255,0.4)] active:scale-[0.97] active:translate-y-0"
             >
-              {copy.cta}
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0b1614]/10 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5">
+              <span className="pointer-events-none absolute inset-0 origin-center scale-0 rounded-full bg-accent/10 transition-transform duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] group-hover:scale-100" />
+              <span className="relative">{copy.cta}</span>
+              <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-[#0b1614]/10 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:bg-[#0b1614]/20 rtl:group-hover:-translate-x-0.5">
                 <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
               </span>
             </button>

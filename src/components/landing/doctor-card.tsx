@@ -119,10 +119,11 @@ export function DoctorCard({ doctor, index }: { doctor: PublicDoctor; index: num
           <button
             type="button"
             onClick={handleBook}
-            className="group/btn flex flex-1 items-center justify-between rounded-full bg-primary py-1.5 ps-4 pe-1.5 text-xs font-semibold text-primary-foreground transition-transform duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]"
+            className="group/btn relative flex flex-1 items-center justify-between overflow-hidden rounded-full bg-primary py-1.5 ps-4 pe-1.5 text-xs font-semibold text-primary-foreground transition-[transform,box-shadow] duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-12px_hsl(var(--primary)/0.6)] active:scale-[0.98] active:translate-y-0"
           >
-            {t.landing.bookNow}
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 rtl:group-hover/btn:-translate-x-0.5">
+            <span className="pointer-events-none absolute inset-0 origin-center scale-0 rounded-full bg-white/10 transition-transform duration-300 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] group-hover/btn:scale-100" />
+            <span className="relative">{t.landing.bookNow}</span>
+            <span className="relative flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition-all duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 group-hover/btn:bg-white/25 rtl:group-hover/btn:-translate-x-0.5">
               <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
             </span>
           </button>

@@ -2,39 +2,24 @@
 
 import * as React from 'react';
 import { useGSAP } from '@gsap/react';
-import { ensureGsap, gsap, ScrollTrigger } from '@/lib/gsap';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ensureGsap, ScrollTrigger } from '@/lib/gsap';
 import type { LandingCopy } from '@/content/landing-copy';
-import { Eyebrow } from '../primitives';
+import { EASE, Eyebrow } from '../primitives';
 import { SearchDoctorIllustration, PickTimeIllustration, ConfirmIllustration, RecordsIllustration } from '../illustrations';
 
 const ILLUSTRATIONS = [SearchDoctorIllustration, PickTimeIllustration, ConfirmIllustration, RecordsIllustration];
 
 export function HowItWorks({ copy }: { copy: LandingCopy['how'] }) {
   const sectionRef = React.useRef<HTMLElement>(null);
-  const pathRef = React.useRef<SVGPathElement>(null);
   const stepRefs = React.useRef<(HTMLDivElement | null)[]>([]);
   const [active, setActive] = React.useState(0);
 
   useGSAP(
     () => {
       ensureGsap();
-      const path = pathRef.current;
       const section = sectionRef.current;
-      if (!path || !section) return;
-
-      const length = path.getTotalLength();
-      gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
-
-      const drawTween = gsap.to(path, {
-        strokeDashoffset: 0,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: section,
-          start: 'top center',
-          end: 'bottom center',
-          scrub: 0.6,
-        },
-      });
+      if (!section) return;
 
       const triggers = stepRefs.current.map((el, i) => {
         if (!el) return null;
@@ -48,8 +33,6 @@ export function HowItWorks({ copy }: { copy: LandingCopy['how'] }) {
       });
 
       return () => {
-        drawTween.scrollTrigger?.kill();
-        drawTween.kill();
         triggers.forEach((tr) => tr?.kill());
       };
     },
@@ -67,38 +50,44 @@ export function HowItWorks({ copy }: { copy: LandingCopy['how'] }) {
 
         <div className="mt-16 grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="relative hidden lg:block">
-            <div className="sticky top-32">
-              <svg viewBox="0 0 120 480" className="absolute inset-0 h-full w-full" fill="none" aria-hidden>
-                <path
-                  ref={pathRef}
-                  d="M60 20 L60 460"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeDasharray="6 10"
-                  opacity="0.5"
+            <div className="sticky top-32 flex items-center gap-6">
+              {/* Progress rail: one dot per step, filled up to the active step */}
+              <div className="relative flex h-72 w-2 shrink-0 flex-col items-center justify-between rounded-full bg-border/60">
+                <motion.div
+                  className="absolute inset-x-0 top-0 rounded-full bg-primary"
+                  animate={{ height: `${((active + 1) / copy.steps.length) * 100}%` }}
+                  transition={{ duration: 0.5, ease: EASE }}
                 />
-              </svg>
-              <div className="relative flex h-[480px] flex-col items-center justify-between py-4">
-                {copy.steps.map((_, i) => {
-                  const Illustration = ILLUSTRATIONS[i] ?? ILLUSTRATIONS[0];
-                  const isActive = active === i;
-                  return (
-                    <div
-                      key={i}
-                      className="flex h-24 w-24 items-center justify-center rounded-[1.5rem] border transition-all duration-500"
-                      style={{
-                        borderColor: isActive ? 'hsl(var(--primary))' : 'hsl(var(--border))',
-                        backgroundColor: isActive ? 'hsl(var(--surface))' : 'hsl(var(--surface-sunken))',
-                        boxShadow: isActive ? '0 20px 50px -20px hsl(var(--primary)/0.35)' : 'none',
-                        transform: isActive ? 'scale(1.08)' : 'scale(1)',
-                        opacity: isActive ? 1 : 0.5,
-                      }}
-                    >
-                      <Illustration className="h-16 w-16" />
-                    </div>
-                  );
-                })}
+                {copy.steps.map((_, i) => (
+                  <span
+                    key={i}
+                    className="relative z-10 h-2 w-2 rounded-full transition-colors duration-500"
+                    style={{ backgroundColor: i <= active ? 'hsl(var(--primary))' : 'hsl(var(--border))' }}
+                  />
+                ))}
+              </div>
+
+              {/* Single crossfading illustration tied to the active step */}
+              <div className="relative flex h-72 w-72 items-center justify-center rounded-[2rem] border border-border bg-surface shadow-[0_20px_50px_-20px_rgba(15,23,42,0.15)]">
+                <AnimatePresence mode="wait">
+                  {(() => {
+                    const Illustration = ILLUSTRATIONS[active] ?? ILLUSTRATIONS[0];
+                    return (
+                      <motion.div
+                        key={active}
+                        initial={{ opacity: 0, scale: 0.85 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.85 }}
+                        transition={{ duration: 0.4, ease: EASE }}
+                      >
+                        <Illustration className="h-40 w-40" />
+                      </motion.div>
+                    );
+                  })()}
+                </AnimatePresence>
+                <span className="absolute bottom-5 text-xs font-semibold tabular-nums text-muted-foreground">
+                  {String(active + 1).padStart(2, '0')} / {String(copy.steps.length).padStart(2, '0')}
+                </span>
               </div>
             </div>
           </div>

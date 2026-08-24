@@ -106,10 +106,11 @@ export function Hero({ copy, clinicName, address, city, doctors, ratingValue, ra
               <button
                 type="button"
                 onClick={onBook}
-                className="group flex items-center gap-2 rounded-full bg-primary py-4 ps-7 pe-2.5 text-sm font-semibold text-primary-foreground shadow-[0_24px_50px_-16px_hsl(var(--primary)/0.55)] transition-transform duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97]"
+                className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-primary py-4 ps-7 pe-2.5 text-sm font-semibold text-primary-foreground shadow-[0_24px_50px_-16px_hsl(var(--primary)/0.55)] transition-[transform,box-shadow] duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1 hover:shadow-[0_32px_60px_-14px_hsl(var(--primary)/0.65)] active:scale-[0.97] active:translate-y-0"
               >
-                {copy.ctaPrimary}
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5">
+                <span className="pointer-events-none absolute inset-0 origin-center scale-0 rounded-full bg-white/10 transition-transform duration-500 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] group-hover:scale-100" />
+                <span className="relative">{copy.ctaPrimary}</span>
+                <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/15 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:bg-white/25 rtl:group-hover:-translate-x-0.5">
                   <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
                 </span>
               </button>
