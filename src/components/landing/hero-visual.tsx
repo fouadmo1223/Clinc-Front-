@@ -35,22 +35,26 @@ export function HeroVisual({
   const stackDoctors = doctors.slice(0, 4);
 
   return (
-    <div className="relative mx-auto aspect-[4/5] w-full max-w-sm lg:max-w-md">
-      <HeroIllustration className="pointer-events-none absolute -inset-16 -z-10 h-[calc(100%+8rem)] w-[calc(100%+8rem)]" />
+    <div className="relative isolate mx-auto aspect-[4/5] w-full max-w-sm lg:max-w-md">
+      {/* Fills the whole frame and stays fully visible above the card zone —
+          the glass card below only occupies the bottom ~62%, so the
+          illustration itself is the hero image, not something hidden behind
+          an opaque panel. */}
+      <HeroIllustration className="pointer-events-none absolute inset-0 -z-10" />
 
       {/* Back stacked card */}
       <motion.div
         initial={{ opacity: 0, y: 40, rotate: -10 }}
         animate={{ opacity: 1, y: 0, rotate: -9 }}
         transition={{ duration: 0.9, delay: 0.25, ease: EASE }}
-        className="absolute inset-x-4 top-16 h-[70%] rounded-[2rem] bg-white/40 shadow-xl ring-1 ring-white/50 backdrop-blur-xl"
+        className="absolute inset-x-4 bottom-2 top-[42%] rounded-[2rem] bg-white/40 shadow-xl ring-1 ring-white/50 backdrop-blur-xl"
       />
       {/* Middle stacked card */}
       <motion.div
         initial={{ opacity: 0, y: 40, rotate: 8 }}
         animate={{ opacity: 1, y: 0, rotate: 6 }}
         transition={{ duration: 0.9, delay: 0.15, ease: EASE }}
-        className="absolute inset-x-4 top-10 h-[70%] rounded-[2rem] bg-white/55 shadow-xl ring-1 ring-white/60 backdrop-blur-xl"
+        className="absolute inset-x-4 bottom-2 top-[38%] rounded-[2rem] bg-white/55 shadow-xl ring-1 ring-white/60 backdrop-blur-xl"
       />
 
       {/* Main glass card */}
@@ -58,7 +62,7 @@ export function HeroVisual({
         initial={{ opacity: 0, y: 30, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.9, ease: EASE }}
-        className="relative z-10 flex h-full flex-col justify-between rounded-[2rem] bg-white/70 p-6 shadow-[0_30px_80px_-25px_rgba(15,23,42,0.35)] ring-1 ring-white/70 backdrop-blur-2xl"
+        className="absolute inset-x-0 bottom-0 top-[35%] z-10 flex flex-col justify-between rounded-[2rem] bg-white/70 p-6 shadow-[0_30px_80px_-25px_rgba(15,23,42,0.35)] ring-1 ring-white/70 backdrop-blur-2xl"
       >
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary">
