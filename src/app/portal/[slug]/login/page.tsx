@@ -109,7 +109,13 @@ export default function PatientPortalLoginPage() {
       <div className="mb-7 space-y-1.5">
         <h1 className="text-xl font-semibold tracking-tight">{mode === 'register' ? t.portal.createAccount : t.portal.title}</h1>
         <p className="text-sm text-muted-foreground">
-          {step === 'code' ? t.portal.codeSentSubtitle : mode === 'register' ? t.portal.createAccountSubtitle : t.portal.subtitle}
+          {step === 'code'
+            ? method === 'email'
+              ? t.portal.codeSentSubtitleEmail
+              : t.portal.codeSentSubtitlePhone
+            : mode === 'register'
+              ? t.portal.createAccountSubtitle
+              : t.portal.subtitle}
         </p>
       </div>
 
@@ -249,7 +255,7 @@ export default function PatientPortalLoginPage() {
             }}
             className="w-full text-center text-sm font-medium text-primary hover:underline"
           >
-            {t.portal.changePhone}
+            {method === 'email' ? t.portal.changeEmail : t.portal.changePhone}
           </button>
         </form>
       )}

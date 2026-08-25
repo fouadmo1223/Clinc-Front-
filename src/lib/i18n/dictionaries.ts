@@ -12,10 +12,12 @@ export interface Dictionary {
     useEmailInstead: string;
     usePhoneInstead: string;
     sendCode: string;
-    codeSentSubtitle: string;
+    codeSentSubtitlePhone: string;
+    codeSentSubtitleEmail: string;
     code: string;
     verify: string;
     changePhone: string;
+    changeEmail: string;
     invalidCode: string;
     welcome: (name: string) => string;
     logout: string;
@@ -617,10 +619,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
       useEmailInstead: 'Use email instead',
       usePhoneInstead: 'Use phone instead',
       sendCode: 'Send code',
-      codeSentSubtitle: "We've sent a 6-digit code to your phone.",
+      codeSentSubtitlePhone: "We've sent a 6-digit code to your phone.",
+      codeSentSubtitleEmail: "We've sent a 6-digit code to your email.",
       code: 'Verification code',
       verify: 'Verify',
       changePhone: 'Use a different number',
+      changeEmail: 'Use a different email',
       invalidCode: 'Invalid or expired code.',
       welcome: (name) => `Welcome, ${name}`,
       logout: 'Log out',
@@ -1267,10 +1271,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
       useEmailInstead: 'استخدام البريد الإلكتروني بدلاً من ذلك',
       usePhoneInstead: 'استخدام الهاتف بدلاً من ذلك',
       sendCode: 'إرسال الرمز',
-      codeSentSubtitle: 'تم إرسال رمز مكوّن من 6 أرقام إلى هاتفك.',
+      codeSentSubtitlePhone: 'تم إرسال رمز مكوّن من 6 أرقام إلى هاتفك.',
+      codeSentSubtitleEmail: 'تم إرسال رمز مكوّن من 6 أرقام إلى بريدك الإلكتروني.',
       code: 'رمز التحقق',
       verify: 'تحقق',
       changePhone: 'استخدام رقم آخر',
+      changeEmail: 'استخدام بريد إلكتروني آخر',
       invalidCode: 'الرمز غير صحيح أو انتهت صلاحيته.',
       welcome: (name) => `أهلاً بك، ${name}`,
       logout: 'تسجيل الخروج',
