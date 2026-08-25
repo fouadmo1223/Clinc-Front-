@@ -37,6 +37,16 @@ const WEEKDAY_LABELS = {
   ar: ['أح', 'إث', 'ثل', 'أر', 'خم', 'جم', 'سب'],
 };
 
+const MONTH_NAMES = Array.from({ length: 12 }, (_, i) => format(new Date(2020, i, 1), 'MMMM'));
+
+/** Wide enough to cover both future booking dates and a patient's date of birth. */
+function yearOptions(): number[] {
+  const current = new Date().getFullYear();
+  const years: number[] = [];
+  for (let y = current + 10; y >= current - 120; y--) years.push(y);
+  return years;
+}
+
 export function DatePicker({ value, onChange, id, className, disabled, minDate }: DatePickerProps) {
   const { locale } = useLocale();
   const [open, setOpen] = React.useState(false);
@@ -50,7 +60,7 @@ export function DatePicker({ value, onChange, id, className, disabled, minDate }
   const gridStart = startOfWeek(startOfMonth(viewMonth));
   const gridEnd = endOfWeek(endOfMonth(viewMonth));
   const days = eachDayOfInterval({ start: gridStart, end: gridEnd });
-  const monthLabel = format(viewMonth, 'MMMM yyyy');
+  const years = React.useMemo(() => yearOptions(), []);
 
   return (
     <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
@@ -78,19 +88,47 @@ export function DatePicker({ value, onChange, id, className, disabled, minDate }
           sideOffset={6}
           className="z-50 w-64 rounded-lg border border-border bg-surface p-3 shadow-popover data-[state=open]:animate-dialog-in"
         >
-          <div className="mb-2 flex items-center justify-between">
+          <div className="mb-2 flex items-center justify-between gap-1">
             <button
               type="button"
               onClick={() => setViewMonth((m) => subMonths(m, 1))}
-              className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground"
             >
               <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
             </button>
-            <span className="text-sm font-medium capitalize">{monthLabel}</span>
+
+            <div className="flex min-w-0 items-center gap-1">
+              <select
+                aria-label={locale === 'ar' ? 'الشهر' : 'Month'}
+                value={viewMonth.getMonth()}
+                onChange={(e) => setViewMonth((m) => new Date(m.getFullYear(), Number(e.target.value), 1))}
+                className="min-w-0 rounded-md bg-transparent px-1 py-0.5 text-sm font-medium hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {MONTH_NAMES.map((name, i) => (
+                  <option key={name} value={i}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+              {/* Direct year selection — jumping years shouldn't require stepping through every month. */}
+              <select
+                aria-label={locale === 'ar' ? 'السنة' : 'Year'}
+                value={viewMonth.getFullYear()}
+                onChange={(e) => setViewMonth((m) => new Date(Number(e.target.value), m.getMonth(), 1))}
+                className="rounded-md bg-transparent px-1 py-0.5 text-sm font-medium tabular-nums hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {years.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <button
               type="button"
               onClick={() => setViewMonth((m) => addMonths(m, 1))}
-              className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground"
             >
               <ChevronRight className="h-4 w-4 rtl:rotate-180" />
             </button>
