@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DetailError } from '@/components/layout/detail-error';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ExportMenu } from '@/components/ui/export-menu';
@@ -43,7 +44,7 @@ export default function InvoiceDetailPage() {
   const [refundMethod, setRefundMethod] = React.useState<PaymentMethod>('CASH');
   const [refundNotes, setRefundNotes] = React.useState('');
 
-  const { data: invoice } = useQuery({
+  const { data: invoice, isError } = useQuery({
     queryKey: ['invoices', invoiceId],
     queryFn: () => api.get<Invoice>(`/invoices/${invoiceId}`),
   });
@@ -104,6 +105,10 @@ export default function InvoiceDetailPage() {
     },
     onError: (err) => toast.error(err instanceof ApiError ? err.message : t.common.error),
   });
+
+  if (isError) {
+    return <DetailError backHref="/invoices" backLabel={t.invoices.backToInvoices} />;
+  }
 
   if (!invoice) {
     return (

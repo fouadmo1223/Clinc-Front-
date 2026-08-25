@@ -594,6 +594,14 @@ export interface Dictionary {
     expenseAdded: string;
     expenseDeleted: string;
   };
+  errorPage: {
+    title: string;
+    description: string;
+    retry: string;
+    backHome: string;
+    notFoundTitle: string;
+    notFoundDescription: string;
+  };
 }
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -1238,6 +1246,14 @@ export const dictionaries: Record<Locale, Dictionary> = {
       expenseAdded: 'Expense added',
       expenseDeleted: 'Expense deleted',
     },
+    errorPage: {
+      title: 'Something went wrong',
+      description: 'An unexpected error occurred. You can try again, or head back to the dashboard.',
+      retry: 'Try again',
+      backHome: 'Back to dashboard',
+      notFoundTitle: 'Page not found',
+      notFoundDescription: "The page you're looking for doesn't exist or may have been moved.",
+    },
   },
   ar: {
     app: { name: 'نظام العيادة', tagline: 'تشغيل عيادتك، بكل ثقة.' },
@@ -1879,6 +1895,14 @@ export const dictionaries: Record<Locale, Dictionary> = {
       queueUpdated: 'تم تحديث الطابور',
       expenseAdded: 'تمت إضافة المصروف',
       expenseDeleted: 'تم حذف المصروف',
+    },
+    errorPage: {
+      title: 'حدث خطأ ما',
+      description: 'حدث خطأ غير متوقع. يمكنك المحاولة مرة أخرى، أو العودة إلى لوحة التحكم.',
+      retry: 'حاول مرة أخرى',
+      backHome: 'العودة إلى لوحة التحكم',
+      notFoundTitle: 'الصفحة غير موجودة',
+      notFoundDescription: 'الصفحة التي تبحث عنها غير موجودة أو ربما تم نقلها.',
     },
   },
 };

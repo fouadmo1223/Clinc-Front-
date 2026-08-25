@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { ExportMenu } from '@/components/ui/export-menu';
+import { DetailError } from '@/components/layout/detail-error';
 import { toast } from '@/hooks/use-toast';
 
 function emptyMedication(): Medication {
@@ -33,7 +34,7 @@ export default function VisitDetailPage() {
   const [medications, setMedications] = React.useState<Medication[]>([emptyMedication()]);
   const [rxNotes, setRxNotes] = React.useState('');
 
-  const { data: visit } = useQuery({
+  const { data: visit, isError } = useQuery({
     queryKey: ['visits', visitId],
     queryFn: () => api.get<Visit>(`/visits/${visitId}`),
   });
@@ -69,6 +70,10 @@ export default function VisitDetailPage() {
     },
     onError: (err) => toast.error(err instanceof ApiError ? err.message : t.common.error),
   });
+
+  if (isError) {
+    return <DetailError backHref="/visits" backLabel={t.visits.backToVisits} />;
+  }
 
   if (!visit) {
     return (

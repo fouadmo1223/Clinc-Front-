@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DatePicker } from '@/components/ui/date-picker';
 import { FieldError } from '@/components/ui/field-error';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { DetailError } from '@/components/layout/detail-error';
 import { onFormInvalid } from '@/lib/form-invalid';
 import { toast } from '@/hooks/use-toast';
 
@@ -74,7 +75,7 @@ export default function PatientDetailPage() {
   const canEditMedical = hasPermission('patients.medical.update');
   const BackIcon = dir === 'rtl' ? ArrowRight : ArrowLeft;
 
-  const { data: patient, isLoading } = useQuery({
+  const { data: patient, isLoading, isError } = useQuery({
     queryKey: ['patients', id],
     queryFn: () => api.get<Patient>(`/patients/${id}`),
   });
@@ -187,6 +188,10 @@ export default function PatientDetailPage() {
     },
     onError: () => toast.error(t.common.error),
   });
+
+  if (isError) {
+    return <DetailError backHref="/patients" backLabel={t.patients.backToList} />;
+  }
 
   if (isLoading || !patient) {
     return (
