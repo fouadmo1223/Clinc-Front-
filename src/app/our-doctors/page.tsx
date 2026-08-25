@@ -17,7 +17,17 @@ import { EASE, Eyebrow } from '@/components/landing/primitives';
 
 const DEFAULT_CLINIC_SLUG = process.env.NEXT_PUBLIC_DEFAULT_CLINIC_SLUG ?? 'demo-clinic';
 
+// useSearchParams() opts the whole subtree out of static prerendering unless it's inside a
+// Suspense boundary — Vercel's production build enforces this even though `next dev` doesn't.
 export default function DoctorsPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <DoctorsPageInner />
+    </React.Suspense>
+  );
+}
+
+function DoctorsPageInner() {
   const { t, locale } = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();

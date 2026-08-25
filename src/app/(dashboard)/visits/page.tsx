@@ -59,6 +59,14 @@ function emptyForm(defaults: Partial<VisitForm> = {}): VisitForm {
 }
 
 export default function VisitsPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <VisitsPageInner />
+    </React.Suspense>
+  );
+}
+
+function VisitsPageInner() {
   const { t } = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();

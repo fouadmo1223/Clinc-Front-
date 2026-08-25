@@ -16,6 +16,14 @@ type Method = 'phone' | 'email';
 type Mode = 'login' | 'register';
 
 export default function PatientPortalLoginPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <PatientPortalLoginPageInner />
+    </React.Suspense>
+  );
+}
+
+function PatientPortalLoginPageInner() {
   const { t } = useLocale();
   const router = useRouter();
   const params = useParams<{ slug: string }>();

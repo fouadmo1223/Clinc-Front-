@@ -21,6 +21,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
 
 export default function PatientPortalBookPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <PatientPortalBookPageInner />
+    </React.Suspense>
+  );
+}
+
+function PatientPortalBookPageInner() {
   const { t, locale } = useLocale();
   const router = useRouter();
   const params = useParams<{ slug: string }>();
