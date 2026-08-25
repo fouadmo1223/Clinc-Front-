@@ -8,6 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Building2 } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { api } from '@/lib/api';
+import { useAuthStore } from '@/stores/auth-store';
 import type { Branch } from '@/types/domain';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,6 +46,8 @@ type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 export default function BranchesPage() {
   const { t } = useLocale();
   const queryClient = useQueryClient();
+  const hasPermission = useAuthStore((s) => s.hasPermission);
+  const canManage = hasPermission('branches.manage');
   const [open, setOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<Branch | null>(null);
   const [workingHours, setWorkingHours] = React.useState<WorkingHours[]>([]);
@@ -136,10 +139,12 @@ export default function BranchesPage() {
           <h1 className="text-lg font-semibold tracking-tight">{t.branches.title}</h1>
           <p className="text-sm text-muted-foreground">{t.branches.subtitle}</p>
         </div>
-        <Button size="sm" onClick={openCreate}>
-          <Plus className="h-4 w-4" />
-          {t.branches.add}
-        </Button>
+        {canManage && (
+          <Button size="sm" onClick={openCreate}>
+            <Plus className="h-4 w-4" />
+            {t.branches.add}
+          </Button>
+        )}
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-border bg-surface">
@@ -163,7 +168,11 @@ export default function BranchesPage() {
             </thead>
             <tbody>
               {branches.map((branch) => (
-                <tr key={branch._id} className="cursor-pointer" onClick={() => openEdit(branch)}>
+                <tr
+                  key={branch._id}
+                  className={canManage ? 'cursor-pointer' : undefined}
+                  onClick={canManage ? () => openEdit(branch) : undefined}
+                >
                   <td className="font-medium">{branch.name}</td>
                   <td className="text-muted-foreground">
                     {branch.address}
@@ -176,29 +185,30 @@ export default function BranchesPage() {
                     </Badge>
                   </td>
                   <td className="text-end">
-                    {branch.isActive ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deactivateMutation.mutate(branch._id);
-                        }}
-                      >
-                        {t.common.deactivate}
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          activateMutation.mutate(branch._id);
-                        }}
-                      >
-                        {t.common.activate}
-                      </Button>
-                    )}
+                    {canManage &&
+                      (branch.isActive ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deactivateMutation.mutate(branch._id);
+                          }}
+                        >
+                          {t.common.deactivate}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            activateMutation.mutate(branch._id);
+                          }}
+                        >
+                          {t.common.activate}
+                        </Button>
+                      ))}
                   </td>
                 </tr>
               ))}

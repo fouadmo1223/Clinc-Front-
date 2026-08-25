@@ -8,6 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Users } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { api } from '@/lib/api';
+import { useAuthStore } from '@/stores/auth-store';
 import type { StaffMember, Branch, StaffRole } from '@/types/domain';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +38,8 @@ type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 export default function StaffPage() {
   const { t } = useLocale();
   const queryClient = useQueryClient();
+  const hasPermission = useAuthStore((s) => s.hasPermission);
+  const canManage = hasPermission('staff.manage');
   const [open, setOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<StaffMember | null>(null);
   const schema = React.useMemo(() => buildSchema(t), [t]);
@@ -131,10 +134,12 @@ export default function StaffPage() {
           <h1 className="text-lg font-semibold tracking-tight">{t.staff.title}</h1>
           <p className="text-sm text-muted-foreground">{t.staff.subtitle}</p>
         </div>
-        <Button size="sm" onClick={openCreate}>
-          <Plus className="h-4 w-4" />
-          {t.staff.add}
-        </Button>
+        {canManage && (
+          <Button size="sm" onClick={openCreate}>
+            <Plus className="h-4 w-4" />
+            {t.staff.add}
+          </Button>
+        )}
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-border bg-surface">
@@ -159,7 +164,11 @@ export default function StaffPage() {
             </thead>
             <tbody>
               {staff.map((member) => (
-                <tr key={member._id} className="cursor-pointer" onClick={() => openEdit(member)}>
+                <tr
+                  key={member._id}
+                  className={canManage ? 'cursor-pointer' : undefined}
+                  onClick={canManage ? () => openEdit(member) : undefined}
+                >
                   <td className="font-medium">
                     <div className="flex items-center gap-2.5">
                       <AvatarInitials name={member.fullName} />
@@ -175,29 +184,30 @@ export default function StaffPage() {
                     </Badge>
                   </td>
                   <td className="text-end">
-                    {member.isActive ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deactivateMutation.mutate(member._id);
-                        }}
-                      >
-                        {t.common.deactivate}
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          activateMutation.mutate(member._id);
-                        }}
-                      >
-                        {t.common.activate}
-                      </Button>
-                    )}
+                    {canManage &&
+                      (member.isActive ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deactivateMutation.mutate(member._id);
+                          }}
+                        >
+                          {t.common.deactivate}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            activateMutation.mutate(member._id);
+                          }}
+                        >
+                          {t.common.activate}
+                        </Button>
+                      ))}
                   </td>
                 </tr>
               ))}

@@ -9,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Stethoscope, CalendarClock } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { api } from '@/lib/api';
+import { useAuthStore } from '@/stores/auth-store';
 import type { Doctor, Branch } from '@/types/domain';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +42,8 @@ type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 export default function DoctorsPage() {
   const { t } = useLocale();
   const queryClient = useQueryClient();
+  const hasPermission = useAuthStore((s) => s.hasPermission);
+  const canManage = hasPermission('doctors.manage');
   const [open, setOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<Doctor | null>(null);
   const createSchema = React.useMemo(() => buildSchema(t), [t]);
@@ -152,10 +155,12 @@ export default function DoctorsPage() {
           <h1 className="text-lg font-semibold tracking-tight">{t.doctors.title}</h1>
           <p className="text-sm text-muted-foreground">{t.doctors.subtitle}</p>
         </div>
-        <Button size="sm" onClick={openCreate}>
-          <Plus className="h-4 w-4" />
-          {t.doctors.add}
-        </Button>
+        {canManage && (
+          <Button size="sm" onClick={openCreate}>
+            <Plus className="h-4 w-4" />
+            {t.doctors.add}
+          </Button>
+        )}
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-border bg-surface">
@@ -180,7 +185,11 @@ export default function DoctorsPage() {
             </thead>
             <tbody>
               {doctors.map((doctor) => (
-                <tr key={doctor._id} className="cursor-pointer" onClick={() => openEdit(doctor)}>
+                <tr
+                  key={doctor._id}
+                  className={canManage ? 'cursor-pointer' : undefined}
+                  onClick={canManage ? () => openEdit(doctor) : undefined}
+                >
                   <td className="font-medium">
                     <div className="flex items-center gap-2.5">
                       <AvatarInitials name={doctor.fullName} />
@@ -202,29 +211,30 @@ export default function DoctorsPage() {
                           <CalendarClock className="h-3.5 w-3.5" />
                         </Button>
                       </Link>
-                      {doctor.isActive ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deactivateMutation.mutate(doctor._id);
-                          }}
-                        >
-                          {t.common.deactivate}
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            activateMutation.mutate(doctor._id);
-                          }}
-                        >
-                          {t.common.activate}
-                        </Button>
-                      )}
+                      {canManage &&
+                        (doctor.isActive ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deactivateMutation.mutate(doctor._id);
+                            }}
+                          >
+                            {t.common.deactivate}
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              activateMutation.mutate(doctor._id);
+                            }}
+                          >
+                            {t.common.activate}
+                          </Button>
+                        ))}
                     </div>
                   </td>
                 </tr>

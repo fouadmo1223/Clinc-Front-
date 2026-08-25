@@ -36,21 +36,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (!isReady || !user) return null;
 
-  const navItems: NavItem[] = [
+  // Every entry beyond the overview is gated by the permission that actually lets this
+  // role do something on that page — the backend already enforces these; hiding the nav
+  // item (and the page's action buttons, see each page) keeps the UI from offering actions
+  // that would just come back as a 403.
+  const allNavItems: (NavItem & { permission?: string })[] = [
     { href: '/dashboard', label: t.nav.overview, icon: LayoutGrid },
-    { href: '/queue', label: t.nav.queue, icon: ListOrdered },
-    { href: '/appointments', label: t.nav.appointments, icon: CalendarClock },
-    { href: '/visits', label: t.nav.visits, icon: ClipboardList },
-    { href: '/patients', label: t.nav.patients, icon: Contact },
-    { href: '/invoices', label: t.nav.invoices, icon: Receipt },
-    { href: '/expenses', label: t.nav.expenses, icon: Wallet },
-    { href: '/reports', label: t.nav.reports, icon: BarChart3 },
-    { href: '/clinic', label: t.nav.clinic, icon: Settings },
-    { href: '/branches', label: t.nav.branches, icon: Building2 },
-    { href: '/doctors', label: t.nav.doctors, icon: Stethoscope },
-    { href: '/staff', label: t.nav.staff, icon: Users },
-    ...(hasPermission('audit.read') ? [{ href: '/audit-logs', label: t.nav.auditLogs, icon: History }] : []),
+    { href: '/queue', label: t.nav.queue, icon: ListOrdered, permission: 'queue.manage' },
+    { href: '/appointments', label: t.nav.appointments, icon: CalendarClock, permission: 'appointments.read' },
+    { href: '/visits', label: t.nav.visits, icon: ClipboardList, permission: 'visits.read' },
+    { href: '/patients', label: t.nav.patients, icon: Contact, permission: 'patients.read' },
+    { href: '/invoices', label: t.nav.invoices, icon: Receipt, permission: 'invoices.read' },
+    { href: '/expenses', label: t.nav.expenses, icon: Wallet, permission: 'expenses.read' },
+    { href: '/reports', label: t.nav.reports, icon: BarChart3, permission: 'reports.read' },
+    { href: '/clinic', label: t.nav.clinic, icon: Settings, permission: 'settings.manage' },
+    { href: '/branches', label: t.nav.branches, icon: Building2, permission: 'branches.manage' },
+    { href: '/doctors', label: t.nav.doctors, icon: Stethoscope, permission: 'doctors.read' },
+    { href: '/staff', label: t.nav.staff, icon: Users, permission: 'staff.read' },
+    { href: '/audit-logs', label: t.nav.auditLogs, icon: History, permission: 'audit.read' },
   ];
+  const navItems: NavItem[] = allNavItems.filter((item) => !item.permission || hasPermission(item.permission));
 
   const handleLogout = async () => {
     try {

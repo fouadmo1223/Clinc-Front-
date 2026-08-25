@@ -8,6 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Building2 } from 'lucide-react';
 import { useLocale } from '@/lib/i18n/locale-context';
 import { api } from '@/lib/api';
+import { useAuthStore } from '@/stores/auth-store';
 import type { Clinic, WorkingHours } from '@/types/domain';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +37,7 @@ function buildSchema(t: ReturnType<typeof useLocale>['t']) {
 }
 type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
-function LogoCard({ clinic }: { clinic: Clinic }) {
+function LogoCard({ clinic, canManage }: { clinic: Clinic; canManage: boolean }) {
   const { t } = useLocale();
   const queryClient = useQueryClient();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -86,6 +87,7 @@ function LogoCard({ clinic }: { clinic: Clinic }) {
             variant="outline"
             size="sm"
             loading={uploadMutation.isPending}
+            disabled={!canManage}
             onClick={() => fileInputRef.current?.click()}
           >
             {t.clinicSettings.changeLogo}
@@ -96,7 +98,7 @@ function LogoCard({ clinic }: { clinic: Clinic }) {
   );
 }
 
-function WorkingHoursCard({ clinic }: { clinic: Clinic }) {
+function WorkingHoursCard({ clinic, canManage }: { clinic: Clinic; canManage: boolean }) {
   const { t } = useLocale();
   const queryClient = useQueryClient();
   const [hours, setHours] = React.useState<WorkingHours[]>(
@@ -123,7 +125,7 @@ function WorkingHoursCard({ clinic }: { clinic: Clinic }) {
       </CardHeader>
       <CardContent className="space-y-4">
         <WorkingHoursEditor value={hours} onChange={setHours} />
-        <Button type="button" size="sm" loading={mutation.isPending} onClick={() => mutation.mutate(hours)}>
+        <Button type="button" size="sm" loading={mutation.isPending} disabled={!canManage} onClick={() => mutation.mutate(hours)}>
           {t.common.save}
         </Button>
       </CardContent>
@@ -143,7 +145,7 @@ function AppointmentDefaultsSchema(t: ReturnType<typeof useLocale>['t']) {
 }
 type AppointmentDefaultsValues = z.infer<ReturnType<typeof AppointmentDefaultsSchema>>;
 
-function AppointmentDefaultsCard({ clinic }: { clinic: Clinic }) {
+function AppointmentDefaultsCard({ clinic, canManage }: { clinic: Clinic; canManage: boolean }) {
   const { t } = useLocale();
   const queryClient = useQueryClient();
   const schema = React.useMemo(() => AppointmentDefaultsSchema(t), [t]);
@@ -213,7 +215,7 @@ function AppointmentDefaultsCard({ clinic }: { clinic: Clinic }) {
             ))}
           </div>
 
-          <Button type="submit" size="sm" loading={mutation.isPending} disabled={!formState.isDirty}>
+          <Button type="submit" size="sm" loading={mutation.isPending} disabled={!canManage || !formState.isDirty}>
             {t.common.save}
           </Button>
         </form>
@@ -225,6 +227,7 @@ function AppointmentDefaultsCard({ clinic }: { clinic: Clinic }) {
 export default function ClinicSettingsPage() {
   const { t } = useLocale();
   const queryClient = useQueryClient();
+  const canManage = useAuthStore((s) => s.hasPermission('settings.manage'));
 
   const { data: clinic, isLoading } = useQuery({
     queryKey: ['clinic', 'me'],
@@ -295,7 +298,7 @@ export default function ClinicSettingsPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
-        <LogoCard clinic={clinic} />
+        <LogoCard clinic={clinic} canManage={canManage} />
 
         <Card>
           <CardHeader>
@@ -350,7 +353,7 @@ export default function ClinicSettingsPage() {
               </div>
 
               <div className="flex items-center gap-3 pt-2">
-                <Button type="submit" loading={mutation.isPending} disabled={!isDirty}>
+                <Button type="submit" loading={mutation.isPending} disabled={!canManage || !isDirty}>
                   {t.common.save}
                 </Button>
               </div>
@@ -358,8 +361,8 @@ export default function ClinicSettingsPage() {
           </CardContent>
         </Card>
 
-        <WorkingHoursCard clinic={clinic} />
-        <AppointmentDefaultsCard clinic={clinic} />
+        <WorkingHoursCard clinic={clinic} canManage={canManage} />
+        <AppointmentDefaultsCard clinic={clinic} canManage={canManage} />
       </div>
     </div>
   );
